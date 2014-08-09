@@ -1,0 +1,64 @@
+.app-navigation
+{
+	.branding
+	{
+		font-size: 25px;
+		font-weight: bold;
+		
+		text-decoration: none;
+		color: #DDD;
+		text-shadow: -1px -1px #000;
+		
+		line-height: 80px;
+		text-align: center;
+	}
+	
+	.sections
+	{
+		ul
+		{
+			list-style-type: none;
+			
+			li
+			{
+				i.fa
+				{
+					float: left;
+					
+					font-size: 16px;
+					
+					padding-left: 20px;
+					padding-top: 11px;
+					
+					color: #AAA;
+				}
+				
+				a
+				{
+					padding-left: 52px;
+					line-height: 36px;
+					
+					display: block;
+					
+					text-decoration: none;
+					color: #DDD;
+					text-shadow: -1px -1px #000;
+				}
+				
+				width: 100%;
+				height: 36px;
+			}
+			
+			margin: 0px;
+		}
+	}
+	
+	@include texture(#222);
+	@include box-shadow(-2px 0px 2px 0px #111 inset);
+	
+	border-right: 1px solid #000;
+	
+	width: 250px;
+	height: 100%;
+	position: absolute;
+}

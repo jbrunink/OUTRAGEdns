@@ -1,0 +1,60 @@
+/**
+ *	Grid controls for Phoenix-UI
+ */
+
+
+/* Defining the body */
+body
+{
+	font-family: $global-font-family;
+	font-size: $global-font-size;
+	font-weight: $global-font-weight;
+	line-height: $global-line-height;
+}
+
+
+/* Creating the column structure */
+$index: 0;
+
+@mixin columns($columns)
+{
+	width: #{$grid-colwidth * $columns};
+};
+
+@while $index < $grid-columns
+{
+	$index: $index + 1;
+	
+	.col-#{$index}
+	{
+		@include columns($index);
+	}
+};
+
+/* Creating the offset structure */
+$index: 0;
+
+@mixin offset-left($columns)
+{
+	margin-left: #{$grid-colwidth * $columns};
+};
+
+@mixin offset-right($columns)
+{
+	margin-right: #{$grid-colwidth * $columns};
+};
+
+@mixin offset($columns)
+{
+	margin-left: #{$grid-colwidth * $columns};
+};
+
+@while $index < $grid-columns
+{
+	$index: $index + 1;
+	
+	.offset-#{$index}
+	{
+		@include offset($index);
+	}
+};

@@ -1,0 +1,151 @@
+/**
+ *	Positioning controls for Phoenix-UI
+ */
+
+
+/* The world famous clearfix functionality */
+@mixin clearfix()
+{
+	clear: both;
+	*zoom: 1;
+	
+	&:before, &:after
+	{
+		display: table;
+		content: "";
+		
+		*zoom: 1;
+		*display: inline;
+	}
+	
+	&:after
+	{
+		clear: both;
+	}
+}
+
+.group, .clearfix
+{
+	@include clearfix();
+}
+
+
+/* Custom display handlers */
+@mixin display($type)
+{
+	@if $type == inline-block
+	{
+		display: $type;
+		
+		*display: inline;
+		*zoom: 1;
+	}
+	@else
+	{
+		display: $type;
+	}
+}
+
+
+/* Element alignment */
+.pull-left
+{
+	float: left;
+}
+
+.pull-right
+{
+	float: right;
+}
+
+.centre, .center
+{
+	margin-left: auto !important;
+	margin-right: auto !important;
+}
+
+.reset-positioning
+{
+	margin: 0;
+	padding: 0;
+}
+
+.centre-block, .center-block
+{
+	display: block;
+	margin: 0 auto;
+}
+
+
+/* Full height - for reasons unknown to all */
+.full-size
+{
+	width: 100%;
+	height: 100%;
+}
+
+
+/* Hiding and showing */
+.hide
+{
+	display: none;
+}
+
+.show
+{
+	display: block;
+}
+
+.invisible
+{
+	visibility: hidden;
+}
+
+
+/* Container sizes */
+.content-column
+{
+	display: block;
+	
+	&.full-width, .full-width
+	{
+		width: 100%;
+		
+		clear: both;
+		float: none;
+		
+		@include clearfix();
+	}
+	
+	@mixin partition-at-end()
+	{
+		//margin-right: -1%; // IE Bug?
+		
+		margin-right: 0%;
+		float: right;
+	}
+	
+	@mixin partition-structure($title: half-width, $parts: 2, $margin: 1.5%)
+	{
+		$width: (100% - (($parts - 1) * $margin)) / $parts;
+		
+		&.#{$title}, > .#{$title}
+		{
+			width: #{$width};
+			margin-right: $margin;
+			
+			@include display(inline-block);
+			
+			float: left;
+		}
+		
+		&.#{$title}:nth-child(#{$parts}n), > .#{$title}:nth-child(#{$parts}n), > .#{$title}.last-row-element
+		{
+			@include partition-at-end();
+		}
+	}
+	
+	@include partition-structure(half-width, 2, $partition-margin-width);
+	@include partition-structure(third-width, 3, $partition-margin-width);
+	@include partition-structure(quarter-width, 4, $partition-margin-width);
+}

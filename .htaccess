@@ -1,0 +1,7 @@
+RewriteEngine on
+RewriteRule ^(([^/\.]+)/?)*?$ /index.php [L]
+
+FileETag MTime Size
+
+ExpiresActive On
+ExpiresDefault "access plus 1 month"

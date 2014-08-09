@@ -1,0 +1,10 @@
+entities:
+{
+	record:
+	{
+		namespace: "OUTRAGEdns.Record"
+		
+		type: "record"
+		table: "records"
+	}
+}

@@ -1,0 +1,10 @@
+entities:
+{
+	zone:
+	{
+		namespace: "OUTRAGEdns.Zone"
+		
+		type: "zone"
+		table: "zones"
+	}
+}

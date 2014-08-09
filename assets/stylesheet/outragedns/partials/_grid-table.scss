@@ -1,0 +1,64 @@
+.grid-table
+{
+	border: 1px solid $form-input-border-colour;
+	
+	thead
+	{
+		@include texture(#222);
+		
+		border: 1px solid #111;
+		
+		th
+		{
+			color: #FFF;
+		}
+	}
+	
+	tbody
+	{
+		tr
+		{
+			background-color: #FAFAFA;
+			
+			&:nth-child(2n)
+			{
+				background-color: #FFF;
+			}
+			
+			border-top: 1px solid $form-input-border-colour;
+		}
+		
+		td
+		{
+			ul.actions
+			{
+				margin: 0px;
+				
+				list-style-type: none;
+				
+				li
+				{
+					a
+					{
+						@include display(inline-block);
+						
+						font-size: 14px;
+						font-weight: normal;
+						
+						line-height: 30px;
+						text-decoration: none;
+						
+						color: #000;
+					}
+					
+					display: inline;
+					line-height: 30px;
+					
+					margin-right: 5px;
+				}
+				
+				float: right;
+			}
+		}
+	}
+}

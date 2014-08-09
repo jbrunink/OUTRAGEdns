@@ -1,0 +1,106 @@
+/**
+ *	Table component include for Phoenix-UI
+ */
+
+
+table
+{
+	width: 100%;
+	max-width: 100%;
+	
+	@if $table-background-colour
+	{
+		background-color: $table-background-colour;
+	}
+	
+	border-collapse: collapse;
+	border-spacing: 0;
+	
+	font-family: $table-font-family;
+	margin-bottom: $table-line-height;
+
+	th, td
+	{
+		padding: 8px;
+		
+		line-height: $table-line-height;
+		
+		text-align: left;
+		vertical-align: top;
+	}
+	
+	th
+	{
+		font-weight: bold;
+	}
+	
+	thead
+	{
+		th
+		{
+			vertical-align: bottom;
+		}
+		
+		font-family: $table-header-font-family;
+		font-size: $table-header-font-size;
+		font-weight: $table-header-font-weight;
+		
+		@if $table-border-minor
+		{
+			border-bottom: 1px solid $table-border-major;
+		}
+	}
+	
+	caption + thead tr:first-child th, caption + thead tr:first-child td, colgroup + thead tr:first-child th, colgroup + thead tr:first-child td, thead:first-child tr:first-child th, thead:first-child tr:first-child td
+	{
+		border-top: 0;
+	}
+	
+	tbody
+	{
+		@if $table-border-minor
+		{
+			tr
+			{
+				border-bottom: 1px solid $table-border-minor;
+			}
+		}
+		
+		tr.last-child, tr:last-child
+		{
+			border-bottom: 0;
+		}
+		
+		font-family: $table-body-font-family;
+		font-size: $table-body-font-size;
+		font-weight: $table-body-font-weight;
+	}
+	
+	@if $table-border-minor
+	{
+		tbody + tbody
+		{
+			border-top: 1px solid $table-border-major;
+		}
+	}
+	
+	tfoot
+	{
+		font-family: $table-footer-font-family;
+		font-size: $table-footer-font-size;
+		font-weight: $table-footer-font-weight;
+		
+		@if $table-border-minor
+		{
+			border-top: 1px solid $table-border-major;
+		}
+	}
+}
+
+.table-condensed
+{
+	th, td
+	{
+		padding: 4px 5px;
+	}
+}

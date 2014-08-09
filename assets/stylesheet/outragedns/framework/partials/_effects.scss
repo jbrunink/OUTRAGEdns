@@ -1,0 +1,162 @@
+/**
+ *	Effect components for Phoenix-UI
+ */
+
+
+/* Border radius */
+@mixin border-radius($radius)
+{
+	@if $backwards-compatible
+	{
+		-webkit-border-radius: $radius;
+		-moz-border-radius: $radius;
+	}
+	
+	border-radius: $radius;
+}
+
+
+/* Box shadows */
+@mixin box-shadow-both($outset, $inset)
+{
+	@if $backwards-compatible
+	{
+		-webkit-box-shadow: $outset, $inset inset;
+		-moz-box-shadow: $outset, $inset inset;
+	}
+	
+	box-shadow: $outset, $inset inset;
+}
+
+@mixin box-shadow($shadow)
+{
+	@if $backwards-compatible
+	{
+		-webkit-box-shadow: $shadow;
+		-moz-box-shadow: $shadow;
+	}
+	
+	box-shadow: $shadow;
+}
+
+@mixin box-shadow-inset($shadow)
+{
+	@if $backwards-compatible
+	{
+		-webkit-box-shadow: $shadow inset;
+		-moz-box-shadow: $shadow inset;
+	}
+	
+	box-shadow: $shadow inset;
+}
+
+
+/* Background clip */
+@mixin background-clip($clip)
+{
+	@if $backwards-compatible
+	{
+		-webkit-background-clip: $clip;
+		-moz-background-clip: $clip;
+	}
+	
+	background-clip: $clip;
+}
+
+
+/* Box sizing */
+@mixin box-sizing($sizing)
+{
+	@if $backwards-compatible
+	{
+		-webkit-box-sizing: $sizing;
+		-moz-box-sizing: $sizing;
+	}
+	
+	box-sizing: $sizing;
+}
+
+
+/* Opacity */
+@mixin opacity($opacity)
+{
+	@if $backwards-compatible
+	{
+		filter: "alpha(opacity=#{$opacity})";
+	}
+	
+	opacity: ($opacity / 100);
+}
+
+
+/* Gradients */
+@mixin gradient-horizontal($start: #555, $end: #333)
+{
+	background-color: $start;
+	
+	@if $backwards-compatible
+	{
+		background-image: -moz-linear-gradient(left, $start, $end); // FF 3.6+
+		background-image: -webkit-gradient(linear, 0 0, 100% 0, from($start), to($end)); // Safari 4+, Chrome 2+
+		background-image: -webkit-linear-gradient(left, $start, $end); // Safari 5.1+, Chrome 10+
+		background-image: -o-linear-gradient(left, $start, $end); // Opera 11.10
+	}
+	
+	background-image: linear-gradient(to right, $start, $end); // Standard, IE10
+	background-repeat: repeat-x;
+	
+	@if $backwards-compatible
+	{
+		filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#{$start}', endColorstr='#{$end}', GradientType=1)"; // IE9 and down
+	}
+}
+
+@mixin gradient-vertical($start: #555, $end: #333)
+{
+	background-color: mix($start, $end, 60%);
+	
+	@if $backwards-compatible
+	{
+		background-image: -moz-linear-gradient(top, $start, $end); // FF 3.6+
+		background-image: -webkit-gradient(linear, 0 0, 0 100%, from($start), to($end)); // Safari 4+, Chrome 2+
+		background-image: -webkit-linear-gradient(top, $start, $end); // Safari 5.1+, Chrome 10+
+		background-image: -o-linear-gradient(top, $start, $end); // Opera 11.10
+	}
+	
+	background-image: linear-gradient(to bottom, $start, $end); // Standard, IE10
+	background-repeat: repeat-x;
+	
+	@if $backwards-compatible
+	{
+		filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#{$start}', endColorstr='#{$end}', GradientType=0)"; // IE9 and down
+	}
+}
+
+@mixin gradient-directional($start: #555, $end: #333, $angle: 45deg)
+{
+	background-color: $end;
+	background-repeat: repeat-x;
+	
+	@if $backwards-compatible
+	{
+		background-image: -moz-linear-gradient($angle, $start, $end); // FF 3.6+
+		background-image: -webkit-linear-gradient($angle, $start, $end); // Safari 5.1+, Chrome 10+
+		background-image: -o-linear-gradient($angle, $start, $end); // Opera 11.10
+	}
+	
+	background-image: linear-gradient($angle, $start, $end); // Standard, IE10
+}
+
+
+/* Transitions */
+@mixin transition($transition)
+{
+	@if $backwards-compatible
+	{
+		-webkit-transition: $transition;
+		-moz-transition: $transition;
+		-o-transition: $transition;
+	}
+	
+	transition: $transition;
+}

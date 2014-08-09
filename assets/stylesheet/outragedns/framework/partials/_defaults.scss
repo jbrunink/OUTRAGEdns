@@ -1,0 +1,120 @@
+/**
+ *	!default options for Phoenix-UI
+ */
+
+
+/* Import everything? */
+$import-everything: 1 !default;
+ 
+
+/* Global font types */
+$global-font-family: "Tahoma" !default;
+$global-font-size: 11px !default;
+$global-font-weight: normal !default;
+$global-line-height: 19px !default;
+
+
+/* Grid */
+$grid-colwidth: 1% !default;
+$grid-columns: 100 !default;
+
+
+/* Heading */
+$heading-font-family: $global-font-family !default;
+$heading-font-base-size: $global-font-size !default;
+$heading-font-weight: $global-font-weight !default;
+$heading-line-height: $global-line-height !default;
+
+
+/* List */
+$list-font-family: $global-font-family !default;
+$list-font-size: $global-font-size !default;
+$list-font-weight: $global-font-weight !default;
+$list-line-height: $global-line-height !default;
+
+
+/* Paragraphs */
+$paragraph-font-family: $global-font-family !default;
+$paragraph-font-weight: $global-font-weight !default;
+$paragraph-font-size: $global-font-size !default;
+$paragraph-line-height: $global-line-height !default;
+
+
+/* Blockquotes (they're technically paragraphs)... */
+$blockquote-font-family: $paragraph-font-family !default;
+$blockquote-font-weight: $paragraph-font-weight !default;
+$blockquote-font-size: $paragraph-font-size !default;
+$blockquote-line-height: $paragraph-line-height !default;
+
+
+/* Table: Core */
+$table-background-colour: null !default;
+$table-font-family: $global-font-family !default;
+$table-line-height: $global-line-height !default;
+$table-border-major: null /* #666 */ !default;
+$table-border-minor: null /* #333 */ !default;
+
+
+/* Table: Header */
+$table-header-font-family: $global-font-family !default;
+$table-header-font-size: $global-font-size + 2px !default;
+$table-header-font-weight: $global-font-weight !default;
+
+
+/* Table: Body */
+$table-body-font-family: $global-font-family !default;
+$table-body-font-size: $global-font-size !default;
+$table-body-font-weight: $global-font-weight !default;
+
+
+/* Table: Footer */
+$table-footer-font-family: $global-font-family !default;
+$table-footer-font-size: $global-font-size !default;
+$table-footer-font-weight: $global-font-weight !default;
+
+
+/* Code */
+$code-font-colour: #CCC !default;
+$code-font-family: "Courier New" !default;
+$code-font-size: 12px !default;
+$code-font-weight: $global-font-weight !default;
+$code-line-height: 14px !default;
+
+
+/* Form: Core */
+$form-font-family: $global-font-family !default;
+$form-font-size: $global-font-size !default;
+$form-font-weight: $global-font-weight !default;
+$form-line-height: $global-line-height !default;
+
+
+/* Form: Fieldset */
+$form-fieldset-colour: #777 !default;
+$form-fieldset-bottom-border: #333 !default;
+
+
+/* Form: Input */
+$form-input-background-colour: #FFF !default;
+$form-input-border-colour: #111 !default;
+$form-input-shadow-colour: #EEEEEE !default;
+$form-input-text-colour: #111 !default;
+
+
+/* Form: Buttons */
+$form-button-shadow-colour: #CCC !default;
+
+
+/* Icon import */
+$icon-import: true !default;
+
+
+/* Margin for content columns */
+$partition-margin-width: 1.5% !default;
+
+
+/* keeping old CSS effects for old browsers */
+$backwards-compatible: false !default;
+
+
+/* Path for Font Awesome */
+$fa-font-path: "/assets/fonts/font-awesome" !default;

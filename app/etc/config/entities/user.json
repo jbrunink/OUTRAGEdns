@@ -1,0 +1,10 @@
+entities:
+{
+	user:
+	{
+		namespace: "OUTRAGEdns.User"
+		
+		type: "user"
+		table: "users"
+	}
+}

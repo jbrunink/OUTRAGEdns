@@ -1,0 +1,11 @@
+database:
+{
+	production:
+	{
+		host:     "localhost"
+		username: "root"
+		password: ""
+		database: "outragedns"
+		port:     "3306"
+	}
+}

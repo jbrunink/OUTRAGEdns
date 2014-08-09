@@ -1,0 +1,9 @@
+@mixin texture($colour: false)
+{	
+	background-image: url("/assets/images/texture.png");
+	
+	@if($colour)
+	{
+		background-color: $colour;
+	}
+}

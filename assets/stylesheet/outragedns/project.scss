@@ -1,0 +1,24 @@
+/**
+ *	Beginning of everything for OUTRAGEdns - let's just do some stuff in here and then
+ *	include millions of partials, methinks.
+ */
+
+/* define some options first */
+$global-font-family: "Open Sans";
+$form-input-border-colour: #DDD;
+
+
+/* include font */
+@import url("http://fonts.googleapis.com/css?family=Open+Sans:400,600");
+
+
+/* include libraries */
+@import "framework/core.scss";
+@import "partials/_mixins";
+
+
+/* and then finally the partials! */
+@import "partials/_body";
+@import "partials/_navigation";
+@import "partials/_main-container";
+@import "partials/_grid-table";

@@ -1,0 +1,494 @@
+/**
+ *	Form components for Phoenix-UI - based on Formalise.me
+ */
+
+
+input[type = "search"]::-webkit-search-decoration
+{
+	display: none;
+}
+
+input, button, a.button, select, textarea
+{
+	@include transition(all 0.2s);
+	
+	&:invalid
+	{
+		/* uhm, no idea what here, red perhaps? */
+	}
+
+	&:focus
+	{
+		@include box-shadow(0px 0px 3px darken($form-input-shadow-colour, 2%) !important);
+		
+		background-color: lighten($form-input-background-colour, 5%) !important;
+		z-index: 1;
+	}
+}
+
+input[type = "file"], input[type = "radio"], input[type = "checkbox"]
+{
+	&:focus, &:active
+	{
+		@include box-shadow(none);
+	}
+}
+
+button, a.button, input[type = "reset"], input[type = "submit"], input[type = "button"]
+{
+	@mixin button-colour($start, $end, $change)
+	{
+		text-decoration: none;
+		text-shadow: -1px -1px #111;
+		
+		@include gradient-vertical($start, $end);
+		
+		&:hover
+		{
+			text-shadow: -1px -1px #222;
+			
+			@include gradient-vertical(lighten($start, 5%), lighten($end, 5%));
+		}
+		
+		&:active
+		{
+			text-shadow: -1px -1px #000;
+			
+			@include gradient-vertical(darken($start, 5%), darken($end, 10%));
+			@include box-shadow-both(0px 0px 8px $form-button-shadow-colour, 0px 0px 2px $form-button-shadow-colour);
+		}
+	}
+	
+	-webkit-appearance: none;
+	
+	@include transition(all 0.2s);
+	@include border-radius(2px);
+	@include box-shadow(0px 0px 8px $form-button-shadow-colour);
+	@include background-clip(padding-box);
+	
+	font-family: $form-font-family;
+	font-size: $form-font-size;
+	font-weight: $form-font-weight;
+	line-height: $form-line-height;
+	
+	padding-left: 10px;
+	padding-right: 10px;
+	padding-top: 4px;
+	padding-bottom: 4px;
+	
+	margin: 5px;
+	
+	border: 0;
+	
+	@include button-colour(#1D66D3, #1855B0, 2%);
+	
+	color: #FFF;
+	
+	&.button-green
+	{
+		@include button-colour(#699F2A, #48731E, 2%);
+	}
+	
+	&.button-red
+	{
+		@include button-colour(#D50000, #B00000, 2%);
+	}
+	
+	&.button-orange
+	{
+		@include button-colour(#ED6101, #C75401, 2%);
+	}
+	
+	&.button-grey
+	{
+		@include button-colour(#666666, #333333, 2%);
+	}
+	
+	*padding-top: 2px;
+	*padding-bottom: 0;
+	
+	&::-moz-focus-inner
+	{
+		border: 0;
+		padding: 0;
+	}
+}
+
+a.button
+{
+	*padding-bottom: 3px;
+}
+
+button
+{
+	*padding-top: 1px;
+	*padding-bottom: 1px;
+}
+
+textarea, select, input[type = "date"], input[type = "datetime"], input[type = "datetime-local"], input[type = "email"], input[type = "month"], input[type = "number"], input[type = "password"], input[type = "search"], input[type = "tel"], input[type = "text"], input[type = "time"], input[type = "url"], input[type = "week"]
+{
+	-webkit-appearance: none;
+	
+	border: 1px solid $form-input-border-colour;
+	
+	width: 100%;
+	
+	outline: 0;
+	margin: 0;
+	padding: 5px 6px;
+	
+	background-color: $form-input-background-colour;
+	color: $form-input-text-colour;
+	
+	font-family: $form-font-family;
+	font-size: $form-font-size;
+	font-weight: $form-font-weight;
+	
+	line-height: $form-line-height;
+	text-align: left;
+	
+	vertical-align: top;
+	
+	@include box-sizing(border-box);
+	@include box-shadow(0px 0px 3px $form-input-shadow-colour);
+	@include background-clip(padding-box);
+	@include border-radius(0);
+	
+	@if $backwards-compatible
+	{
+		// IE7
+		*padding-top: 2px;
+		*padding-bottom: 1px;
+		*height: auto;
+	}
+	
+	&[disabled]
+	{
+		@if lightness($form-input-background-colour) > 127
+		{
+			background-color: lighten($form-input-background-colour, 3%);
+			color: lighten($form-input-text-colour, 40%);
+		}
+		@else
+		{
+			background-color: darken($form-input-background-colour, 3%);
+			color: darken($form-input-text-colour, 40%);
+		}
+	}
+	
+	&.invalid-content
+	{
+		border: 1px solid #FF0000;
+		
+		@if lightness($form-input-shadow-colour) > 127
+		{
+			@include box-shadow(0px 0px 3px #FF7777);
+			
+			&:active
+			{
+				@include box-shadow(0px 0px 3px darken(#FF7777, 2%));
+			}
+		}
+		@else
+		{
+			@include box-shadow(0px 0px 3px #E14545);
+			
+			&:active
+			{
+				@include box-shadow(0px 0px 3px lighten(#E14545, 2%));
+			}
+		}
+	}
+}
+
+button[disabled], input[disabled], select[disabled], select[disabled] option, select[disabled] optgroup, textarea[disabled], a.button-disabled
+{
+	@if $backwards-compatible
+	{
+		-moz-user-select: -moz-none;
+		-webkit-user-select: none;
+		-khtml-user-select: none;
+	}
+	
+	user-select: none;
+	
+	cursor: default;
+}
+
+input::-webkit-input-placeholder, textarea::-webkit-input-placeholder
+{
+	color: #888888;
+}
+
+input:-moz-placeholder, textarea:-moz-placeholder
+{
+	color: #888888;
+}
+
+input.placeholder-text, textarea.placeholder-text
+{
+	color: #888888;
+}
+
+textarea, select[size], select[multiple]
+{
+	height: auto;
+}
+
+select[size = "0"], select[size = "1"]
+{
+	height: 1.8em;
+	*height: auto;
+}
+
+@media (-webkit-min-device-pixel-ratio: 0)
+{
+	select[size], select[multiple], select[multiple][size]
+	{
+		background-image: none;
+		padding-right: 3px;
+	}
+	
+	select, select[size = "0"], select[size = "1"]
+	{
+		background-image: url(data:image/png;base64,R0lGODlhDQAEAIAAAAAAAP8A/yH5BAEHAAEALAAAAAANAAQAAAILhA+hG5jMDpxvhgIAOw==);
+		background-repeat: no-repeat;
+		background-position: right center;
+		
+		padding-right: 20px;
+	}
+	
+	::-webkit-validation-bubble-message
+	{
+	}
+	
+	::-webkit-validation-bubble-arrow, ::-webkit-validation-bubble-top-outer-arrow, ::-webkit-validation-bubble-top-inner-arrow
+	{
+	}
+}
+
+textarea
+{
+	width: 100%;
+	min-height: 140px;
+	
+	overflow: auto;
+	resize: vertical;
+}
+
+optgroup
+{
+	&::-moz-focus-inner
+	{
+		border: 0;
+		padding: 0;
+	}
+}
+
+
+/* Fieldset */
+fieldset
+{
+	padding: 0;
+	margin: 0;
+	border: 0;
+	
+	@include clearfix();
+}
+
+legend
+{
+	display: block;
+	width: 100%;
+	
+	padding: 0;
+	border: 0;
+	
+	font-family: $form-font-family;
+	font-size: $global-font-size * 1.5;
+	line-height: $global-line-height * 2;
+	
+	color: $form-fieldset-colour;
+	
+	border-bottom: 1px solid $form-fieldset-bottom-border;
+	
+	small
+	{
+		font-size: $global-line-height * 0.75;
+	}
+}
+
+
+/* Form alignment */
+.form-search, .form-inline, .form-horizontal
+{
+	input, textarea, select, .help-inline, .uneditable-input, .input-prepend, .input-append
+	{
+		display: inline-block;
+		*display: inline;
+		*zoom: 1;
+		
+		margin-bottom: 0;
+	}
+	
+	.hide
+	{
+		display: none;
+	}
+}
+
+.form-search label, .form-inline label
+{
+	display: inline-block;
+	*display: inline;
+	*zoom: 1;
+}
+
+.form-search .input-append, .form-inline .input-append, .form-search .input-prepend, .form-inline .input-prepend
+{
+	margin-bottom: 0;
+}
+
+.form-search .radio, .form-search .checkbox, .form-inline .radio, .form-inline .checkbox
+{
+	padding-left: 0;
+	margin-bottom: 0;
+	
+	vertical-align: middle;
+}
+
+.form-search .radio input[type = "radio"], .form-search .checkbox input[type = "checkbox"], .form-inline .radio input[type = "radio"], .form-inline .checkbox input[type = "checkbox"]
+{
+	float: left;
+	margin-right: 3px;
+	margin-left: 0;
+}
+
+.control-group
+{
+	margin-bottom: $form-line-height / 2;
+}
+
+legend + .control-group
+{
+	margin-top: $form-line-height;
+	
+	-webkit-margin-top-collapse: separate;
+}
+
+.form-horizontal
+{
+	.control-group
+	{
+		@include clearfix();
+		
+		margin-bottom: $form-line-height;
+	}
+	
+	.control-label
+	{
+		float: left;
+		width: 100px;
+		
+		padding-top: 5px;
+		text-align: left;
+	}
+	
+	.controls
+	{
+		*display: inline-block;
+		*padding-left: 20px;
+		margin-left: 125px;
+		*margin-left: 0;
+		
+		&:first-child
+		{
+			*padding-left: 125px;
+		}
+	}
+	
+	.error-text
+	{
+		margin-top: 10px;
+		
+		.label
+		{
+			background-color: #F00;
+			
+			padding-left: 4px;
+			padding-right: 4px;
+			padding-top: 3px;
+			padding-bottom: 3px;
+			
+			border-radius: 3px;
+			
+			font-weight: bold;
+			color: #FFF;
+			
+			margin-right: 3px;
+			
+			text-transform: uppercase;
+			
+			&:before
+			{
+				content: "Error";
+			}
+		}
+	}
+	
+	.help-block
+	{
+		margin-top: $form-line-height / 2;
+		margin-bottom: 0;
+	}
+	
+	.form-actions
+	{
+		padding-left: 160px;
+	}
+}
+
+
+/* we can use this to strip styles */
+input, textarea
+{
+	&.strip-styles
+	{
+		text-decoration: none !important;
+		text-shadow: none !important;
+		
+		color: $colour-grey-dark;
+		background-color: #FFFFFF !important;
+		
+		@include border-radius(0 !important);
+		@include box-shadow(none !important);
+		
+		border: 1px solid $colour-grey;
+		
+		&:invalid, &:hover, &:active
+		{
+			@include border-radius(0 !important);
+			@include box-shadow(none !important);
+			
+			text-decoration: none !important;
+			text-shadow: none !important;
+			
+			color: $colour-grey-dark;
+			background-color: #FFFFFF !important;
+		}
+	}
+}
+
+
+/* or we can use this to keep styles, but removing obtrusive form components */
+input, textarea
+{
+	&.mini-item
+	{
+		background-color: inherit;
+		border: 0px;
+		background-image: inherit;
+		padding: 0px;
+		margin: 0px;
+	}
+}

@@ -1,0 +1,10 @@
+entities:
+{
+	domain:
+	{
+		namespace: "OUTRAGEdns.Domain"
+		
+		type: "domain"
+		table: "domains"
+	}
+}

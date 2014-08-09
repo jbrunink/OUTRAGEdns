@@ -1,0 +1,34 @@
+/**
+ *	Core framework include for Phoenix-UI
+ */
+
+
+/* Reset everything - it's good for the soul! */
+@import "partials/reset";
+
+/* Then add the default settings. */
+@import "partials/defaults";
+@import "partials/colours";
+
+/* Effects are useful. Keep this here. */
+@import "partials/effects";
+@import "partials/positioning";
+
+/* Add the other components. These can be in any order. */
+@import "partials/alert";
+@import "partials/code";
+@import "partials/editor";
+@import "partials/form";
+@import "partials/grid";
+@import "partials/heading";
+@import "partials/list";
+@import "partials/paragraph";
+@import "partials/responsive";
+@import "partials/table";
+
+/* New icons! */
+@import "partials/font-awesome/font-awesome.scss";
+
+/* Here we'll include some other stuff. */
+@import "../jquery-plugins/tipsy/jquery.tipsy.scss";
+@import "../jquery-plugins/tagsinput/jquery.tagsinput.scss";
