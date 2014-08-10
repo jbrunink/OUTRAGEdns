@@ -22,6 +22,15 @@ class Controller extends Entity\Controller
 		(
 			"name" => "test.westie.sh",
 			"descr" => "Sample westie.sh zone template record",
+			
+			"records" => array
+			(
+				[ "name" => "[NAME]", "type" => "A", "content" => "127.0.0.1", "ttl" => 3600, "prio" => 0 ],
+				[ "name" => "[NAME]", "type" => "A", "content" => "127.0.0.2", "ttl" => 3600, "prio" => 0 ],
+				[ "name" => "[NAME]", "type" => "A", "content" => "127.0.0.3", "ttl" => 3600, "prio" => 0 ],
+				[ "name" => "[NAME]", "type" => "A", "content" => "127.0.0.4", "ttl" => 3600, "prio" => 0 ],
+				[ "name" => "[NAME]", "type" => "A", "content" => "127.0.0.5", "ttl" => 3600, "prio" => 0 ],
+			),
 		);
 		
 		var_dump($form->validate($post), $form->values());

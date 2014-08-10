@@ -76,6 +76,9 @@ class Template extends Component
 	 */
 	public function element($component)
 	{
+		if($component instanceof Element)
+			return $component->appendTo($this);
+		
 		if(is_array($component))
 		{
 			$set = [];
@@ -86,9 +89,7 @@ class Template extends Component
 			return $set;
 		}
 		
-		$element = new Element($component);
-		
-		return $element->appendTo($this);
+		return new Element($component);
 	}
 	
 	
@@ -97,6 +98,9 @@ class Template extends Component
 	 */
 	public function template($component)
 	{
+		if($component instanceof Template)
+			return $component->appendTo($this);
+		
 		if(is_array($component))
 		{
 			$set = [];
@@ -166,7 +170,12 @@ class Template extends Component
 		{
 			foreach($this->children as $child)
 			{
-				if(isset($input[$child->component]))
+				if(empty($child->component))
+				{
+					if($child instanceof Template)
+						$child->iterate($input, $callback);
+				}
+				elseif(isset($input[$child->component]))
 				{
 					if($child instanceof Template)
 						$child->iterate($input[$child->component], $callback);

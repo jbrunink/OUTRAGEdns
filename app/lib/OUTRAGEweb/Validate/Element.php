@@ -35,13 +35,30 @@ class Element extends Component
 	{
 		$result = $input;
 		
-		foreach($this->conditions as $condition)
+		if($this->is_array)
 		{
-			if($condition->clean()->validate($result))
-				$context->error($this, $condition->error());
-			
-			if($condition instanceof Transformer)
-				$result = $condition->transform($result);
+			foreach($this->conditions as $condition)
+			{
+				foreach($result as $key => $value)
+				{
+					if($condition->clean()->validate($value))
+						$context->error($this, $condition->error());
+					
+					if($condition instanceof Transformer)
+						$result[$key] = $condition->transform($value);
+				}
+			}
+		}
+		else
+		{
+			foreach($this->conditions as $condition)
+			{
+				if($condition->clean()->validate($result))
+					$context->error($this, $condition->error());
+				
+				if($condition instanceof Transformer)
+					$result = $condition->transform($result);
+			}
 		}
 		
 		return $result;
@@ -111,7 +128,6 @@ class Element extends Component
 			if(!$target)
 			{
 				$target = new $class();
-				
 				$this->conditions[] = $target;
 			}
 			

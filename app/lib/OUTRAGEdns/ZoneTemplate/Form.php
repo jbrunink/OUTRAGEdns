@@ -37,8 +37,11 @@ class Form extends Validate\Template
 		$descr->required(true);
 		$descr->appendTo($info);
 		
-		$records = new ZoneTemplateRecord\Form();
+		$records = new FormElement\Fieldset();
+		$records->name("records");
 		$records->label("Manage records");
+		$records->isArray(true);
+		$records->template(new ZoneTemplateRecord\Form());
 		$records->appendTo($this);
 	}
 }

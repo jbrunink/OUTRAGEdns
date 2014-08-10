@@ -38,6 +38,12 @@ abstract class Component
 	
 	
 	/**
+	 *	Is this an array?
+	 */
+	protected $is_array = false;
+	
+	
+	/**
 	 *	We'll store all errors here as well.
 	 */
 	protected $errors = [];
@@ -112,6 +118,20 @@ abstract class Component
 			return $this->label;
 		
 		$this->label = $label;
+		return $this;
+	}
+	
+	
+	/**
+	 *	Toggle the flag to determine whether this is an array element
+	 *	or not.
+	 */
+	public function isArray($toggle = null)
+	{
+		if($toggle === null)
+			return $this->is_array;
+		
+		$this->is_array = (boolean) $toggle;
 		return $this;
 	}
 	
