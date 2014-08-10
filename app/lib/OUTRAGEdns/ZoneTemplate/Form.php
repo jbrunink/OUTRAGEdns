@@ -40,8 +40,7 @@ class Form extends Validate\Template
 		$records = new FormElement\Fieldset();
 		$records->name("records");
 		$records->label("Manage records");
-		$records->isArray(true);
-		$records->template(new ZoneTemplateRecord\Form());
+		$records->template(new ZoneTemplateRecord\Form())->isArray(true);
 		$records->appendTo($this);
 	}
 }

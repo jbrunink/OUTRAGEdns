@@ -40,13 +40,22 @@ abstract class Component
 	/**
 	 *	Is this an array?
 	 */
-	protected $is_array = false;
+	public $is_array = false;
 	
 	
 	/**
 	 *	We'll store all errors here as well.
 	 */
 	protected $errors = [];
+	
+	
+	/**
+	 *	What index is this component currently in in some sort
+	 *	of pseudo-stack? Useful for validation or rule grabbing.
+	 *
+	 *	Be aware to clean up after using though!!
+	 */
+	public $key = null;
 	
 	
 	/**
@@ -69,6 +78,9 @@ abstract class Component
 		
 		while(($target = $target->parent) != null)
 		{
+			if($target->is_array)
+				array_unshift($tree, isset($this->key) ? $this->key : 0);
+			
 			if($target->component)
 				array_unshift($tree, $target->component);
 		}

@@ -156,40 +156,76 @@ class Template extends Component
 	 *	Iterate through the templates and invokes the callback with that input
 	 *	passed as an argument.
 	 *
-	 *	The callback is passed two arguments: child component; value - if null,
-	 *	then the value doesn't exist.
+	 *	The handler is passed three arguments:
+	 *	 - element/component
+	 *	 - key (if array, its key, if scalar null)
+	 *	 - value (if not supplied, null)
 	 */
-	public function iterate($input, $callback)
+	public function iterate($key, $input, $handler)
 	{
-		if($input instanceof \OUTRAGEweb\Construct\ObjectContainer)
-			$input = $input->toArray();
-		elseif($input instanceof \Traversable)
-			$input = iterator_to_array($input);
-		
-		if(is_array($input))
+		# just to convert things into a nice array
+		if(!is_array($input))
 		{
-			foreach($this->children as $child)
+			if($input instanceof \OUTRAGEweb\Construct\ObjectContainer)
+				$input = $input->toArray();
+			elseif($input instanceof \Traversable)
+				$input = iterator_to_array($input);
+		}
+		
+		# if there's nothing to do just skip!
+		if(!is_array($input))
+			return $this;
+		
+		# go through our input, iterate through our children
+		foreach($this->children as $element)
+		{
+			if($element->is_array)
 			{
-				if(empty($child->component))
+				foreach($input as $_key => $_value)
 				{
-					if($child instanceof Template)
-						$child->iterate($input, $callback);
-				}
-				elseif(isset($input[$child->component]))
-				{
-					if($child instanceof Template)
-						$child->iterate($input[$child->component], $callback);
+					if(empty($element->component))
+					{
+						if($element instanceof Template)
+							$element->iterate($_key, $_value, $handler);
+					}
+					elseif(isset($input[$element->component]))
+					{
+						if($element instanceof Template)
+							$element->iterate($_key, $_value, $handler);
+						else
+							$handler($element, $_key, $_value);
+					}
 					else
-						$callback($child, $input[$child->component]);
+					{
+						if($element instanceof Template)
+							$element->iterate($_key, [], $handler);
+						else
+							$handler($element, $key, null);
+					}
+				}
+			}
+			else
+			{
+				if(empty($element->component))
+				{
+					if($element instanceof Template)
+						$element->iterate(null, $input, $handler);
+				}
+				elseif(isset($input[$element->component]))
+				{
+					if($element instanceof Template)
+						$element->iterate(null, $input[$element->component], $handler);
+					else
+						$handler($element, $key, $input[$element->component]);
 				}
 				else
 				{
-					if($child instanceof Template)
-						$child->iterate([], $callback);
+					if($element instanceof Template)
+						$element->iterate(null, [], $handler);
 					else
-						$callback($child, null);
+						$handler($element, $key, null);
 				}
-			}	
+			}
 		}
 		
 		return $this;
@@ -204,8 +240,10 @@ class Template extends Component
 		$this->errors = [];
 		$this->values = [];
 		
-		$this->iterate($input, function($element, $value)
+		$handler = function($element, $key, $value)
 		{
+			$element->key = $key;
+			
 			$result = $element->validate($value, $this);
 			
 			$tree = $element->property_tree;
@@ -226,7 +264,11 @@ class Template extends Component
 				
 				$target = &$target[$node];
 			}
-		});
+			
+			$element->key = null;
+		};
+		
+		$this->iterate(null, $input, $handler);
 		
 		if(!empty($input[":validate"]))
 			return $this->handleAJAX();
