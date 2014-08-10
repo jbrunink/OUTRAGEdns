@@ -1,0 +1,9 @@
+.content-wrapper
+{
+	@include clearfix();
+	@include box-shadow(1px 1px 1px #CCC);
+	
+	background-color: #FFF;
+	padding: 20px;
+	margin-top: 20px;
+}

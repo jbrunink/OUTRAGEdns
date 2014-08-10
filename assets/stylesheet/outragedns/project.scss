@@ -14,11 +14,12 @@ $form-input-border-colour: #DDD;
 
 /* include libraries */
 @import "framework/core.scss";
-@import "partials/_mixins";
+@import "partials/mixins";
 
 
 /* and then finally the partials! */
-@import "partials/_body";
-@import "partials/_navigation";
-@import "partials/_main-container";
-@import "partials/_grid-table";
+@import "partials/body";
+@import "partials/navigation";
+@import "partials/main-container";
+@import "partials/grid-table";
+@import "partials/content-wrapper";
