@@ -16,6 +16,11 @@ class Controller extends Entity\Controller
 	 */
 	public function add()
 	{
+		$form = new Form();
+		
+		var_dump($form);
+		exit;
+		
 		return $this->response->display("index.twig");
 	}
 	

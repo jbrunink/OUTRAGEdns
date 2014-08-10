@@ -32,6 +32,12 @@ abstract class Component
 	
 	
 	/**
+	 *	This component might even have a label to boot.
+	 */
+	public $label = null;
+	
+	
+	/**
 	 *	We'll store all errors here as well.
 	 */
 	protected $errors = [];
@@ -58,9 +64,7 @@ abstract class Component
 		while(($target = $target->parent) != null)
 		{
 			if($target->component)
-			{
 				array_unshift($tree, $target->component);
-			}
 		}
 		
 		$tree[] = $this->component;
@@ -83,6 +87,26 @@ abstract class Component
 			$return .= $index ? "[".$node."]" : $node;
 		
 		return $return;
+	}
+	
+	
+	/**
+	 *	Set the name (key?) of this component.
+	 */
+	public function setName($name)
+	{
+		$this->component = $name;
+		return $this;
+	}
+	
+	
+	/**
+	 *	Set the label of this component.
+	 */
+	public function setLabel($label)
+	{
+		$this->label = $label;
+		return $this;
 	}
 	
 	

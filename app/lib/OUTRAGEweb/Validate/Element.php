@@ -115,10 +115,8 @@ class Element extends Component
 				$this->conditions[] = $target;
 			}
 			
-			$reflector = $target->reflector();
-			
-			if($reflector->hasMethod("arguments"))
-				$reflector->getMethod("arguments")->invokeArgs($target, $arguments);
+			if(method_exists($target, "arguments"))
+				call_user_func_array([ $target, "arguments" ], $arguments);
 			
 			return $this;
 		}
