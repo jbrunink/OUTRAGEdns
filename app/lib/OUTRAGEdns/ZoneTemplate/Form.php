@@ -19,5 +19,26 @@ class Form extends Validate\Template
 	public function rules()
 	{
 		parent::rules();
+		
+		# fieldset for info
+		$info = new FormElement\Fieldset();
+		$info->label("Template information");
+		$info->appendTo($this);
+		
+		# name
+		$name = new FormElement\Text("name");
+		$name->label("Name");
+		$name->required(true);
+		$name->appendTo($info);
+		
+		# description
+		$descr = new FormElement\Text("descr");
+		$descr->label("Name");
+		$descr->required(true);
+		$descr->appendTo($info);
+		
+		$records = new ZoneTemplateRecord\Form();
+		$records->label("Manage records");
+		$records->appendTo($this);
 	}
 }

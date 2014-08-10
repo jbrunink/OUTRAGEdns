@@ -93,8 +93,11 @@ abstract class Component
 	/**
 	 *	Set the name (key?) of this component.
 	 */
-	public function setName($name)
+	public function name($name = null)
 	{
+		if($name === null)
+			return $this->component;
+		
 		$this->component = $name;
 		return $this;
 	}
@@ -103,8 +106,11 @@ abstract class Component
 	/**
 	 *	Set the label of this component.
 	 */
-	public function setLabel($label)
+	public function label($label = null)
 	{
+		if($label === null)
+			return $this->label;
+		
 		$this->label = $label;
 		return $this;
 	}

@@ -18,7 +18,13 @@ class Controller extends Entity\Controller
 	{
 		$form = new Form();
 		
-		var_dump($form);
+		$post = array
+		(
+			"name" => "test.westie.sh",
+			"descr" => "Sample westie.sh zone template record",
+		);
+		
+		var_dump($form->validate($post), $form->values());
 		exit;
 		
 		return $this->response->display("index.twig");
