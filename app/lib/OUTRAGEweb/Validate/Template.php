@@ -181,26 +181,49 @@ class Template extends Component
 		{
 			if($element->is_array)
 			{
-				foreach($input as $_key => $_value)
+				if(!empty($element->component))
 				{
-					if(empty($element->component))
+					foreach($input[$element->component] as $_key => $_value)
 					{
-						if($element instanceof Template)
-							$element->iterate($_key, $_value, $handler);
-					}
-					elseif(isset($input[$element->component]))
-					{
-						if($element instanceof Template)
-							$element->iterate($_key, $_value, $handler);
+						if(isset($input[$element->component]))
+						{
+							if($element instanceof Template)
+								$element->iterate($_key, $_value, $handler);
+							else
+								$handler($element, $_key, $_value);
+						}
 						else
-							$handler($element, $_key, $_value);
+						{
+							if($element instanceof Template)
+								$element->iterate($_key, [], $handler);
+							else
+								$handler($element, $key, null);
+						}
 					}
-					else
+				}
+				else
+				{
+					foreach($input as $_key => $_value)
 					{
-						if($element instanceof Template)
-							$element->iterate($_key, [], $handler);
+						if(empty($element->component))
+						{
+							if($element instanceof Template)
+								$element->iterate($_key, $_value, $handler);
+						}
+						elseif(isset($input[$element->component]))
+						{
+							if($element instanceof Template)
+								$element->iterate($_key, $_value, $handler);
+							else
+								$handler($element, $_key, $_value);
+						}
 						else
-							$handler($element, $key, null);
+						{
+							if($element instanceof Template)
+								$element->iterate($_key, [], $handler);
+							else
+								$handler($element, $key, null);
+						}
 					}
 				}
 			}
@@ -247,6 +270,7 @@ class Template extends Component
 			$result = $element->validate($value, $this);
 			
 			$tree = $element->property_tree;
+			
 			$target = &$this->values;
 			
 			for($i = 0; $i < $count = count($tree); ++$i)
@@ -255,7 +279,18 @@ class Template extends Component
 				
 				if(($i + 1) == $count)
 				{
-					$target[$node] = $result;
+					if($element->is_array)
+					{
+						if(!is_array($target[$node]))
+							$target[$node] = [];
+						
+						$target[$node][] = $result;
+					}
+					else
+					{
+						$target[$node] = $result;
+					}
+					
 					break;
 				}
 				
