@@ -5,8 +5,8 @@
 	
 	<td>
 		{% if config.records.types is iterable %}
-			<select name="records[{% if index is not empty %}{{ index|e }}{% endif %}][type]" class="editable-dropdown">
-				{% if not content.type %}
+			<select name="records[{% if index is not empty %}{{ index|e }}{% endif %}][type]">
+				{% if not content.id %}
 					<option value="">?</option>
 				{% endif %}
 				
@@ -26,7 +26,23 @@
 	</td>
 	
 	<td>
-		<input type="text" name="records[{% if index is not empty %}{{ index|e }}{% endif %}][ttl]" value="{{ content.ttl|e }}" />
+		{% if config.records.ttl is iterable %}
+			<select name="records[{% if index is not empty %}{{ index|e }}{% endif %}][ttl]" class="editable-dropdown">
+				{% if not content.id %}
+					<option value="">?</option>
+				{% endif %}
+				
+				{% if content.ttl is not empty and content.ttl not in config.records.ttl|keys %}
+					<option value="{{ content.ttl|e }}" selected="selected">{{ content.ttl|e }} sec</option>
+				{% endif %}
+				
+				{% for ttl, title in config.records.ttl %}
+					<option value="{{ ttl|e }}"{% if content.ttl == ttl %} selected="selected"{% endif %}>{{ title|e }}</option>
+				{% endfor %}
+			</select>
+		{% else %}
+			<input type="text" name="records[{% if index is not empty %}{{ index|e }}{% endif %}][ttl]" value="{{ content.ttl|e }}" />
+		{% endif %}
 	</td>
 	
 	<td>
