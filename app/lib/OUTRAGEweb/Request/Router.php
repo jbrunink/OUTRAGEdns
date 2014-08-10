@@ -52,12 +52,12 @@ class Router
 	 *	Locate and invoke the correct path, based on a URI provided to the
 	 *	router.
 	 */
-	public function invoke($uri)
+	public function invoke(Environment $environment)
 	{
 		foreach($this->routes as $route)
 		{
-			if($route->test($uri))
-				return $route->invoke($uri);
+			if($route->test($environment))
+				return $route->invoke($environment);
 		}
 		
 		return false;

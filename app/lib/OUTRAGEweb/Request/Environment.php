@@ -80,4 +80,29 @@ class Environment
 		
 		return new Method\Header($headers);
 	}
+	
+	
+	/**
+	 *	Does things with the URI passed to the website.
+	 */
+	public function getter_url()
+	{
+		$parsed_url = parse_url($_SERVER["REQUEST_URI"]);
+		$elements = explode('/', $parsed_url["path"]);
+		
+		$last = end($elements);
+		
+		if(!strlen($last))
+			array_pop($elements);
+		
+		$scheme = ($_SERVER["SERVER_PORT"] == 443 ? "https" : "http");
+		$elements[0] = $scheme."://".$_SERVER['HTTP_HOST'];
+		
+		if(isset($elements[1]))
+			$elements[1] = trim($elements[1]);
+		else
+			$elements[1] = "";
+		
+		return new Method\URL($elements);
+	}
 }

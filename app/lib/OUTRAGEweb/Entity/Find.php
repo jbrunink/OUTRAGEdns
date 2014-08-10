@@ -8,7 +8,7 @@
 namespace OUTRAGEweb\Entity;
 
 
-class Find
+abstract class Find
 {
 	/**
 	 *	Let's store a select query here!

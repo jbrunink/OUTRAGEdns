@@ -6,5 +6,13 @@ entities:
 		
 		type: "record"
 		table: "records"
+		
+		actions:
+		{
+			add:    { id: false }
+			edit:   { id: true }
+			remove: { id: true }
+			grid:   { id: false, default: true }
+		}
 	}
 }

@@ -7,4 +7,4 @@
 namespace OUTRAGEdns\Entity;
 
 
-class Content extends \OUTRAGEweb\Entity\Content {}
+class Controller extends \OUTRAGEweb\Entity\Controller {}

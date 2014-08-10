@@ -7,6 +7,8 @@
 namespace OUTRAGEweb\Request\Router;
 
 use OUTRAGEweb\Construct\Ability;
+use OUTRAGEweb\Entity;
+use OUTRAGEweb\Request;
 
 
 class Path
@@ -49,10 +51,8 @@ class Path
 		}
 		elseif(is_array($callback))
 		{
-			$reflection = new \ReflectionObject($handler[0]);
-			
-			if($reflection->hasMethod($handler[1]))
-				$this->callback = $reflection->getMethod($handler[1])->getClosure($handler[0]);
+			$reflection = new \ReflectionObject($callback[0]);
+			$this->callback = $reflection->hasMethod($callback[1]) ? $reflection->getMethod($callback[1])->getClosure($callback[0]) : null;
 		}
 		
 		if(!$this->callback)
@@ -85,18 +85,18 @@ class Path
 	
 	
 	/**
-	 *	Called to test this route, based on a URL passed to it.
+	 *	Called to test this route, based on an environment passed to it.
 	 */
-	public function test($uri)
+	public function test(Request\Environment $environment)
 	{
-		return (boolean) preg_match("/^".$this->pattern."$/", $uri);
+		return (boolean) preg_match("/^".$this->pattern."$/", $environment->url->path);
 	}
 	
 	
 	/**
 	 *	Run the closure associated with this path.
 	 */
-	public function invoke($uri)
+	public function invoke(Request\Environment $environment)
 	{
 		$reflection = new \ReflectionFunction($this->callback);
 		
@@ -105,10 +105,16 @@ class Path
 		
 		$arguments = [];
 		
-		if(!preg_match("/^".$this->pattern."$/", $uri, $arguments))
+		if(!preg_match("/^".$this->pattern."$/", $environment->url->path, $arguments))
 			throw new \Exception("Pattern does not match URI supplied.");
 		
 		array_shift($arguments);
+		
+		if($pointer = $reflection->getClosureThis())
+		{
+			if($pointer instanceof Entity\Controller)
+				$pointer->setEnvironment($environment);
+		}
 		
 		return call_user_func_array($this->callback, $arguments);
 	}

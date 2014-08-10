@@ -10,7 +10,7 @@ namespace OUTRAGEweb\Entity;
 use \OUTRAGEweb\Construct;
 
 
-class Content extends Construct\ObjectContainer
+abstract class Content extends Construct\ObjectContainer
 {
 	/**
 	 *	Retrieve the config for this element.

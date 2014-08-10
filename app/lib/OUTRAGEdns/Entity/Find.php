@@ -7,4 +7,4 @@
 namespace OUTRAGEdns\Entity;
 
 
-class Content extends \OUTRAGEweb\Entity\Content {}
+class Find extends \OUTRAGEweb\Entity\Find {}

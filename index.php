@@ -4,7 +4,7 @@
  */
 
 
-if(!class_exists("\OUTRAGEweb\Construct\Autoloader"))
+if(!class_exists("\OUTRAGEweb\Construct\Autoloader", false))
 	require $_SERVER["DOCUMENT_ROOT"]."/app/lib/OUTRAGEweb/Construct/Autoloader.php";
 
 
@@ -14,30 +14,51 @@ session_start();
 
 \OUTRAGEweb\Construct\Autoloader::register();
 
-\OUTRAGEweb\Configuration\Wallet::getInstance()->load($_SERVER["DOCUMENT_ROOT"]."/app/etc/config/*.json");
-\OUTRAGEweb\Configuration\Wallet::getInstance()->load($_SERVER["DOCUMENT_ROOT"]."/app/etc/config/entities/*.json");
+$configuration = \OUTRAGEweb\Configuration\Wallet::getInstance();
+
+if(!$configuration)
+	exit;
+
+$configuration->load($_SERVER["DOCUMENT_ROOT"]."/app/etc/config/*.json");
+$configuration->load($_SERVER["DOCUMENT_ROOT"]."/app/etc/config/entities/*.json");
 
 
-# perhaps it's a good idea to init our request environment
+# it's also a good idea to register the Twig autoloader, and other settings
+# related to Twig, almost the world's best template engine
+if(!class_exists("\Twig_Environment", false))
+	require $_SERVER["DOCUMENT_ROOT"]."app/lib/Twig/Autoloader.php";
+
+
+# perhaps it's a good idea to init our request environment, we don't need to
+# do anything else here as default functionality is handled by the getters
 $environment = new \OUTRAGEweb\Request\Environment();
 
 
-$content = new \OUTRAGEdns\User\Content();
-$content->load(1);
+# and now, what we need to do is find out what path we need to go down.
+$router = new \OUTRAGEweb\Request\Router();
 
-$template = new \OUTRAGEdns\Domain\Content();
-$template->db->begin();
-
-$set = array
-(
-	"name" => "ss.westie.sh",
+foreach($configuration->entities as $entity)
+{
+	if(!$entity->actions)
+		continue;
 	
-	"records" => array
-	(
-		[ "name" => "ss.westie.sh", "type" => "A", "content" => "127.0.0.1" ],
-	),
-);
+	foreach($entity->actions as $action => $settings)
+	{
+		$route = "/".$entity->type."s/".$action."/";
+		
+		if($settings->id)
+			$route .= ":id/";
+		
+		$class = "\\".str_replace(".", "\\", $entity->namespace)."\\Controller";
+		
+		if(!class_exists($class))
+			continue;
+		
+		$router->register($route, [ new $class(), $action ]);
+	}
+}
 
-var_dump($template->save($set));
+$router->invoke($environment);
 
-$template->db->commit();
+var_dump($router);
+exit;
