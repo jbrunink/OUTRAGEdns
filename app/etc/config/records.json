@@ -1,6 +1,6 @@
-recordtypes:
+records:
 {
-	all: [
+	types: [
 		"A"
 		"AAAA"
 		"AFSDB"

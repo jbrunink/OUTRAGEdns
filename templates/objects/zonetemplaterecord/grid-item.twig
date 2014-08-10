@@ -4,13 +4,13 @@
 	</td>
 	
 	<td>
-		{% if config.recordtypes.all is iterable %}
-			<select name="records[{% if index is not empty %}{{ index|e }}{% endif %}][type]">
+		{% if config.records.types is iterable %}
+			<select name="records[{% if index is not empty %}{{ index|e }}{% endif %}][type]" class="editable-dropdown">
 				{% if not content.type %}
 					<option value="">?</option>
 				{% endif %}
 				
-				{% for type in config.recordtypes.all %}
+				{% for type in config.records.types %}
 					<option value="{{ type|e }}"{% if content.type == type %} selected="selected"{% endif %}>{{ type|e }}</option>
 				{% endfor %}
 			</select>

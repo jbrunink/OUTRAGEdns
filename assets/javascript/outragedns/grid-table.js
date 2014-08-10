@@ -3,16 +3,19 @@
 	/* declare the module */
 	var Module = function(table)
 	{
-		this.table = $(table).data("grid-table", this);
+		this.table = $(table).data(Module.component, this);
 		this.init();
 	};
 	
+	Module.component = "grid-table";
+	
+	/* and then the methods */
 	Module.prototype =
 	{
 		init: function()
 		{
-			this.table.on("click", "ul.actions > li.clone", this.onclone);
-			this.table.on("click", "ul.actions > li.remove", this.onremove);
+			this.table.on("click." + Module.component, "ul.actions > li.clone", this.onclone);
+			this.table.on("click." + Module.component, "ul.actions > li.remove", this.onremove);
 			
 			this.reindex();
 		},
@@ -37,7 +40,7 @@
 			
 			duplicate.appendTo(table).fadeIn("fast");
 			
-			$(this).parents("table").data("grid-table").reindex();
+			$(this).parents("table").data(Module.component).reindex();
 		},
 		
 		onremove: function(event)
@@ -52,7 +55,7 @@
 				var container = $(this).parents("table");
 				
 				$(this).remove();
-				$(container).data("grid-table").reindex();
+				$(container).data(Module.component).reindex();
 			});
 		}
 	};
