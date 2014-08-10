@@ -46,27 +46,9 @@ class Content extends Entity\Content
 		if(!empty($post["owner"]) && is_object($post["owner"]))
 			$post["owner"] = $post["owner"]->id;
 		
-		return parent::save($post);
-	}
-	
-	
-	/**
-	 *	Called when editing a zone template.
-	 */
-	public function edit($post = array())
-	{
-		if(!empty($post["owner"]) && is_object($post["owner"]))
-			$post["owner"] = $post["owner"]->id;
+		if(!parent::save($post))
+			return false;
 		
-		return parent::edit($post);
-	}
-	
-	
-	/**
-	 *	Called when things are being modified in general.
-	 */
-	protected function onChange($post = array())
-	{
 		if(!empty($post["records"]))
 		{
 			foreach($post["records"] as $item)
@@ -78,19 +60,35 @@ class Content extends Entity\Content
 				$record->save($item);
 			}
 		}
+	}
+	
+	
+	/**
+	 *	Called when editing a zone template.
+	 */
+	public function edit($post = array())
+	{
+		if(!empty($post["owner"]) && is_object($post["owner"]))
+			$post["owner"] = $post["owner"]->id;
 		
-		if(!empty($post["records_dropped"]))
+		if(!parent::edit($post))
+			return false;
+		
+		if(!empty($post["records"]))
 		{
-			$request = (new ZoneTemplateRecord\Content())->find();
-			$request->where("zone_templ_id = ?", $this->id);
-			$request->where("id IN (?)", $post["records_dropped"]);
+			$record = new ZoneTemplateRecord\Content();
+			$record->db->delete($record->db_table, "zone_templ_id = ".$this->db->quote($this->id));
 			
-			$objects = $request->invoke("objects");
-			
-			foreach($objects as $object)
-				$object->remove();
+			foreach($post["records"] as $item)
+			{
+				if(empty($item["zone_templ_id"]))
+					$item["zone_templ_id"] = $this->id;
+				
+				$record = new ZoneTemplateRecord\Content();
+				$record->save($item);
+			}
 		}
 		
-		return true;
+		return $this->id;
 	}
 }

@@ -1,0 +1,27 @@
+recordtypes:
+{
+	all: [
+		"A"
+		"AAAA"
+		"AFSDB"
+		"CERT"
+		"CNAME"
+		"DNSKEY"
+		"DS"
+		"HINFO"
+		"KEY"
+		"LOC"
+		"MX"
+		"NAPTR"
+		"NS"
+		"NSEC"
+		"PTR"
+		"RP"
+		"RRSIG"
+		"SOA"
+		"SPF"
+		"SSHFP"
+		"SRV"
+		"TXT"
+	]
+}

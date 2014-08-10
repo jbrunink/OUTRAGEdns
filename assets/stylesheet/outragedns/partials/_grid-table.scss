@@ -54,11 +54,13 @@
 					display: inline;
 					line-height: 30px;
 					
-					margin-right: 5px;
+					margin-right: 8px;
 				}
 				
 				float: right;
 			}
 		}
 	}
+	
+	@extend %content-wrapper-generic;
 }

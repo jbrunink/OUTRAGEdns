@@ -1,0 +1,39 @@
+{% import "/includes/macros/form.twig" as forms %}
+
+<h1>Add a new Zone Template</h1>
+
+<form class="form-horizontal" method="POST">
+	<article class="content-wrapper">
+		<fieldset>
+			<legend>Template Information</legend>
+			
+			{{ forms.text({ title: "Name",        field: "name",  value: content.name  }) }}
+			{{ forms.text({ title: "Description", field: "descr", value: content.descr }) }}
+		</fieldset>
+	</article>
+	
+	<table class="grid-table">
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Type</th>
+				<th>Value</th>
+				<th>Priority</th>
+				<th>TTL</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		
+		<tbody>
+			{% for record in content.records %}
+				{% include "objects/zonetemplaterecord/grid-item.twig" with { content: record } %}
+			{% endfor %}
+			
+			{% include "objects/zonetemplaterecord/grid-item.twig" with { content: null } %}
+		</tbody>
+	</table>
+	
+	<div class="pull-right">
+		<button class="btn btn-primary" type="submit" name="commit" value="now">Update template</button>
+	</div>
+</form>

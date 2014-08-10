@@ -185,6 +185,9 @@ class Template extends Component
 				{
 					foreach($input[$element->component] as $_key => $_value)
 					{
+						if(is_array($_value) && !array_filter($_value))
+							continue;
+						
 						if(isset($input[$element->component]))
 						{
 							if($element instanceof Template)

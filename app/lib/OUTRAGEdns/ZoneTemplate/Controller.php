@@ -7,6 +7,7 @@
 namespace OUTRAGEdns\ZoneTemplate;
 
 use \OUTRAGEdns\Entity;
+use \OUTRAGEdns\ZoneTemplateRecord;
 
 
 class Controller extends Entity\Controller
@@ -16,25 +17,24 @@ class Controller extends Entity\Controller
 	 */
 	public function add()
 	{
-		$form = new Form();
-		
-		$post = array
-		(
-			"name" => "test.westie.sh",
-			"descr" => "Sample westie.sh zone template record",
-			
-			"records" => array
-			(
-				[ "name" => "[NAME]", "type" => "A", "content" => "127.0.0.1", "ttl" => 3600, "prio" => 0 ],
-				[ "name" => "[NAME]", "type" => "A", "content" => "127.0.0.2", "ttl" => 3600, "prio" => 0 ],
-				[ "name" => "[NAME]", "type" => "A", "content" => "127.0.0.3", "ttl" => 3600, "prio" => 0 ],
-				[ "name" => "[NAME]", "type" => "A", "content" => "127.0.0.4", "ttl" => 3600, "prio" => 0 ],
-				[ "name" => "[NAME]", "type" => "A", "content" => "127.0.0.5", "ttl" => 3600, "prio" => 0 ],
-			),
-		);
-		
-		var_dump($form->validate($post), $form->values());
-		exit;
+		if(!empty($this->request->post->commit))
+		{
+			if($this->form->validate($this->request->post->toArray()))
+			{
+				try
+				{
+					$this->content->db->begin();
+					$this->content->save($this->form->values());
+					$this->content->db->commit();
+					
+					header("Location: ".$this->content->actions->edit);
+				}
+				catch(Exception $exception)
+				{
+					$this->content->db->rollback();
+				}
+			}
+		}
 		
 		return $this->response->display("index.twig");
 	}
@@ -45,6 +45,27 @@ class Controller extends Entity\Controller
 	 */
 	public function edit($id)
 	{
+		if(!$this->content->id)
+			$this->content->load($id);
+		
+		if(!empty($this->request->post->commit))
+		{
+			if($this->form->validate($this->request->post->toArray()))
+			{
+				try
+				{
+					$this->content->db->begin();
+					$this->content->edit($this->form->values());
+					$this->content->db->commit();
+				}
+				catch(Exception $exception)
+				{
+					$this->content->db->rollback();
+				}
+			}
+		}
+		
+		return $this->response->display("index.twig");
 	}
 	
 	

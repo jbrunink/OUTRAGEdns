@@ -100,9 +100,6 @@ abstract class Content extends Construct\ObjectContainer
 		if(!$result)
 			return $result;
 		
-		if(method_exists($this, "onChange"))
-			$this->onChange($post);
-		
 		return $this->load($result);
 	}
 	
@@ -126,9 +123,6 @@ abstract class Content extends Construct\ObjectContainer
 		
 		if(!$result)
 			return $result;
-		
-		if(method_exists($this, "onChange"))
-			$this->onChange($post);
 		
 		return $this->load($this->id);
 	}

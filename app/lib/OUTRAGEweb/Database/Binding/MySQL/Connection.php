@@ -169,6 +169,7 @@ class Connection
 			$reflection->getMethod("bind_param")->invokeArgs($statement, $arguments);
 			
 			$statement->execute();
+			
 			$result = $statement->get_result();
 		}
 		
@@ -250,20 +251,18 @@ class Connection
 			}
 		}
 		
-		if(count($fragments))
-		{
-			$keys = array_keys($values);
-			$values = array_values($values);
-			
-			foreach($keys as &$key)
-				$key = $this->quoteIdentifier($key);
-			
-			$this->query("INSERT INTO ".$this->quoteIdentifier($table)." (".implode(", ", $keys).") VALUES (".implode(", ", $fragments).")", $values);
-			
-			return $this->connection->insert_id;
-		}
+		if(!count($fragments))
+			return null;
 		
-		return null;
+		$keys = array_keys($values);
+		$values = array_values($values);
+		
+		foreach($keys as &$key)
+			$key = $this->quoteIdentifier($key);
+		
+		$this->query("INSERT INTO ".$this->quoteIdentifier($table)." (".implode(", ", $keys).") VALUES (".implode(", ", $fragments).")", $values);
+		
+		return $this->connection->insert_id;
 	}
 	
 	
@@ -290,11 +289,14 @@ class Connection
 			}
 		}
 		
-		if(count($fragments))
+		if(!count($fragments))
+			return null;
+		
+		$query = "UPDATE ".$this->quoteIdentifier($table)." SET ".implode(", ", $fragments);
+		
+		if($where)
 		{
-			$query = "UPDATE ".$this->quoteIdentifier($table)." SET ".implode(", ", $fragments);
-			
-			if($where)
+			if(is_array($where))
 			{
 				$conditions = [];
 				
@@ -308,14 +310,17 @@ class Connection
 				
 				$query .= " WHERE ".implode(" AND ", $conditions);
 			}
-			
-			if($limit)
-				$query .= "LIMIT ".$this->quote($limit);
-			
-			return $this->query($query, $values);
+			else
+			{
+				$query .= " WHERE ".$where;
+			}
 		}
 		
-		return null;
+		if($limit)
+			$query .= " LIMIT ".$this->quote($limit);
+		
+		$this->query($query, $values);
+		return true;
 	}
 	
 	
@@ -331,21 +336,28 @@ class Connection
 		
 		if($where)
 		{
-			$conditions = [];
-			
-			foreach($where as $field => $value)
+			if(is_array($where))
 			{
-				if(is_int($field))
-					$conditions[] = $value;
-				else
-					$conditions[] = $this->quoteIdentifier($field)." = ".$this->quote($value);
+				$conditions = [];
+				
+				foreach($where as $field => $value)
+				{
+					if(is_int($field))
+						$conditions[] = $value;
+					else
+						$conditions[] = $this->quoteIdentifier($field)." = ".$this->quote($value);
+				}
+				
+				$query .= " WHERE ".implode(" AND ", $conditions);
 			}
-			
-			$query .= " WHERE ".implode(" AND ", $conditions);
+			else
+			{
+				$query .= " WHERE ".$where;
+			}
 		}
 		
 		if($limit)
-			$query .= "LIMIT ".$this->quote($limit);
+			$query .= " LIMIT ".$this->quote($limit);
 		
 		return $this->query($query);
 	}

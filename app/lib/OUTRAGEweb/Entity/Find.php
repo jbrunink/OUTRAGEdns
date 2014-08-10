@@ -8,7 +8,7 @@
 namespace OUTRAGEweb\Entity;
 
 
-abstract class Find
+class Find
 {
 	/**
 	 *	Let's store a select query here!
@@ -86,13 +86,16 @@ abstract class Find
 		$objects = [];	
 		$results = $this->select->invoke();
 		
-		foreach($results as $result)
+		if(!empty($results))
 		{
-			$object = new $this->content->class();
-			$object->load($result["__item"]);
-			
-			if($object->id)
-				$objects[] = $object;
+			foreach($results as $result)
+			{
+				$object = new $this->content->class();
+				$object->load($result["__item"]);
+				
+				if($object->id)
+					$objects[] = $object;
+			}
 		}
 		
 		return $objects;

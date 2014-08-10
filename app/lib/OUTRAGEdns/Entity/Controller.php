@@ -20,5 +20,7 @@ class Controller extends \OUTRAGEweb\Entity\Controller
 		
 		if($this->form)
 			$this->response->form = $this->form;
+		
+		$this->response->config = \OUTRAGEweb\Configuration\Wallet::getInstance();
 	}
 }

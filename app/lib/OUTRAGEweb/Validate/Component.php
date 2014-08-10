@@ -16,6 +16,7 @@ abstract class Component
 	 *	We'd like to use some delegators to make our life ever so easier.
 	 */
 	use Ability\Delegator;
+	use Ability\Delegation;
 	
 	
 	/**

@@ -1,6 +1,6 @@
 <?php
 /**
- *	This is a fieldset.
+ *	Abstract for all form elements
  */
 
 
@@ -9,7 +9,7 @@ namespace OUTRAGEweb\FormElement;
 use \OUTRAGEweb\Validate;
 
 
-class Fieldset extends Validate\Template
+abstract class FormElementAbstract extends Validate\Element
 {
 	/**
 	 *	Returns the element name - used in the template engine.

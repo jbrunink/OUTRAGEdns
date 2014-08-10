@@ -6,7 +6,5 @@
 
 namespace OUTRAGEweb\FormElement;
 
-use OUTRAGEweb\Validate;
 
-
-class Input extends Validate\Element {}
+class Input extends FormElementAbstract {}

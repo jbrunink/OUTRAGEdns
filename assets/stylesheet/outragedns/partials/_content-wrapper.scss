@@ -1,9 +1,15 @@
 .content-wrapper
 {
-	@include clearfix();
-	@include box-shadow(1px 1px 1px #CCC);
+	@extend %content-wrapper-generic;
 	
 	background-color: #FFF;
 	padding: 20px;
-	margin-top: 20px;
+}
+
+%content-wrapper-generic
+{
+	@include clearfix();
+	@include box-shadow(1px 1px 1px #CCC);
+	
+	margin-top: 25px;
 }

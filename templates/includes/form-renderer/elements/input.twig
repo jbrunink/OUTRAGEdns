@@ -1,0 +1,9 @@
+<div class="control-group">
+	<label class="control-label">{{ element.label }}</label>
+	
+	<div class="controls">
+		<div class="control-wrap">
+			<input{% if element.name %} name="{{ element.name|e }}"{% endif %} type="text" />
+		</div>
+	</div>
+</div>

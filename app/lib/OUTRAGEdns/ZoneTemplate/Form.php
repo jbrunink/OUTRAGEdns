@@ -33,12 +33,12 @@ class Form extends Validate\Template
 		
 		# description
 		$descr = new FormElement\Text("descr");
-		$descr->label("Name");
+		$descr->label("Description");
 		$descr->required(true);
 		$descr->appendTo($info);
 		
-		$records = new ZoneTemplateRecord\Form();
-		$records->name("records");
+		# records
+		$records = new ZoneTemplateRecord\Form("records");
 		$records->label("Manage records");
 		$records->isArray(true);
 		$records->appendTo($this);

@@ -1,0 +1,47 @@
+<tr{% if class %} class="{{ class|e }}"{% endif %}>
+	<td>
+		<input type="text" name="records[{% if index is not empty %}{{ index|e }}{% endif %}][name]" value="{{ content.name|e }}" />
+	</td>
+	
+	<td>
+		{% if config.recordtypes.all is iterable %}
+			<select name="records[{% if index is not empty %}{{ index|e }}{% endif %}][type]">
+				{% if not content.type %}
+					<option value="">?</option>
+				{% endif %}
+				
+				{% for type in config.recordtypes.all %}
+					<option value="{{ type|e }}"{% if content.type == type %} selected="selected"{% endif %}>{{ type|e }}</option>
+				{% endfor %}
+			</select>
+		{% endif %}
+	</td>
+	
+	<td>
+		<input type="text" name="records[{% if index is not empty %}{{ index|e }}{% endif %}][content]" value="{{ content.content|e }}" />
+	</td>
+	
+	<td>
+		<input type="text" name="records[{% if index is not empty %}{{ index|e }}{% endif %}][prio]" value="{{ content.prio|e }}" />
+	</td>
+	
+	<td>
+		<input type="text" name="records[{% if index is not empty %}{{ index|e }}{% endif %}][ttl]" value="{{ content.ttl|e }}" />
+	</td>
+	
+	<td>
+		<ul class="actions">
+			<li class="clone">
+				<a href="#">
+					<i class="fa fa-plus"></i>
+				</a>
+			</li>
+			
+			<li class="remove">
+				<a href="#">
+					<i class="fa fa-trash-o"></i>
+				</a>
+			</li>
+		</ul>
+	</td>
+</tr>
