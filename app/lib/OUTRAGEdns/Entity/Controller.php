@@ -17,5 +17,8 @@ class Controller extends \OUTRAGEweb\Entity\Controller
 	{
 		if($this->content)
 			$this->response->content = $this->content;
+		
+		if($this->form)
+			$this->response->form = $this->form;
 	}
 }
