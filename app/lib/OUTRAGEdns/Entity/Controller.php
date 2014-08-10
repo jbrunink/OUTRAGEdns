@@ -7,4 +7,15 @@
 namespace OUTRAGEdns\Entity;
 
 
-class Controller extends \OUTRAGEweb\Entity\Controller {}
+class Controller extends \OUTRAGEweb\Entity\Controller
+{
+	/**
+	 *	This method is called before the path is executed - this can be used to prepare
+	 *	stuff like content before it's time for stuff to be performed on it.
+	 */
+	public function init()
+	{
+		if($this->content)
+			$this->response->content = $this->content;
+	}
+}

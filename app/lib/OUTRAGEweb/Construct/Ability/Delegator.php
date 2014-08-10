@@ -85,6 +85,12 @@ trait Delegator
 				$this->container[$property] = $value;
 				return true;
 			}
+			
+			if($reflection->hasConstant("DELEGATOR_SET_UNKNOWN_INTO_CONTAINER") && $reflection->getConstant("DELEGATOR_SET_UNKNOWN_INTO_CONTAINER"))
+			{
+				$this->container[$property] = $value;
+				return true;
+			}
 		}
 		
 		if(!$reflection->hasMethod("setter_".$property))
@@ -113,7 +119,7 @@ trait Delegator
 		}
 		
 		if(!$reflection->hasMethod("isset_".$property))
-			return false;
+			return $this->{$property} !== null;
 		
 		return $reflection->getMethod("isset_".$property)->invoke($this);
 	}

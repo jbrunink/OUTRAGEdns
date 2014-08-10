@@ -15,7 +15,7 @@ trait Singleton
 	 */
 	public static function getInstance()
 	{
-		$target = __CLASS__;
+		$target = get_called_class();
 		
 		static $instance = null;
 		return $instance ?: $instance = new $target();
@@ -27,7 +27,7 @@ trait Singleton
 	 */
 	public function __clone()
 	{
-		trigger_error("Cloning ".__CLASS__." is not allowed.", E_USER_ERROR);
+		trigger_error("Cloning ".get_called_class()." is not allowed.", E_USER_ERROR);
 		return false;
 	}
 	
@@ -38,7 +38,7 @@ trait Singleton
 	 */
 	public function __wakeup()
 	{
-		trigger_error("Unserializing ".__CLASS__." is not allowed.", E_USER_ERROR);
+		trigger_error("Unserializing ".get_called_class()." is not allowed.", E_USER_ERROR);
 		return false;
 	}
 }

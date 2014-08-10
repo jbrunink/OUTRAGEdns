@@ -16,8 +16,7 @@ class Controller extends Entity\Controller
 	 */
 	public function add()
 	{
-		var_dump($this->content, $this->request);
-		exit;
+		return $this->response->display("index.twig");
 	}
 	
 	
@@ -26,8 +25,6 @@ class Controller extends Entity\Controller
 	 */
 	public function edit($id)
 	{
-		var_dump($this->content, $this->request, $id);
-		exit;
 	}
 	
 	
@@ -36,8 +33,6 @@ class Controller extends Entity\Controller
 	 */
 	public function remove($id)
 	{
-		var_dump($this->content, $this->request, $id);
-		exit;
 	}
 	
 	
@@ -46,7 +41,5 @@ class Controller extends Entity\Controller
 	 */
 	public function grid()
 	{
-		var_dump($this->content, $this->request);
-		exit;
 	}
 }

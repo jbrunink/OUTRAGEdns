@@ -59,6 +59,4 @@ foreach($configuration->entities as $entity)
 }
 
 $router->invoke($environment);
-
-var_dump($router);
 exit;

@@ -8,6 +8,7 @@ namespace OUTRAGEweb\Entity;
 
 use \OUTRAGEweb\Construct\Ability;
 use \OUTRAGEweb\Request;
+use \OUTRAGEweb\Response;
 
 
 abstract class Controller
@@ -45,5 +46,18 @@ abstract class Controller
 			throw new \Exception("Unable to find content/model");
 		
 		return new $class();
+	}
+	
+	
+	/**
+	 *	What is the response going to be? By default, it is the amazing
+	 *	Twig engine.
+	 */
+	public function getter_response()
+	{
+		$response = Response\Twig::getInstance();
+		$response->setEnvironment($this->request);
+		
+		return $response;
 	}
 }

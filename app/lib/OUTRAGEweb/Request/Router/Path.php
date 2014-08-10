@@ -113,7 +113,12 @@ class Path
 		if($pointer = $reflection->getClosureThis())
 		{
 			if($pointer instanceof Entity\Controller)
+			{
 				$pointer->setEnvironment($environment);
+				
+				if(method_exists($pointer, "init"))
+					$pointer->init();
+			}
 		}
 		
 		return call_user_func_array($this->callback, $arguments);
