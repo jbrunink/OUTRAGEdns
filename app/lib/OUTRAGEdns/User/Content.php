@@ -7,6 +7,7 @@
 namespace OUTRAGEdns\User;
 
 use OUTRAGEdns\Entity;
+use OUTRAGEdns\Domain;
 use OUTRAGEdns\ZoneTemplate;
 
 
@@ -27,6 +28,24 @@ class Content extends Entity\Content
 	public function getter_templates_no()
 	{
 		return ZoneTemplate\Content::find()->where("owner = ?", $this->id)->invoke("count");
+	}
+	
+	
+	/**
+	 *	What domains does this user own?
+	 */
+	public function getter_domains()
+	{
+		return Domain\Content::find()->where("owner = ?", $this->id)->sort("id ASC")->invoke("objects");
+	}
+	
+	
+	/**
+	 *	How many domains does this user own?
+	 */
+	public function getter_domains_no()
+	{
+		return Domain\Content::find()->where("owner = ?", $this->id)->invoke("count");
 	}
 	
 	

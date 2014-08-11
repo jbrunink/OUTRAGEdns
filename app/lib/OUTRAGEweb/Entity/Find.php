@@ -48,6 +48,15 @@ class Find
 	
 	
 	/**
+	 *	Return the current state of execution as a string.
+	 */
+	public function __toString()
+	{
+		return (string) $this->select;
+	}
+	
+	
+	/**
 	 *	Finish the select, and give results based on what was requested.
 	 */
 	public function invoke($type = null)

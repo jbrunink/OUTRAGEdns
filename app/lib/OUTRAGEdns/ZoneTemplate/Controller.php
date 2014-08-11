@@ -23,7 +23,13 @@ class Controller extends Entity\Controller
 				try
 				{
 					$this->content->db->begin();
-					$this->content->save($this->form->values());
+					
+					$values = $this->form->values();
+					
+					if($this->response->user)
+						$values["owner"] = $this->response->user;
+					
+					$this->content->save($values);
 					$this->content->db->commit();
 					
 					header("Location: ".$this->content->actions->edit);
@@ -100,6 +106,7 @@ class Controller extends Entity\Controller
 		if(!$this->response->templates)
 		{
 			$request = Content::find();
+			$request->where("owner = ?", $this->response->user->id);
 			$request->sort("id ASC");
 			
 			$this->response->templates = $request->invoke("objects");

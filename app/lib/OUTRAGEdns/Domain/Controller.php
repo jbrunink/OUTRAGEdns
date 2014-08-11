@@ -24,7 +24,13 @@ class Controller extends Entity\Controller
 				try
 				{
 					$this->content->db->begin();
-					$this->content->save($this->form->values());
+					
+					$values = $this->form->values();
+					
+					if($this->response->user)
+						$values["owner"] = $this->response->user;
+					
+					$this->content->save($values);
 					$this->content->db->commit();
 					
 					header("Location: ".$this->content->actions->edit);
@@ -92,6 +98,22 @@ class Controller extends Entity\Controller
 	 */
 	public function remove($id)
 	{
+		if(!$this->content->id)
+			$this->content->load($id);
+		
+		try
+		{
+			$this->content->db->begin();
+			$this->content->remove();
+			$this->content->db->commit();
+		}
+		catch(Exception $exception)
+		{
+			$this->content->db->rollback();
+		}
+		
+		header("Location: ".$this->content->actions->grid);
+		exit;
 	}
 	
 	
@@ -100,5 +122,16 @@ class Controller extends Entity\Controller
 	 */
 	public function grid()
 	{
+		if(!$this->response->domains)
+		{
+			$request = Content::find();
+			$request->leftJoin("zones", "zones.domain_id = ".$this->content->db_table.".id");
+			$request->where("zones.owner = ?", $this->response->user->id);
+			$request->sort("id ASC");
+			
+			$this->response->domains = $request->invoke("objects");
+		}
+		
+		return $this->response->display("index.twig");
 	}
 }

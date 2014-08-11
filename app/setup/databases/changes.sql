@@ -44,3 +44,10 @@ CREATE TABLE IF NOT EXISTS `zone_templ_records`
 	`prio` bigint(20) NOT NULL DEFAULT '0',
 	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+ALTER TABLE `zones`
+	ADD UNIQUE INDEX `domain_id` (`domain_id`),
+	ADD CONSTRAINT `domain` FOREIGN KEY (`domain_id`) REFERENCES `domains` (`id`) ON DELETE CASCADE;
+
+ALTER TABLE `zone_templ_records`
+	ADD CONSTRAINT `template` FOREIGN KEY (`zone_templ_id`) REFERENCES `zone_templ` (`id`) ON DELETE CASCADE;

@@ -1,0 +1,22 @@
+{% import "/includes/macros/form.twig" as forms %}
+
+<h1>List all zones/domains</h1>
+
+<form class="form-horizontal" method="POST">
+	<table class="grid-table">
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Description</th>
+				<th>No. of records</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		
+		<tbody>
+			{% for domain in domains %}
+				{% include "objects/domain/grid-item.twig" with { content: domain } %}
+			{% endfor %}
+		</tbody>
+	</table>
+</form>

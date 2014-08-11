@@ -6,8 +6,11 @@
 
 namespace OUTRAGEdns\Entity;
 
+use \OUTRAGEweb\Entity;
+use \OUTRAGEweb\Configuration;
+use \OUTRAGEdns\User;
 
-class Controller extends \OUTRAGEweb\Entity\Controller
+class Controller extends Entity\Controller
 {
 	/**
 	 *	This method is called before the path is executed - this can be used to prepare
@@ -21,6 +24,14 @@ class Controller extends \OUTRAGEweb\Entity\Controller
 		if($this->form)
 			$this->response->form = $this->form;
 		
-		$this->response->config = \OUTRAGEweb\Configuration\Wallet::getInstance();
+		$this->response->config = Configuration\Wallet::getInstance();
+		
+		if($this->request->session->current_users_id)
+		{
+			$this->response->user = new User\Content();
+			$this->response->user->load($this->request->session->current_users_id);
+		}
+		
+		return true;
 	}
 }

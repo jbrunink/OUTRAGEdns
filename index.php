@@ -32,6 +32,7 @@ if(!class_exists("\Twig_Environment", false))
 # perhaps it's a good idea to init our request environment, we don't need to
 # do anything else here as default functionality is handled by the getters
 $environment = new \OUTRAGEweb\Request\Environment();
+$environment->session->current_users_id = 1;
 
 
 # and now, what we need to do is find out what path we need to go down.
