@@ -81,6 +81,14 @@ class Controller extends Entity\Controller
 	 */
 	public function grid()
 	{
+		if(!$this->response->templates)
+		{
+			$request = Content::find();
+			$request->sort("id ASC");
+			
+			$this->response->templates = $request->invoke("objects");
+		}
+		
 		return $this->response->display("index.twig");
 	}
 }

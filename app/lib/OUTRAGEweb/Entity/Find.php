@@ -67,7 +67,6 @@ class Find
 	public function returnCount()
 	{
 		$this->select->select("COUNT(1) AS __item");
-		$this->select->group($this->content->db_table.".id");
 		
 		$results = $this->select->invoke();
 		

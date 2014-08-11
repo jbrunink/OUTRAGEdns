@@ -8,15 +8,19 @@
 	</td>
 	
 	<td>
-		<ul class="actions">
-			<li class="clone">
-				<a href="#">
-					<i class="fa fa-plus"></i>
+		{{ content.records_no }}
+	</td>
+	
+	<td>
+		<ul class="actions tiny">
+			<li>
+				<a href="{{ content.actions.edit }}">
+					<i class="fa fa-edit"></i>
 				</a>
 			</li>
 			
 			<li class="remove">
-				<a href="#">
+				<a href="{{ content.actions.remove }}">
 					<i class="fa fa-trash-o"></i>
 				</a>
 			</li>

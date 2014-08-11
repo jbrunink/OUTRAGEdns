@@ -42,19 +42,26 @@
 					{
 						@include display(inline-block);
 						
+						color: #000;
+						
 						font-size: 14px;
 						font-weight: normal;
 						
-						line-height: 30px;
 						text-decoration: none;
-						
-						color: #000;
 					}
 					
 					display: inline;
 					line-height: 30px;
 					
 					margin-right: 8px;
+				}
+				
+				&.tiny
+				{
+					li
+					{
+						line-height: 18px;
+					}
 				}
 				
 				float: right;
