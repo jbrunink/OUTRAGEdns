@@ -59,6 +59,15 @@ class Content extends Entity\Content
 	
 	
 	/**
+	 *	How many records does this domain possess?
+	 */
+	public function getter_records_no()
+	{
+		return Record\Content::find()->where("domain_id = ?", $this->id)->sort("id ASC")->invoke("count");
+	}
+	
+	
+	/**
 	 *	Called when saving a new zone template.
 	 */
 	public function save($post = array())

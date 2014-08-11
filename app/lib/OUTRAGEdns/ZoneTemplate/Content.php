@@ -33,6 +33,15 @@ class Content extends Entity\Content
 	
 	
 	/**
+	 *	How many records does this zone template have?
+	 */
+	public function getter_records_no()
+	{
+		return ZoneTemplateRecord\Content::find()->where("zone_templ_id = ?", $this->id)->sort("id ASC")->invoke("count");
+	}
+	
+	
+	/**
 	 *	Called when saving a new zone template.
 	 */
 	public function save($post = array())
