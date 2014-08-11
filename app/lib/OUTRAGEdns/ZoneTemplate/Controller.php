@@ -7,7 +7,6 @@
 namespace OUTRAGEdns\ZoneTemplate;
 
 use \OUTRAGEdns\Entity;
-use \OUTRAGEdns\ZoneTemplateRecord;
 
 
 class Controller extends Entity\Controller

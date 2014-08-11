@@ -9,54 +9,45 @@ namespace OUTRAGEdns\Domain;
 use \OUTRAGEdns\Entity;
 use \OUTRAGEdns\Record;
 use \OUTRAGEdns\User;
+use \OUTRAGEdns\Zone;
 use \OUTRAGEdns\ZoneTemplate;
 
 
 class Content extends Entity\Content
 {
 	/**
+	 *	What zone does this domain belong to?
+	 */
+	public function getter_zone()
+	{
+		$request = (new Zone\Content())->find();
+		$request->where("domain_id = ?", $this->id);
+		
+		return $request->invoke("first");
+	}
+	
+	
+	/**
 	 *	What account owns this domain?
 	 */
 	public function getter_user()
 	{
-		$statement = $this->db->select();
-		
-		$statement->from("zones");
-		$statement->fields([ "owner" ]);
-		$statement->where("domain_id = ?", $this->id);
-		
-		$result = $statement->invoke();
-		
-		if(!$result || !$result[0]["owner"])
+		if(!$this->zone)
 			return null;
 		
-		$content = new User\Content();
-		$content->load($result[0]["owner"]);
-		
-		return $content->id ? $content : null;
+		return $this->zone->user;
 	}
 	
 	
 	/**
 	 *	What record template, if any, is currently in use on this domain?
 	 */
-	public function getter_zone_template()
+	public function getter_template()
 	{
-		$statement = $this->db->select();
-		
-		$statement->from("zones");
-		$statement->fields([ "zone_templ_id" ]);
-		$statement->where("domain_id = ?", $this->id);
-		
-		$result = $statement->invoke();
-		
-		if(!$result || !$result[0]["zone_templ_id"])
+		if(!$this->zone)
 			return null;
 		
-		$content = new ZoneTemplate\Content();
-		$content->load($result[0]["zone_templ_id"]);
-		
-		return $content->id ? $content : null;
+		return $this->zone->template;
 	}
 	
 	
@@ -64,29 +55,33 @@ class Content extends Entity\Content
 	 *	Now, for the fun bit of retrieving all the records that belong to this
 	 *	domain.
 	 */
-	public function getter_domains()
+	public function getter_records()
 	{
-		$request = (new Record\Content())->find();
-		$request->where("domain_id = ?", $this->id);
-		$request->sort("id ASC");
-		
-		return $request->invoke("objects");
+		return (new Record\Content())->find()->where("domain_id = ?", $this->id)->sort("id ASC")->invoke("objects");
 	}
 	
 	
 	/**
-	 *	Called when this object has been changed, and we want to perform some
-	 *	other operations to it or something.
+	 *	Called when saving a new zone template.
 	 */
-	protected function onChange($post = array())
+	public function save($post = array())
 	{
-		if(!empty($post["owner"]))
-		{
-			if(is_object($post["owner"]))
-				$post["owner"] = $post["owner"]->id;
-		}
+		if(!empty($post["owner"]) && is_object($post["owner"]))
+			$post["owner"] = $post["owner"]->id;
 		
-		if(!empty($post["records"]))
+		if(!parent::save($post))
+			return false;
+		
+		# create a child zone
+		$zone = new Zone\Content();
+		
+		$set = array_merge([ "domain_id" => $this->id ], array_intersect_key($post, array_flip($zone->db_fields)));
+		
+		if($set)
+			$zone->save($set);
+		
+		# do stuff with records
+		if(array_key_exists("records", $post))
 		{
 			foreach($post["records"] as $item)
 			{
@@ -95,23 +90,52 @@ class Content extends Entity\Content
 				
 				$record = new Record\Content();
 				$record->save($item);
-				
-				var_dump($record->id);
 			}
 		}
 		
-		if(!empty($post["records_dropped"]))
+		if($this->template)
 		{
-			$request = (new Record\Content())->find();
-			$request->where("domain_id = ?", $this->id);
-			$request->where("id IN (?)", $post["records_dropped"]);
+			$exports = $this->template->export([ "ZONE" => $this->name, "SERIAL" => 0 ]);
 			
-			$objects = $request->invoke("objects");
-			
-			foreach($objects as $object)
-				$object->remove();
+			foreach($exports as $export)
+			{
+				$export["domain_id"] = $this->id;
+				
+				$record = new Record\Content();
+				$record->save($export);
+			}
 		}
 		
-		return true;
+		return $this->id;
+	}
+	
+	
+	/**
+	 *	Called when editing a zone template.
+	 */
+	public function edit($post = array())
+	{
+		if(!empty($post["owner"]) && is_object($post["owner"]))
+			$post["owner"] = $post["owner"]->id;
+		
+		if(!parent::edit($post))
+			return false;
+		
+		if(array_key_exists("records", $post))
+		{
+			$record = new Record\Content();
+			$record->db->delete($record->db_table, "domain_id = ".$this->db->quote($this->id));
+			
+			foreach($post["records"] as $item)
+			{
+				if(empty($item["domain_id"]))
+					$item["domain_id"] = $this->id;
+				
+				$record = new Record\Content();
+				$record->save($item);
+			}
+		}
+		
+		return $this->id;
 	}
 }

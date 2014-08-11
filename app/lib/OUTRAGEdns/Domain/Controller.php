@@ -7,6 +7,7 @@
 namespace OUTRAGEdns\Domain;
 
 use \OUTRAGEdns\Entity;
+use \OUTRAGEdns\ZoneTemplate;
 
 
 class Controller extends Entity\Controller
@@ -16,8 +17,35 @@ class Controller extends Entity\Controller
 	 */
 	public function add()
 	{
-		var_dump($this->content, $this->request);
-		exit;
+		if(!empty($this->request->post->commit))
+		{
+			if($this->form->validate($this->request->post->toArray()))
+			{
+				try
+				{
+					$this->content->db->begin();
+					$this->content->save($this->form->values());
+					$this->content->db->commit();
+					
+					header("Location: ".$this->content->actions->edit);
+				}
+				catch(Exception $exception)
+				{
+					$this->content->db->rollback();
+				}
+			}
+		}
+		
+		if(!$this->response->templates)
+		{
+			$request = (new ZoneTemplate\Content())->find();
+			$request->where("1");
+			$request->order("name ASC");
+			
+			$this->response->templates = $request->invoke("objects");
+		}
+		
+		return $this->response->display("index.twig");
 	}
 	
 	
@@ -26,8 +54,36 @@ class Controller extends Entity\Controller
 	 */
 	public function edit($id)
 	{
-		var_dump($this->content, $this->request, $id);
-		exit;
+		if(!$this->content->id)
+			$this->content->load($id);
+		
+		if(!empty($this->request->post->commit))
+		{
+			if($this->form->validate($this->request->post->toArray()))
+			{
+				try
+				{
+					$this->content->db->begin();
+					$this->content->edit($this->form->values());
+					$this->content->db->commit();
+				}
+				catch(Exception $exception)
+				{
+					$this->content->db->rollback();
+				}
+			}
+		}
+		
+		if(!$this->response->templates)
+		{
+			$request = (new ZoneTemplate\Content())->find();
+			$request->where("1");
+			$request->order("name ASC");
+			
+			$this->response->templates = $request->invoke("objects");
+		}
+		
+		return $this->response->display("index.twig");
 	}
 	
 	
@@ -36,8 +92,6 @@ class Controller extends Entity\Controller
 	 */
 	public function remove($id)
 	{
-		var_dump($this->content, $this->request, $id);
-		exit;
 	}
 	
 	
@@ -46,7 +100,5 @@ class Controller extends Entity\Controller
 	 */
 	public function grid()
 	{
-		var_dump($this->content, $this->request);
-		exit;
 	}
 }

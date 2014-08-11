@@ -7,7 +7,8 @@
 namespace OUTRAGEdns\ZoneTemplate;
 
 use \OUTRAGEdns\Entity;
-use \OUTRAGEdns\Entity\User;
+use \OUTRAGEdns\User;
+use \OUTRAGEdns\Record;
 use \OUTRAGEdns\ZoneTemplateRecord;
 
 
@@ -18,10 +19,7 @@ class Content extends Entity\Content
 	 */
 	public function getter_user()
 	{
-		$request = (new User\Content())->find();
-		$request->where("id = ?", $this->owner);
-		
-		return $request->invoke("first");
+		return (new User\Content())->find()->where("id = ?", $this->owner)->invoke("first");
 	}
 	
 	
@@ -30,11 +28,7 @@ class Content extends Entity\Content
 	 */
 	public function getter_records()
 	{
-		$request = (new ZoneTemplateRecord\Content())->find();
-		$request->where("zone_templ_id = ?", $this->id);
-		$request->sort("id ASC");
-		
-		return $request->invoke("objects");
+		return (new ZoneTemplateRecord\Content())->find()->where("domain_id = ?", $this->id)->sort("id ASC")->invoke("objects");
 	}
 	
 	
@@ -49,7 +43,7 @@ class Content extends Entity\Content
 		if(!parent::save($post))
 			return false;
 		
-		if(!empty($post["records"]))
+		if(array_key_exists("records", $post))
 		{
 			foreach($post["records"] as $item)
 			{
@@ -60,6 +54,8 @@ class Content extends Entity\Content
 				$record->save($item);
 			}
 		}
+		
+		return $this->id;
 	}
 	
 	
@@ -74,7 +70,7 @@ class Content extends Entity\Content
 		if(!parent::edit($post))
 			return false;
 		
-		if(!empty($post["records"]))
+		if(array_key_exists("records", $post))
 		{
 			$record = new ZoneTemplateRecord\Content();
 			$record->db->delete($record->db_table, "zone_templ_id = ".$this->db->quote($this->id));
@@ -90,5 +86,34 @@ class Content extends Entity\Content
 		}
 		
 		return $this->id;
+	}
+	
+	
+	/**
+	 *	Export all the records, applying any substitutions to any
+	 *	of the fields or values out there.
+	 */
+	public function export($context = [])
+	{
+		$exports = [];
+		$fields = array_flip((new Record\Content())->db_fields);
+		
+		foreach($this->records as $record)
+		{
+			$export = $record->toArray();
+			$export = array_intersect_key($export, $fields);
+			
+			foreach($export as $key => $value)
+			{
+				foreach($context as $search => $replace)
+					$value = str_replace("[".$search."]", $replace, $value);
+				
+				$export[$key] = $value;
+			}
+			
+			$exports[] = $export;
+		}
+		
+		return $exports;
 	}
 }

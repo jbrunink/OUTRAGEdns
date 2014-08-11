@@ -34,4 +34,10 @@ records:
 		"43200": "12 hrs"
 		"86400": "24 hrs"
 	}
+	
+	synctypes:
+	{
+		"NATIVE": "Native",
+		"MASTER": "Master",
+	}
 }

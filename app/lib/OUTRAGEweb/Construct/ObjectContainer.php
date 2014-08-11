@@ -31,6 +31,15 @@ class ObjectContainer implements \ArrayAccess, \Countable, \Iterator, \Serializa
 	
 	
 	/**
+	 *	Return the array keys of the container.
+	 */
+	public function toArrayKeys()
+	{
+		return array_keys($this->container);
+	}
+	
+	
+	/**
 	 *	I'd like to return an array representation of this set.
 	 */
 	public final function toArray($recursive = true, $fields = null)
