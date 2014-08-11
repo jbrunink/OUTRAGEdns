@@ -73,6 +73,22 @@ class Controller extends Entity\Controller
 	 */
 	public function remove($id)
 	{
+		if(!$this->content->id)
+			$this->content->load($id);
+		
+		try
+		{
+			$this->content->db->begin();
+			$this->content->remove();
+			$this->content->db->commit();
+		}
+		catch(Exception $exception)
+		{
+			$this->content->db->rollback();
+		}
+		
+		header("Location: ".$this->content->actions->grid);
+		exit;
 	}
 	
 	

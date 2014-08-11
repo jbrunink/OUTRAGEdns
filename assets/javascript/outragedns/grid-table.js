@@ -50,6 +50,11 @@
 			if(!window.confirm("Do you want to remove this record?"))
 				return true;
 			
+			var link = $(this).find("a");
+			
+			if(link.attr("href") && link.attr("href") != "#")
+				return window.document.location = link.attr("href");
+			
 			$(this).parents("tr").first().fadeOut("fast", function()
 			{
 				var container = $(this).parents("table");
