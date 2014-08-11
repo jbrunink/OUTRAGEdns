@@ -81,5 +81,6 @@ class Controller extends Entity\Controller
 	 */
 	public function grid()
 	{
+		return $this->response->display("index.twig");
 	}
 }

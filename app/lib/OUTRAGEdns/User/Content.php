@@ -7,10 +7,29 @@
 namespace OUTRAGEdns\User;
 
 use OUTRAGEdns\Entity;
+use OUTRAGEdns\ZoneTemplate;
 
 
 class Content extends Entity\Content
 {
+	/**
+	 *	What zone templates does this user own?
+	 */
+	public function getter_templates()
+	{
+		return ZoneTemplate\Content::find()->where("owner = ?", $this->id)->sort("id ASC")->invoke("objects");
+	}
+	
+	
+	/**
+	 *	How many zone templates does this user own?
+	 */
+	public function getter_templates_no()
+	{
+		return ZoneTemplate\Content::find()->where("owner = ?", $this->id)->invoke("count");
+	}
+	
+	
 	/**
 	 *	Called to save the user.
 	 */

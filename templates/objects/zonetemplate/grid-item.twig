@@ -1,0 +1,25 @@
+<tr{% if class %} class="{{ class|e }}"{% endif %}>
+	<td>
+		{{ content.name }}
+	</td>
+	
+	<td>
+		{{ content.descr }}
+	</td>
+	
+	<td>
+		<ul class="actions">
+			<li class="clone">
+				<a href="#">
+					<i class="fa fa-plus"></i>
+				</a>
+			</li>
+			
+			<li class="remove">
+				<a href="#">
+					<i class="fa fa-trash-o"></i>
+				</a>
+			</li>
+		</ul>
+	</td>
+</tr>

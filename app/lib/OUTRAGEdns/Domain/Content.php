@@ -63,7 +63,7 @@ class Content extends Entity\Content
 	 */
 	public function getter_records_no()
 	{
-		return Record\Content::find()->where("domain_id = ?", $this->id)->sort("id ASC")->invoke("count");
+		return Record\Content::find()->where("domain_id = ?", $this->id)->invoke("count");
 	}
 	
 	

@@ -1,0 +1,21 @@
+{% import "/includes/macros/form.twig" as forms %}
+
+<h1>List all zone templates</h1>
+
+<form class="form-horizontal" method="POST">
+	<table class="grid-table">
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Description</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		
+		<tbody>
+			{% for template in templates %}
+				{% include "objects/zonetemplate/grid-item.twig" with { content: template } %}
+			{% endfor %}
+		</tbody>
+	</table>
+</form>

@@ -37,7 +37,7 @@ class Content extends Entity\Content
 	 */
 	public function getter_records_no()
 	{
-		return ZoneTemplateRecord\Content::find()->where("zone_templ_id = ?", $this->id)->sort("id ASC")->invoke("count");
+		return ZoneTemplateRecord\Content::find()->where("zone_templ_id = ?", $this->id)->invoke("count");
 	}
 	
 	
