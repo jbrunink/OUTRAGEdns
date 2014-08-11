@@ -1,14 +1,15 @@
 <?php
 /**
- *	Form for managing ZoneTemplateRecords.
+ *	Form for managing Record.
  */
 
 
-namespace OUTRAGEdns\ZoneTemplateRecord;
+namespace OUTRAGEdns\Record;
 
 use OUTRAGEweb\Configuration;
 use OUTRAGEweb\FormElement;
 use OUTRAGEweb\Validate;
+
 
 class Form extends Validate\Template
 {

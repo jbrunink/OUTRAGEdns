@@ -9,7 +9,7 @@ namespace OUTRAGEdns\Domain;
 use OUTRAGEweb\Configuration;
 use OUTRAGEweb\FormElement;
 use OUTRAGEweb\Validate;
-use OUTRAGEdns\ZoneTemplateRecord;
+use OUTRAGEdns\Record;
 
 
 class Form extends Validate\Template
@@ -40,7 +40,7 @@ class Form extends Validate\Template
 		$zone_templ_id->appendTo($this);
 		
 		# records
-		$records = new ZoneTemplateRecord\Form("records");
+		$records = new Record\Form("records");
 		$records->isArray(true);
 		$records->appendTo($this);
 	}
