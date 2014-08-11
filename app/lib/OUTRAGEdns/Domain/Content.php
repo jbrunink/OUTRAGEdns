@@ -20,10 +20,7 @@ class Content extends Entity\Content
 	 */
 	public function getter_zone()
 	{
-		$request = (new Zone\Content())->find();
-		$request->where("domain_id = ?", $this->id);
-		
-		return $request->invoke("first");
+		return Zone\Content::find()->where("domain_id = ?", $this->id)->invoke("first");
 	}
 	
 	
@@ -57,7 +54,7 @@ class Content extends Entity\Content
 	 */
 	public function getter_records()
 	{
-		return (new Record\Content())->find()->where("domain_id = ?", $this->id)->sort("id ASC")->invoke("objects");
+		return Record\Content::find()->where("domain_id = ?", $this->id)->sort("id ASC")->invoke("objects");
 	}
 	
 	

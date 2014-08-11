@@ -17,10 +17,7 @@ class Content extends Entity\Content
 	 */
 	public function getter_parent()
 	{
-		$request = (new Domain\Content())->find();
-		$request->where("id = ?", $this->domain_id);
-		
-		return $request->invoke("first");
+		return Domain\Content::find()->where("id = ?", $this->domain_id)->invoke("first");
 	}
 	
 	

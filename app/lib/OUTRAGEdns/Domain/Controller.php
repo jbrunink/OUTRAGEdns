@@ -38,7 +38,7 @@ class Controller extends Entity\Controller
 		
 		if(!$this->response->templates)
 		{
-			$request = (new ZoneTemplate\Content())->find();
+			$request = ZoneTemplate\Content::find();
 			$request->where("1");
 			$request->order("name ASC");
 			
@@ -76,7 +76,7 @@ class Controller extends Entity\Controller
 		
 		if(!$this->response->templates)
 		{
-			$request = (new ZoneTemplate\Content())->find();
+			$request = ZoneTemplate\Content::find();
 			$request->where("1");
 			$request->order("name ASC");
 			

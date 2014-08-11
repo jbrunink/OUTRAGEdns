@@ -145,14 +145,21 @@ abstract class Content extends Construct\ObjectContainer
 	
 	/**
 	 *	We can use this to find objects that match what we want to find.
+	 *	Now can be called statically!
 	 */
-	public function find()
+	public static function find()
 	{
-		$target = "\\".$this->namespace."\\Find";
+		$class = "\\".get_called_class();
+		$content = new $class();
 		
-		if(class_exists($target))
-			return new $target($this);
+		if($content->namespace)
+		{
+			$target = "\\".$content->namespace."\\Find";
+			
+			if(class_exists($target))
+				return new $target($content);
+		}
 		
-		return new Find($this);
+		return new Find($content);
 	}
 }
