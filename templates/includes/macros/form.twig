@@ -60,9 +60,9 @@
 					{% if options.tuple is not empty %}
 						{% for key, item in options.tuple %}
 							{% if item is iterable %}
-								<option value="{{ item.id|e }}"{% if value == item.id %} selected="selected"{% endif %}{% if options.additionalproperty %} data-{{ options.additionalproperty }}="{{ item[options.additionalproperty]|e }}"{% endif %}>{{ item.name|raw }}</option>
+								<option value="{{ item.id|e }}"{% if options.value == item.id %} selected="selected"{% endif %}{% if options.additionalproperty %} data-{{ options.additionalproperty }}="{{ item[options.additionalproperty]|e }}"{% endif %}>{{ item.name|raw }}</option>
 							{% else %}
-								<option value="{{ key|e }}"{% if value == key %} selected="selected"{% endif %}>{{ item|raw }}</option>
+								<option value="{{ key|e }}"{% if options.value == key %} selected="selected"{% endif %}>{{ item|raw }}</option>
 							{% endif %}
 						{% endfor %}
 					{% endif %}

@@ -43,19 +43,25 @@ foreach($configuration->entities as $entity)
 	if(!$entity->actions)
 		continue;
 	
+	$class = "\\".str_replace(".", "\\", $entity->namespace)."\\Controller";
+	
+	if(!class_exists($class))
+		continue;
+	
+	$controller = new $class();
+	$endpoint = $entity->route ?: $entity->type."s";
+	
 	foreach($entity->actions as $action => $settings)
 	{
-		$route = "/".$entity->type."s/".$action."/";
+		$route = "/".$endpoint."/".$action."/";
 		
 		if($settings->id)
 			$route .= ":id/";
 		
-		$class = "\\".str_replace(".", "\\", $entity->namespace)."\\Controller";
-		
 		if(!class_exists($class))
 			continue;
 		
-		$router->register($route, [ new $class(), $action ]);
+		$router->register($route, [ $controller, $action ]);
 	}
 }
 

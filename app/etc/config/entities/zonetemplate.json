@@ -5,6 +5,7 @@ entities:
 		namespace: "OUTRAGEdns.ZoneTemplate"
 		
 		type: "zonetemplate"
+		route: "templates"
 		table: "zone_templ"
 		
 		actions:

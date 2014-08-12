@@ -1,9 +1,0 @@
-{% if not children %}
-	{% set children = form.children %}
-{% endif %}
-
-{% for element in children %}
-	{% if element.element_name %}
-		{% include [ "includes/form/elements/" ~ element.element_name ~ ".twig", "includes/form/elements/input.twig" ] %}
-	{% endif %}
-{% endfor %}

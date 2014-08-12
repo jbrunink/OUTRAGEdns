@@ -31,7 +31,7 @@ class Form extends Validate\Template
 		
 		# description
 		$descr = new FormElement\Text("descr");
-		$descr->required(true);
+		$descr->required(false);
 		$descr->appendTo($info);
 		
 		# records

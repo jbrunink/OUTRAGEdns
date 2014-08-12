@@ -18,13 +18,14 @@ class Content extends Entity\Content
 	public function getter_actions()
 	{
 		$actions = new Construct\ObjectContainer();
+		$endpoint = $this->settings->route ?: $this->settings->type."s";
 		
 		foreach($this->settings->actions as $action => $info)
 		{
 			if(!empty($info->id) && empty($this->id))
 				continue;
 			
-			$path = "/".$this->settings->type."s/".$action."/";
+			$path = "/".$endpoint."/".$action."/";
 			
 			if(!empty($info->id))
 				$path .= $this->id."/";
