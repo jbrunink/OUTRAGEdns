@@ -127,6 +127,14 @@ class Content extends Entity\Content
 		if(!parent::edit($post))
 			return false;
 		
+		if($this->zone)
+		{
+			$set = array_intersect_key($post, array_flip($this->zone->db_fields));
+			
+			if($set)
+				$this->zone->edit($set);
+		}
+		
 		if(array_key_exists("records", $post))
 		{
 			$record = new Record\Content();

@@ -40,9 +40,9 @@ class Form extends Validate\Template
 		$zone_templ_id->appendTo($this);
 		
 		# comments
-		$comments = new FormElement\Textarea("comments");
-		$comments->required(false);
-		$comments->appendTo($this);
+		$comment = new FormElement\Textarea("comment");
+		$comment->required(false);
+		$comment->appendTo($this);
 		
 		# records
 		$records = new Record\Form("records");
