@@ -92,10 +92,10 @@ class Element extends Component
 		else
 		{
 			# adding a new validator
-			$class = "\\OUTRAGEweb\\Validate\\Conditions\\".$condition;
+			$class = "\\OUTRAGEweb\\Validate\\Conditions\\".ucfirst($condition);
 			
 			if(!class_exists($class))
-				throw new \Exception("Invalid validator condition: '".ucfirst($condition)."'");
+				throw new \Exception("Invalid validator condition: '".$condition."'");
 			
 			$target = null;
 			
