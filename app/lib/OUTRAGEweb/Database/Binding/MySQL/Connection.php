@@ -6,6 +6,7 @@
 
 namespace OUTRAGEweb\Database\Binding\MySQL;
 
+use \OUTRAGEweb\Cache;
 use \OUTRAGEweb\Construct;
 use \OUTRAGEweb\Construct\Ability;
 
@@ -188,6 +189,12 @@ class Connection
 	 */
 	public function describe($table)
 	{
+		$cache = Cache\File::getInstance();
+		$key = "__describe_".$table;
+		
+		if($cache->test($key))
+			return array_keys($cache->load($key));
+		
 		$details = [];
 		$result = $this->connection->query("DESCRIBE ".$this->quoteIdentifier($table));
 		
@@ -223,6 +230,9 @@ class Connection
 				$details[$item["Field"]] = $description;
 			}
 		}
+		
+		if($details)
+			$cache->save($key, $details);
 		
 		return array_keys($details);
 	}

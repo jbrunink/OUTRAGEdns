@@ -14,13 +14,23 @@ session_start();
 
 \OUTRAGEweb\Construct\Autoloader::register();
 
+$cache = \OUTRAGEweb\Cache\File::getInstance();
 $configuration = \OUTRAGEweb\Configuration\Wallet::getInstance();
 
 if(!$configuration)
 	exit;
 
-$configuration->load($_SERVER["DOCUMENT_ROOT"]."/app/etc/config/*.json");
-$configuration->load($_SERVER["DOCUMENT_ROOT"]."/app/etc/config/entities/*.json");
+if($cache->test("__main_config"))
+{
+	$configuration->populateContainerRecursively($cache->load("__main_config"));
+}
+else
+{
+	$configuration->load($_SERVER["DOCUMENT_ROOT"]."/app/etc/config/*.json");
+	$configuration->load($_SERVER["DOCUMENT_ROOT"]."/app/etc/config/entities/*.json");
+	
+	$cache->save("__main_config", $configuration->toArray());
+}
 
 
 # it's also a good idea to register the Twig autoloader, and other settings
