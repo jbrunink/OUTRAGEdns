@@ -39,6 +39,11 @@ class Form extends Validate\Template
 		$zone_templ_id->required(false);
 		$zone_templ_id->appendTo($this);
 		
+		# comments
+		$comments = new FormElement\Textarea("comments");
+		$comments->required(false);
+		$comments->appendTo($this);
+		
 		# records
 		$records = new Record\Form("records");
 		$records->isArray(true);
