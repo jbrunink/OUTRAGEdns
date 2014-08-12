@@ -178,7 +178,7 @@ class Connection
 			return new Result($expression, $result);
 		
 		if($this->connection->error)
-			throw new \Exception("Database error: ".$this->connection->error);
+			throw new \Exception("Database error: ".$this->connection->error." with query '".$expression."'");
 		
 		if($this->transaction)
 			$this->transaction_error = true;

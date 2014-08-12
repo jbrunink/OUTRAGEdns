@@ -19,6 +19,9 @@ class Content extends Entity\Content
 	 */
 	public function getter_user()
 	{
+		if(!$this->owner)
+			return null;
+		
 		return User\Content::find()->where("id = ?", $this->owner)->invoke("first");
 	}
 	
@@ -28,6 +31,9 @@ class Content extends Entity\Content
 	 */
 	public function getter_records()
 	{
+		if(!$this->id)
+			return null;
+		
 		return ZoneTemplateRecord\Content::find()->where("zone_templ_id = ?", $this->id)->sort("id ASC")->invoke("objects");
 	}
 	
@@ -37,6 +43,9 @@ class Content extends Entity\Content
 	 */
 	public function getter_records_no()
 	{
+		if(!$this->id)
+			return 0;
+		
 		return ZoneTemplateRecord\Content::find()->where("zone_templ_id = ?", $this->id)->invoke("count");
 	}
 	

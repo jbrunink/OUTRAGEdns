@@ -18,6 +18,9 @@ class Content extends Entity\Content
 	 */
 	public function getter_user()
 	{
+		if(!$this->owner)
+			return null;
+		
 		return User\Content::find()->where("id = ?", $this->owner)->invoke("first");
 	}
 	

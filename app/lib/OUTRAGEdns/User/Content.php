@@ -18,6 +18,9 @@ class Content extends Entity\Content
 	 */
 	public function getter_templates()
 	{
+		if(!$this->id)
+			return null;
+		
 		return ZoneTemplate\Content::find()->where("owner = ?", $this->id)->sort("id ASC")->invoke("objects");
 	}
 	
@@ -27,6 +30,9 @@ class Content extends Entity\Content
 	 */
 	public function getter_templates_no()
 	{
+		if(!$this->id)
+			return 0;
+		
 		return ZoneTemplate\Content::find()->where("owner = ?", $this->id)->invoke("count");
 	}
 	
@@ -36,6 +42,9 @@ class Content extends Entity\Content
 	 */
 	public function getter_domains()
 	{
+		if(!$this->id)
+			return null;
+		
 		return Domain\Content::find()->where("owner = ?", $this->id)->sort("id ASC")->invoke("objects");
 	}
 	
@@ -45,6 +54,9 @@ class Content extends Entity\Content
 	 */
 	public function getter_domains_no()
 	{
+		if(!$this->id)
+			return 0;
+		
 		return Domain\Content::find()->where("owner = ?", $this->id)->invoke("count");
 	}
 	

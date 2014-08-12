@@ -17,6 +17,9 @@ class Content extends Entity\Content
 	 */
 	public function getter_parent()
 	{
+		if(!$this->zone_templ_id)
+			return null;
+		
 		return ZoneTemplate\Content::find()->where("id = ?", $this->zone_templ_id)->invoke("first");
 	}
 }
