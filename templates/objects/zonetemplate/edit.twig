@@ -1,6 +1,10 @@
 {% import "/includes/macros/form.twig" as forms %}
 
-<h1>Add a new Zone Template</h1>
+{% if content.id %}
+	<h1>Edit '{{ content.name }}' template</h1>
+{% else %}
+	<h1>Add a new template</h1>
+{% endif %}
 
 <form class="form-horizontal" method="POST">
 	<article class="content-wrapper">
@@ -34,6 +38,6 @@
 	</table>
 	
 	<div class="pull-right">
-		<button class="btn btn-primary" type="submit" name="commit" value="now">Update template</button>
+		<button class="btn btn-primary" type="submit" name="commit" value="now">{% if content.id %}Update{% else %}Add{% endif %} template</button>
 	</div>
 </form>
