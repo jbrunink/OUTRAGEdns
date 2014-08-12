@@ -54,7 +54,7 @@ class Password extends Validate\Condition implements Validate\Transformer
 	public function transform($value)
 	{
 		if($this->required || !empty($value))
-			return hash("sha384", trim($value));
+			return hash("sha1", trim($value));
 		
 		return null;
 	}

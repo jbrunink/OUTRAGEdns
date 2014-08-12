@@ -1,0 +1,24 @@
+{% import "/includes/macros/form.twig" as forms %}
+
+<h1>List all users</h1>
+
+<form class="form-horizontal" method="POST">
+	<table class="grid-table">
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Type</th>
+				<th>No. of records</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		
+		<tbody>
+			{% for item in users %}
+				{% include "objects/user/grid-item.twig" with { content: item } %}
+			{% endfor %}
+		</tbody>
+	</table>
+	
+	<a class="button pull-right" href="{{ content.actions.add }}">Add user</a>
+</form>

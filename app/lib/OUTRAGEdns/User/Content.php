@@ -54,11 +54,6 @@ class Content extends Entity\Content
 	 */
 	public function save($post)
 	{
-		$password_hash = sha1($post["password"]);
-		
-		if(!empty($post["password"]) && strcmp($this["password"], $password_hash) != 0)
-			$post["password"] = $password_hash;
-		
 		return parent::save($post);
 	}
 	
@@ -68,10 +63,8 @@ class Content extends Entity\Content
 	 */
 	public function edit($post)
 	{
-		$password_hash = sha1($post["password"]);
-		
-		if(!empty($post["password"]) && strcmp($this["password"], $password_hash) != 0)
-			$post["password"] = $password_hash;
+		if(empty($post["password"]))
+			unset($post["password"]);
 		
 		return parent::edit($post);
 	}

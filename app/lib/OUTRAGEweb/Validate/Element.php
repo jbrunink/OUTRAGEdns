@@ -59,7 +59,7 @@ class Element extends Component
 		if(preg_match("/^(has|remove)([A-Za-z])$/", $condition, $matches))
 		{
 			$condition = $matches[2];
-			$class = "\\OUTRAGEweb\\Validate\\Conditions\\".$condition;
+			$class = "\\OUTRAGEweb\\Validate\\Conditions\\".ucfirst($condition);
 			
 			if(!class_exists($class))
 				throw new \Exception("Invalid validator condition: '".$condition."'");
@@ -95,7 +95,7 @@ class Element extends Component
 			$class = "\\OUTRAGEweb\\Validate\\Conditions\\".$condition;
 			
 			if(!class_exists($class))
-				throw new \Exception("Invalid validator condition: '".$condition."'");
+				throw new \Exception("Invalid validator condition: '".ucfirst($condition)."'");
 			
 			$target = null;
 			

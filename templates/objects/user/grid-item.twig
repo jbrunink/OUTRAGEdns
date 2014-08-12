@@ -1,0 +1,29 @@
+<tr{% if class %} class="{{ class|e }}"{% endif %}>
+	<td>
+		{{ content.username }}
+	</td>
+	
+	<td>
+		{{ content.type }}
+	</td>
+	
+	<td>
+		{{ content.records_no }}
+	</td>
+	
+	<td>
+		<ul class="actions tiny">
+			<li>
+				<a href="{{ content.actions.edit }}">
+					<i class="fa fa-edit"></i>
+				</a>
+			</li>
+			
+			<li class="remove">
+				<a href="{{ content.actions.remove }}">
+					<i class="fa fa-trash-o"></i>
+				</a>
+			</li>
+		</ul>
+	</td>
+</tr>

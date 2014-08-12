@@ -1,0 +1,27 @@
+{% import "/includes/macros/form.twig" as forms %}
+
+{% if content.id %}
+	<h1>Edit '{{ content.name }}' domain</h1>
+{% else %}
+	<h1>Add a new domain</h1>
+{% endif %}
+
+<form class="form-horizontal" method="POST">
+	<article class="content-wrapper">
+		<fieldset>
+			<legend>User information</legend>
+			
+			{{ forms.text({     title: "Username",  field: "username", value: content.username }) }}
+			{{ forms.text({     title: "Full name", field: "fullname", value: content.fullname }) }}
+			{{ forms.text({     title: "E-mail",    field: "email",    value: content.email    }) }}
+			
+			<hr />
+			
+			{{ forms.password({ title: "Password",  field: "password", placeholder: "New password" }) }}
+		</fieldset>
+	</article>
+	
+	<div class="pull-right">
+		<button class="btn btn-primary" type="submit" name="commit" value="now">{% if content.id %}Update{% else %}Add{% endif %} user</button>
+	</div>
+</form>
