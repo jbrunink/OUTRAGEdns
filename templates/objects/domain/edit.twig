@@ -7,9 +7,25 @@
 		<fieldset>
 			<legend>Template Information</legend>
 			
-			{{ forms.text({   title: "Name",     field: "name",          value: content.name  }) }}
-			{{ forms.select({ title: "Type",     field: "type",          value: content.type,               tuple: config.records.synctypes }) }}
-			{{ forms.select({ title: "Template", field: "zone_templ_id", value: content.zone.zone_templ_id, tuple: templates }) }}
+			{{ forms.text({
+				title: "Name",
+				field: "name",
+				value: content.name
+			}) }}
+			
+			{{ forms.select({
+				title: "Type",
+				field: "type",
+				value: content.type,
+				tuple: config.records.synctypes
+			}) }}
+			
+			{{ forms.select({
+				title: "Template",
+				field: "zone_templ_id",
+				value: content.zone.zone_templ_id,
+				tuple: templates
+			}) }}
 		</fieldset>
 	</article>
 	

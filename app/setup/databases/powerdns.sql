@@ -1,16 +1,6 @@
--- --------------------------------------------------------
--- Host:                         127.0.0.1
--- Server version:               5.6.11 - MySQL Community Server (GPL)
--- Server OS:                    Win32
--- HeidiSQL Version:             8.3.0.4694
--- --------------------------------------------------------
+-- SQL structure based on PowerDNS specification
+-- thanks, PowerDNS docs!
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET NAMES utf8 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-
--- Dumping structure for table outragedns.comments
 CREATE TABLE IF NOT EXISTS `comments` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `domain_id` int(11) NOT NULL,
@@ -25,10 +15,6 @@ CREATE TABLE IF NOT EXISTS `comments` (
   KEY `comments_order_idx` (`domain_id`,`modified_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Data exporting was unselected.
-
-
--- Dumping structure for table outragedns.cryptokeys
 CREATE TABLE IF NOT EXISTS `cryptokeys` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `domain_id` int(11) NOT NULL,
@@ -39,10 +25,6 @@ CREATE TABLE IF NOT EXISTS `cryptokeys` (
   KEY `domainidindex` (`domain_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Data exporting was unselected.
-
-
--- Dumping structure for table outragedns.domainmetadata
 CREATE TABLE IF NOT EXISTS `domainmetadata` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `domain_id` int(11) NOT NULL,
@@ -52,10 +34,6 @@ CREATE TABLE IF NOT EXISTS `domainmetadata` (
   KEY `domainmetaidindex` (`domain_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Data exporting was unselected.
-
-
--- Dumping structure for table outragedns.domains
 CREATE TABLE IF NOT EXISTS `domains` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
@@ -68,10 +46,6 @@ CREATE TABLE IF NOT EXISTS `domains` (
   UNIQUE KEY `name_index` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Data exporting was unselected.
-
-
--- Dumping structure for table outragedns.records
 CREATE TABLE IF NOT EXISTS `records` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `domain_id` int(11) DEFAULT NULL,
@@ -91,10 +65,6 @@ CREATE TABLE IF NOT EXISTS `records` (
   CONSTRAINT `records_ibfk_1` FOREIGN KEY (`domain_id`) REFERENCES `domains` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Data exporting was unselected.
-
-
--- Dumping structure for table outragedns.supermasters
 CREATE TABLE IF NOT EXISTS `supermasters` (
   `ip` varchar(64) NOT NULL,
   `nameserver` varchar(255) NOT NULL,
@@ -102,10 +72,6 @@ CREATE TABLE IF NOT EXISTS `supermasters` (
   PRIMARY KEY (`ip`,`nameserver`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Data exporting was unselected.
-
-
--- Dumping structure for table outragedns.tsigkeys
 CREATE TABLE IF NOT EXISTS `tsigkeys` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
@@ -114,8 +80,3 @@ CREATE TABLE IF NOT EXISTS `tsigkeys` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `namealgoindex` (`name`,`algorithm`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- Data exporting was unselected.
-/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
-/*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
