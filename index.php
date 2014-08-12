@@ -53,7 +53,7 @@ foreach($configuration->entities as $entity)
 	
 	foreach($entity->actions as $action => $settings)
 	{
-		$route = "/".$endpoint."/".$action."/";
+		$route = $settings->global ? ("/".$action."/") : ("/".$endpoint."/".$action."/");
 		
 		if($settings->id)
 			$route .= ":id/";
@@ -62,6 +62,9 @@ foreach($configuration->entities as $entity)
 			continue;
 		
 		$router->register($route, [ $controller, $action ]);
+		
+		if($settings->default)
+			$router->register("/".$endpoint."/", $route);
 	}
 }
 

@@ -35,6 +35,11 @@ class Form extends Validate\Template
 		$password->required(false);
 		$password->appendTo($this);
 		
+		# description
+		$description = new FormElement\Textarea("description");
+		$description->required(false);
+		$description->appendTo($this);
+		
 		# email
 		$email = new FormElement\Text("email");
 		$email->required(true);

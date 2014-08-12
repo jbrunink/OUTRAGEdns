@@ -13,6 +13,8 @@ entities:
 			edit:   { id: true }
 			remove: { id: true }
 			grid:   { id: false, default: true }
+			
+			account: { id: false, global: true }
 		}
 	}
 }

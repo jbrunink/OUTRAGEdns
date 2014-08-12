@@ -45,14 +45,22 @@ class Path
 		{
 			$this->callback = $callback;
 		}
-		elseif(is_string($callback))
+		elseif(is_string($callback) && function_exists($callback))
 		{
-			$this->callback = (new ReflectionFunction($callback))->getClosure();
+			$this->callback = (new \ReflectionFunction($callback))->getClosure();
 		}
 		elseif(is_array($callback))
 		{
 			$reflection = new \ReflectionObject($callback[0]);
 			$this->callback = $reflection->hasMethod($callback[1]) ? $reflection->getMethod($callback[1])->getClosure($callback[0]) : null;
+		}
+		elseif(substr($callback, 0, 1) == "/")
+		{
+			$this->callback = function() use ($callback)
+			{
+				header("Location: ".$callback);
+				exit;
+			};
 		}
 		
 		if(!$this->callback)

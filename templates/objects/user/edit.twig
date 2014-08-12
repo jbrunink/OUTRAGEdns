@@ -1,9 +1,9 @@
 {% import "/includes/macros/form.twig" as forms %}
 
 {% if content.id %}
-	<h1>Edit '{{ content.name }}' domain</h1>
+	<h1>Edit {{ content.username }}'s account</h1>
 {% else %}
-	<h1>Add a new domain</h1>
+	<h1>Add a new user</h1>
 {% endif %}
 
 <form class="form-horizontal" method="POST">
@@ -11,9 +11,10 @@
 		<fieldset>
 			<legend>User information</legend>
 			
-			{{ forms.text({     title: "Username",  field: "username", value: content.username }) }}
-			{{ forms.text({     title: "Full name", field: "fullname", value: content.fullname }) }}
-			{{ forms.text({     title: "E-mail",    field: "email",    value: content.email    }) }}
+			{{ forms.text({     title: "Username",    field: "username",    value: content.username    }) }}
+			{{ forms.text({     title: "Full name",   field: "fullname",    value: content.fullname    }) }}
+			{{ forms.text({     title: "E-mail",      field: "email",       value: content.email       }) }}
+			{{ forms.textarea({ title: "Description", field: "description", value: content.description }) }}
 			
 			<hr />
 			

@@ -111,4 +111,13 @@ class Controller extends Entity\Controller
 		
 		return $this->response->display("index.twig");
 	}
+	
+	
+	/**
+	 *	Called when we want a user to access their account.
+	 */
+	public function account()
+	{
+		return $this->edit($this->response->user->id);
+	}
 }
