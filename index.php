@@ -26,7 +26,7 @@ $configuration->load($_SERVER["DOCUMENT_ROOT"]."/app/etc/config/entities/*.json"
 # it's also a good idea to register the Twig autoloader, and other settings
 # related to Twig, almost the world's best template engine
 if(!class_exists("\Twig_Environment", false))
-	require $_SERVER["DOCUMENT_ROOT"]."app/lib/Twig/Autoloader.php";
+	require $_SERVER["DOCUMENT_ROOT"]."/app/lib/Twig/Autoloader.php";
 
 
 # perhaps it's a good idea to init our request environment, we don't need to
