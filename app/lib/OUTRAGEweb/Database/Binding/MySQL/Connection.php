@@ -177,6 +177,9 @@ class Connection
 		if($result instanceof \mysqli_result)
 			return new Result($expression, $result);
 		
+		if($this->connection->error)
+			throw new \Exception("Database error: ".$this->connection->error);
+		
 		if($this->transaction)
 			$this->transaction_error = true;
 		
