@@ -17,9 +17,6 @@ session_start();
 $cache = \OUTRAGEweb\Cache\File::getInstance();
 $configuration = \OUTRAGEweb\Configuration\Wallet::getInstance();
 
-if(!$configuration)
-	exit;
-
 if($cache->test("__main_config"))
 {
 	$configuration->populateContainerRecursively($cache->load("__main_config"));
@@ -42,10 +39,11 @@ if(!class_exists("\Twig_Environment", false))
 # perhaps it's a good idea to init our request environment, we don't need to
 # do anything else here as default functionality is handled by the getters
 $environment = new \OUTRAGEweb\Request\Environment();
-$environment->session->current_users_id = null;
 
 
 # and now, what we need to do is find out what path we need to go down.
+# should I make this cleaner or should I just stick to doing things the
+# new fashioned way?
 $router = new \OUTRAGEweb\Request\Router();
 
 if($environment->session->current_users_id)
@@ -79,7 +77,7 @@ if($environment->session->current_users_id)
 				$router->register("/".$endpoint."/", $route);
 		}
 	}
-
+	
 	$router->register("/logout/", [ new \OUTRAGEdns\User\Controller(), "logout" ]);
 }
 else

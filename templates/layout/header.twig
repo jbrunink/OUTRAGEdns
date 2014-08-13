@@ -19,6 +19,12 @@
 					OUTRAGEdns
 				</div>
 				
+				{% if user %}
+					<div class="hello">
+						Hi there, {{ user.username }}.
+					</div>
+				{% endif %}
+				
 				<nav class="sections">
 					{% include "layout/main-navigation.twig" %}
 				</nav>

@@ -64,11 +64,10 @@ class Session extends MethodAbstract
 	{
 		$previous_state = $this->toArray();
 		
-		$_SESSION = [];
-		$this->container = [];
-		
 		session_destroy();
 		session_start();
+		
+		$this->container = &$_SESSION;
 		
 		return $previous_state;
 	}

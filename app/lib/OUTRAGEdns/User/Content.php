@@ -6,6 +6,7 @@
 
 namespace OUTRAGEdns\User;
 
+use OUTRAGEweb\Request;
 use OUTRAGEdns\Entity;
 use OUTRAGEdns\Domain;
 use OUTRAGEdns\ZoneTemplate;
@@ -79,5 +80,39 @@ class Content extends Entity\Content
 			unset($post["password"]);
 		
 		return parent::edit($post);
+	}
+	
+	
+	/**
+	 *	Shall we authenticate this user?
+	 */
+	public function authenticate(Request\Environment $environment, $credentials)
+	{
+		if(!isset($credentials["username"]) || !isset($credentials["password"]))
+			return false;
+		
+		$target = $this->find()
+		               ->where("username LIKE ?", $credentials["username"])
+		               ->where("password LIKE ?", $credentials["password"])
+		               ->where("active = 1")
+		               ->invoke("first");
+		
+		if(!$target)
+			return false;
+		
+		$environment->session->reset();
+		$environment->session->current_users_id = $target->id;
+		
+		return $this->load($target->id);
+	}
+	
+	
+	/**
+	 *	Let's log this user out.
+	 */
+	public function logout(Request\Environment $environment = null)
+	{
+		if($environment)
+			$environment->session->reset();
 	}
 }

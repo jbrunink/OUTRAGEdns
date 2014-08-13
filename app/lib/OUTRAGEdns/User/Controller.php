@@ -129,6 +129,17 @@ class Controller extends Entity\Controller
 	{
 		$this->response->fullwidth = true;
 		
+		$form = new FormAuthenticate();
+		
+		if($form->validate($this->request->post->toArray()))
+		{
+			if($this->content->authenticate($this->request, $form->values()))
+			{
+				header("Location: /");
+				exit;
+			}
+		}
+		
 		return $this->response->display("index.twig");
 	}
 	
@@ -138,6 +149,9 @@ class Controller extends Entity\Controller
 	 */
 	public function logout()
 	{
+		if($this->response->user)
+			$this->response->user->logout($this->request);
+		
 		header("Location: /");
 		exit;
 	}
