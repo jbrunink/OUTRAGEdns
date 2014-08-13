@@ -121,6 +121,8 @@ class Content extends Entity\Content
 			$export = $record->toArray();
 			$export = array_intersect_key($export, $fields);
 			
+			unset($export["id"]);
+			
 			foreach($export as $key => $value)
 			{
 				foreach($context as $search => $replace)

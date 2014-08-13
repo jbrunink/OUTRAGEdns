@@ -1,3 +1,5 @@
 {% if request.url[1] == "account" %}
 	{% include "objects/user/edit.twig" %}
+{% elseif request.url[1] == "login" %}
+	{% include "objects/user/login.twig" %}
 {% endif %}

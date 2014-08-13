@@ -1,0 +1,12 @@
+{% import "/includes/macros/form.twig" as forms %}
+
+<div class="login-container">
+	<h1>OUTRAGEdns</h1>
+	
+	<form class="form-horizontal">
+		{{ forms.text({     title: "Username", field: "username" }) }}
+		{{ forms.password({ title: "Password", field: "password" }) }}
+		
+		<button type="submit" name="commit" value="now" class="pull-right">Authenticate</button>
+	</form>
+</div>

@@ -104,19 +104,21 @@ class Path
 	/**
 	 *	Run the closure associated with this path.
 	 */
-	public function invoke(Request\Environment $environment)
+	public function invoke(Request\Environment $environment, $strict = true)
 	{
+		$arguments = [];
 		$reflection = new \ReflectionFunction($this->callback);
 		
-		if($reflection->getNumberOfParameters() != count($this->args))
-			throw new \Exception("Arity of callback does not match that supplied in the path.");
-		
-		$arguments = [];
-		
-		if(!preg_match("/^".$this->pattern."$/", $environment->url->path, $arguments))
-			throw new \Exception("Pattern does not match URI supplied.");
-		
-		array_shift($arguments);
+		if($strict)
+		{
+			if($reflection->getNumberOfParameters() != count($this->args))
+				throw new \Exception("Arity of callback does not match that supplied in the path.");
+			
+			if(!preg_match("/^".$this->pattern."$/", $environment->url->path, $arguments))
+				throw new \Exception("Pattern does not match URI supplied.");
+			
+			array_shift($arguments);
+		}
 		
 		if($pointer = $reflection->getClosureThis())
 		{

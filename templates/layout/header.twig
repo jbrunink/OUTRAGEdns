@@ -13,14 +13,16 @@
 	</head>
 	
 	<body>
-		<section class="app-navigation">
-			<div class="branding">
-				OUTRAGEdns
-			</div>
-			
-			<nav class="sections">
-				{% include "layout/main-navigation.twig" %}
-			</nav>
-		</section>
+		{% if not fullwidth %}
+			<section class="app-navigation">
+				<div class="branding">
+					OUTRAGEdns
+				</div>
+				
+				<nav class="sections">
+					{% include "layout/main-navigation.twig" %}
+				</nav>
+			</section>
+		{% endif %}
 		
-		<section class="app-container">
+		<section class="app-container{% if not fullwidth %} with-sidebar{% endif %}">

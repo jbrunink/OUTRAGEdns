@@ -120,4 +120,25 @@ class Controller extends Entity\Controller
 	{
 		return $this->edit($this->response->user->id);
 	}
+	
+	
+	/**
+	 *	Called when we want to let someone into the panel.
+	 */
+	public function login()
+	{
+		$this->response->fullwidth = true;
+		
+		return $this->response->display("index.twig");
+	}
+	
+	
+	/**
+	 *	Called when we want to log someone out of the panel.
+	 */
+	public function logout()
+	{
+		header("Location: /");
+		exit;
+	}
 }

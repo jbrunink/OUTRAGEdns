@@ -25,6 +25,12 @@ class Router
 	
 	
 	/**
+	 *	Where do we go on failure?
+	 */
+	protected $failure = null;
+	
+	
+	/**
 	 *	Register a route.
 	 */
 	public function register($route, $callback)
@@ -49,6 +55,15 @@ class Router
 	
 	
 	/**
+	 *	Where do we want to go on failure?
+	 */
+	public function failure($callback)
+	{
+		return $this->failure = new Router\Path("@error-404", $callback);
+	}
+	
+	
+	/**
 	 *	Locate and invoke the correct path, based on a URI provided to the
 	 *	router.
 	 */
@@ -59,6 +74,9 @@ class Router
 			if($route->test($environment))
 				return $route->invoke($environment);
 		}
+		
+		if($this->failure)
+			$this->failure->invoke($environment, false);
 		
 		return false;
 	}

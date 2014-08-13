@@ -5,11 +5,3 @@
 	background-color: #FFF;
 	padding: 20px;
 }
-
-%content-wrapper-generic
-{
-	@include clearfix();
-	@include box-shadow(1px 1px 1px #CCC);
-	
-	margin-top: 25px;
-}

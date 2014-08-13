@@ -1,6 +1,9 @@
 .app-container
 {
-	margin-left: 250px;
+	&.with-sidebar
+	{
+		margin-left: 250px;
+	}
 	
 	padding-left: 50px;
 	padding-right: 50px;

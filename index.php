@@ -42,41 +42,58 @@ if(!class_exists("\Twig_Environment", false))
 # perhaps it's a good idea to init our request environment, we don't need to
 # do anything else here as default functionality is handled by the getters
 $environment = new \OUTRAGEweb\Request\Environment();
-$environment->session->current_users_id = 1;
+$environment->session->current_users_id = null;
 
 
 # and now, what we need to do is find out what path we need to go down.
 $router = new \OUTRAGEweb\Request\Router();
 
-foreach($configuration->entities as $entity)
+if($environment->session->current_users_id)
 {
-	if(!$entity->actions)
-		continue;
-	
-	$class = "\\".str_replace(".", "\\", $entity->namespace)."\\Controller";
-	
-	if(!class_exists($class))
-		continue;
-	
-	$controller = new $class();
-	$endpoint = $entity->route ?: $entity->type."s";
-	
-	foreach($entity->actions as $action => $settings)
+	foreach($configuration->entities as $entity)
 	{
-		$route = $settings->global ? ("/".$action."/") : ("/".$endpoint."/".$action."/");
+		if(!$entity->actions)
+			continue;
 		
-		if($settings->id)
-			$route .= ":id/";
+		$class = "\\".str_replace(".", "\\", $entity->namespace)."\\Controller";
 		
 		if(!class_exists($class))
 			continue;
 		
-		$router->register($route, [ $controller, $action ]);
+		$controller = new $class();
+		$endpoint = $entity->route ?: $entity->type."s";
 		
-		if($settings->default)
-			$router->register("/".$endpoint."/", $route);
+		foreach($entity->actions as $action => $settings)
+		{
+			$route = $settings->global ? ("/".$action."/") : ("/".$endpoint."/".$action."/");
+			
+			if($settings->id)
+				$route .= ":id/";
+			
+			if(!class_exists($class))
+				continue;
+			
+			$router->register($route, [ $controller, $action ]);
+			
+			if($settings->default)
+				$router->register("/".$endpoint."/", $route);
+		}
 	}
+
+	$router->register("/logout/", [ new \OUTRAGEdns\User\Controller(), "logout" ]);
+}
+else
+{
+	$router->register("/login/", [ new \OUTRAGEdns\User\Controller(), "login" ]);
+	
+	$router->failure(function()
+	{
+		header("Location: /login/");
+		exit;
+	});
 }
 
+
+# run our router!
 $router->invoke($environment);
 exit;
