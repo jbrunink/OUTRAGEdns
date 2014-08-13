@@ -32,3 +32,12 @@
 		{% endif %}
 		
 		<section class="app-container{% if not fullwidth %} with-sidebar{% endif %}">
+			{% if notification_messages|length %}
+				<div class="notification-header">
+					{% for message in notification_messages %}
+						<div class="notification-item yellow">
+							<i class="fa fa-exclamation-circle"></i> {{ message }}
+						</div>
+					{% endfor %}
+				</div>
+			{% endif %}

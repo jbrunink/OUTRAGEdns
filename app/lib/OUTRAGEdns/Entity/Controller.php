@@ -32,6 +32,10 @@ class Controller extends Entity\Controller
 			$this->response->user->load($this->request->session->current_users_id);
 		}
 		
+		if(!empty($this->request->session->messages))
+			$this->response->notification_messages = $this->request->session->messages;
+		
+		$this->request->session->messages = [];
 		return true;
 	}
 }

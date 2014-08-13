@@ -28,7 +28,10 @@ class Controller extends Entity\Controller
 					$this->content->save($this->form->values());
 					$this->content->db->commit();
 					
+					$this->request->session->messages[] = "Successfully added this user.";
+					
 					header("Location: ".$this->content->actions->edit);
+					exit;
 				}
 				catch(Exception $exception)
 				{
@@ -60,6 +63,11 @@ class Controller extends Entity\Controller
 					$this->content->db->begin();
 					$this->content->edit($this->form->values());
 					$this->content->db->commit();
+					
+					if($this->request->session->current_users_id == $this->content->id)
+						$this->request->session->messages[] = "Successfully updated your profile.";
+					else
+						$this->request->session->messages[] = "Successfully updated this user.";
 				}
 				catch(Exception $exception)
 				{
@@ -85,6 +93,8 @@ class Controller extends Entity\Controller
 			$this->content->db->begin();
 			$this->content->remove();
 			$this->content->db->commit();
+			
+			$this->request->session->messages[] = "Successfully removed this user.";
 		}
 		catch(Exception $exception)
 		{

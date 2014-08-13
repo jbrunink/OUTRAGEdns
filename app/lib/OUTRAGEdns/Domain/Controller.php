@@ -33,7 +33,10 @@ class Controller extends Entity\Controller
 					$this->content->save($values);
 					$this->content->db->commit();
 					
+					$this->request->session->messages[] = "Successfully created the domain: ".$this->content->name;
+					
 					header("Location: ".$this->content->actions->edit);
+					exit;
 				}
 				catch(Exception $exception)
 				{
@@ -72,6 +75,8 @@ class Controller extends Entity\Controller
 					$this->content->db->begin();
 					$this->content->edit($this->form->values());
 					$this->content->db->commit();
+					
+					$this->request->session->messages[] = "Successfully updated the domain: ".$this->content->name;
 				}
 				catch(Exception $exception)
 				{
@@ -106,6 +111,8 @@ class Controller extends Entity\Controller
 			$this->content->db->begin();
 			$this->content->remove();
 			$this->content->db->commit();
+				
+			$this->request->session->messages[] = "Successfully removed the domain: ".$this->content->name;
 		}
 		catch(Exception $exception)
 		{

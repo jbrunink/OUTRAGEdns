@@ -1,0 +1,31 @@
+.app-container
+{
+	.notification-header
+	{
+		.notification-item
+		{
+			.fa
+			{
+				padding-right: 5px;
+			}
+			
+			padding-left: 35px;
+			padding-right: 35px;
+			padding-top: 10px;
+			padding-bottom: 10px;
+			
+			&.yellow
+			{
+				background-color: #FFFF66;
+				border: 1px solid #FFBF00;
+			}
+			
+			@include box-shadow(1px 1px 2px #BBB);
+		}
+		
+		height: 45px;	
+		margin-bottom: 20px;
+		
+		overflow: hidden;
+	}
+}
