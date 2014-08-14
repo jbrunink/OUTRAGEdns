@@ -7,6 +7,7 @@
 namespace OUTRAGEdns\User;
 
 use \OUTRAGEdns\Entity;
+use \OUTRAGEdns\Notification;
 
 
 class Controller extends Entity\Controller
@@ -28,7 +29,7 @@ class Controller extends Entity\Controller
 					$this->content->save($this->form->values());
 					$this->content->db->commit();
 					
-					$this->request->session->messages[] = "Successfully added this user.";
+					new Notification\Success("Successfully added this user.");
 					
 					header("Location: ".$this->content->actions->edit);
 					exit;
@@ -65,9 +66,9 @@ class Controller extends Entity\Controller
 					$this->content->db->commit();
 					
 					if($this->request->session->current_users_id == $this->content->id)
-						$this->request->session->messages[] = "Successfully updated your profile.";
+						new Notification\Success("Successfully updated your profile.");
 					else
-						$this->request->session->messages[] = "Successfully updated this user.";
+						new Notification\Success("Successfully updated this user.");
 				}
 				catch(Exception $exception)
 				{
@@ -94,7 +95,7 @@ class Controller extends Entity\Controller
 			$this->content->remove();
 			$this->content->db->commit();
 			
-			$this->request->session->messages[] = "Successfully removed this user.";
+			new Notification\Success("Successfully removed this user.");
 		}
 		catch(Exception $exception)
 		{

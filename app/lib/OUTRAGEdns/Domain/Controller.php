@@ -8,6 +8,7 @@ namespace OUTRAGEdns\Domain;
 
 use \OUTRAGEdns\Entity;
 use \OUTRAGEdns\ZoneTemplate;
+use \OUTRAGEdns\Notification;
 
 
 class Controller extends Entity\Controller
@@ -33,7 +34,7 @@ class Controller extends Entity\Controller
 					$this->content->save($values);
 					$this->content->db->commit();
 					
-					$this->request->session->messages[] = "Successfully created the domain: ".$this->content->name;
+					new Notification\Success("Successfully created the domain: ".$this->content->name);
 					
 					header("Location: ".$this->content->actions->edit);
 					exit;
@@ -76,7 +77,7 @@ class Controller extends Entity\Controller
 					$this->content->edit($this->form->values());
 					$this->content->db->commit();
 					
-					$this->request->session->messages[] = "Successfully updated the domain: ".$this->content->name;
+					new Notification\Success("Successfully updated the domain: ".$this->content->name);
 				}
 				catch(Exception $exception)
 				{
@@ -112,7 +113,7 @@ class Controller extends Entity\Controller
 			$this->content->remove();
 			$this->content->db->commit();
 				
-			$this->request->session->messages[] = "Successfully removed the domain: ".$this->content->name;
+			new Notification\Success("Successfully removed the domain: ".$this->content->name);
 		}
 		catch(Exception $exception)
 		{

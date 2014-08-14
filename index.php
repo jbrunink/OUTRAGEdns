@@ -10,8 +10,6 @@ if(!class_exists("\OUTRAGEweb\Construct\Autoloader", false))
 
 # bootstrap the autoloader and load the config - crucial for pretty much
 # everything in the system
-session_start();
-
 \OUTRAGEweb\Construct\Autoloader::register();
 
 $cache = \OUTRAGEweb\Cache\File::getInstance();
@@ -28,6 +26,8 @@ else
 	
 	$cache->save("__main_config", $configuration->toArray());
 }
+
+session_start();
 
 
 # it's also a good idea to register the Twig autoloader, and other settings

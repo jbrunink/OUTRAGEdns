@@ -10,6 +10,7 @@ use \OUTRAGEweb\Entity;
 use \OUTRAGEweb\Configuration;
 use \OUTRAGEdns\User;
 
+
 class Controller extends Entity\Controller
 {
 	/**
@@ -32,10 +33,7 @@ class Controller extends Entity\Controller
 			$this->response->user->load($this->request->session->current_users_id);
 		}
 		
-		if(!empty($this->request->session->messages))
-			$this->response->notification_messages = $this->request->session->messages;
-		
-		$this->request->session->messages = [];
+		$this->request->session->_notification_messages = [];
 		return true;
 	}
 }
