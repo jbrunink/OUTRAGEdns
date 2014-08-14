@@ -37,6 +37,8 @@ class Controller extends Entity\Controller
 				catch(Exception $exception)
 				{
 					$this->content->db->rollback();
+					
+					new Notification\Error("This user wasn't added due to an internal.");
 				}
 			}
 		}
@@ -73,6 +75,8 @@ class Controller extends Entity\Controller
 				catch(Exception $exception)
 				{
 					$this->content->db->rollback();
+					
+					new Notification\Error("This user wasn't edited due to an internal.");
 				}
 			}
 		}
@@ -100,6 +104,8 @@ class Controller extends Entity\Controller
 		catch(Exception $exception)
 		{
 			$this->content->db->rollback();
+					
+			new Notification\Error("This user wasn't removed due to an internal.");
 		}
 		
 		header("Location: ".$this->content->actions->grid);

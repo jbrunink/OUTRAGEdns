@@ -41,6 +41,8 @@ class Controller extends Entity\Controller
 				catch(Exception $exception)
 				{
 					$this->content->db->rollback();
+					
+					new Notification\Error("This zone template wasn't added due to an internal error.");
 				}
 			}
 		}
@@ -72,6 +74,8 @@ class Controller extends Entity\Controller
 				catch(Exception $exception)
 				{
 					$this->content->db->rollback();
+					
+					new Notification\Error("This zone template wasn't edited due to an internal error.");
 				}
 			}
 		}
@@ -99,6 +103,8 @@ class Controller extends Entity\Controller
 		catch(Exception $exception)
 		{
 			$this->content->db->rollback();
+			
+			new Notification\Error("This zone template wasn't removed due to an internal error.");
 		}
 		
 		header("Location: ".$this->content->actions->grid);
