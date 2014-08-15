@@ -216,7 +216,7 @@ class Connection
 					if($spec[1] == "enum")
 					{
 						if(!class_exists("\Services_JSON"))
-							require $_SERVER["DOCUMENT_ROOT"]."/app/lib/PEAR/Services/JSON.php";
+							require APP_DIR."/lib/PEAR/Services/JSON.php";
 						
 						# bad things happen here
 						$handler = new \Services_JSON(\SERVICES_JSON_LOOSE_TYPE);

@@ -48,7 +48,7 @@ class Wallet extends Construct\ObjectContainer
 			throw new \Exception("Problem with the configuration - can't find ".$target);
 		
 		if(!class_exists("\Services_JSON"))
-			require $_SERVER["DOCUMENT_ROOT"]."/app/lib/PEAR/Services/JSON.php";
+			require APP_DIR."/lib/PEAR/Services/JSON.php";
 		
 		$source = file($target);
 		$handler = new \Services_JSON(\SERVICES_JSON_LOOSE_TYPE);

@@ -15,14 +15,30 @@ if(!class_exists("\OUTRAGEweb\Construct\Autoloader", false))
 $cache = \OUTRAGEweb\Cache\File::getInstance();
 $configuration = \OUTRAGEweb\Configuration\Wallet::getInstance();
 
+if(getenv("WWW_DIR"))
+{
+	define("WWW_DIR", getenv("WWW_DIR"));
+} else
+{
+	define("WWW_DIR", $_SERVER["DOCUMENT_ROOT"]);
+}
+
+if(getenv("APP_DIR"))
+{
+        define("APP_DIR", getenv("APP_DIR"));
+} else
+{
+        define("APP_DIR", WWW_DIR . "/app");
+}
+
 if($cache->test("__main_config"))
 {
 	$configuration->populateContainerRecursively($cache->load("__main_config"));
 }
 else
 {
-	$configuration->load($_SERVER["DOCUMENT_ROOT"]."/app/etc/config/*.json");
-	$configuration->load($_SERVER["DOCUMENT_ROOT"]."/app/etc/config/entities/*.json");
+	$configuration->load(APP_DIR."/etc/config/*.json");
+	$configuration->load(APP_DIR."/etc/config/entities/*.json");
 	
 	$cache->save("__main_config", $configuration->toArray());
 }
@@ -33,7 +49,7 @@ session_start();
 # it's also a good idea to register the Twig autoloader, and other settings
 # related to Twig, almost the world's best template engine
 if(!class_exists("\Twig_Environment", false))
-	require $_SERVER["DOCUMENT_ROOT"]."/app/lib/Twig/Autoloader.php";
+	require APP_DIR."/lib/Twig/Autoloader.php";
 
 
 # perhaps it's a good idea to init our request environment, we don't need to

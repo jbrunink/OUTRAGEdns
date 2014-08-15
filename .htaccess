@@ -5,3 +5,7 @@ FileETag MTime Size
 
 ExpiresActive On
 ExpiresDefault "access plus 1 month"
+
+SetEnv APP_DIR	/var/www/app
+SetEnv WWW_DIR	/var/www
+

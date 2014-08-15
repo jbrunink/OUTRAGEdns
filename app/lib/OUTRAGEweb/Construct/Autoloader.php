@@ -56,7 +56,7 @@ class Autoloader
 		$spec = array_filter($spec);
 		$spec = array_values($spec);
 		
-		$location = $_SERVER["DOCUMENT_ROOT"]."/app/lib/".implode("/", $spec).".php";
+		$location = APP_DIR."/lib/".implode("/", $spec).".php";
 		
 		if(file_exists($location))
 			return $location;
