@@ -23,7 +23,7 @@ class File implements CacheInterface
 	 */
 	public function test($key)
 	{
-		return file_exists($_SERVER["DOCUMENT_ROOT"]."/app/cache/blocks/".sha1($key).".object");
+		return file_exists(APP_DIR."/cache/blocks/".sha1($key).".object");
 	}
 	
 	
@@ -35,7 +35,7 @@ class File implements CacheInterface
 		if(!$this->test($key))
 			return null;
 		
-		return unserialize(file_get_contents($_SERVER["DOCUMENT_ROOT"]."/app/cache/blocks/".sha1($key).".object"));
+		return unserialize(file_get_contents(APP_DIR."/cache/blocks/".sha1($key).".object"));
 	}
 	
 	
@@ -44,7 +44,7 @@ class File implements CacheInterface
 	 */
 	public function save($key, $value, $expiry = 0)
 	{
-		return file_put_contents($_SERVER["DOCUMENT_ROOT"]."/app/cache/blocks/".sha1($key).".object", serialize($value));
+		return file_put_contents(APP_DIR."/cache/blocks/".sha1($key).".object", serialize($value));
 	}
 	
 	
@@ -53,6 +53,6 @@ class File implements CacheInterface
 	 */
 	public function remove($key)
 	{
-		return unlink($_SERVER["DOCUMENT_ROOT"]."/app/cache/blocks/".sha1($key).".object");
+		return unlink(APP_DIR."/cache/blocks/".sha1($key).".object");
 	}
 }
