@@ -28,7 +28,7 @@ class Controller extends Entity\Controller
 					
 					$values = $this->form->values();
 					
-					if($this->response->user)
+					if(empty($values["owner"]))
 						$values["owner"] = $this->response->user;
 					
 					$this->content->save($values);
@@ -49,13 +49,7 @@ class Controller extends Entity\Controller
 		}
 		
 		if(!$this->response->templates)
-		{
-			$request = ZoneTemplate\Content::find();
-			$request->where("1");
-			$request->order("name ASC");
-			
-			$this->response->templates = $request->invoke("objects");
-		}
+			$this->response->templates = ZoneTemplate\Content::find()->where("owner = ?", $this->response->user->id)->order("name ASC")->invoke("objects");
 		
 		return $this->response->display("index.twig");
 	}
@@ -91,13 +85,7 @@ class Controller extends Entity\Controller
 		}
 		
 		if(!$this->response->templates)
-		{
-			$request = ZoneTemplate\Content::find();
-			$request->where("1");
-			$request->order("name ASC");
-			
-			$this->response->templates = $request->invoke("objects");
-		}
+			$this->response->templates = ZoneTemplate\Content::find()->where("owner = ?", $this->response->user->id)->order("name ASC")->invoke("objects");
 		
 		return $this->response->display("index.twig");
 	}

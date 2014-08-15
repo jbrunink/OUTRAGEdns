@@ -3,21 +3,11 @@
  *	The beginning of the end for all OUTRAGEweb requests.
  */
 
-if(getenv("WWW_DIR"))
-{
-	define("WWW_DIR", getenv("WWW_DIR"));
-} else
-{
-	define("WWW_DIR", $_SERVER["DOCUMENT_ROOT"]);
-}
 
-if(getenv("APP_DIR"))
-{
-	define("APP_DIR", getenv("APP_DIR"));
-} else
-{
-	define("APP_DIR", WWW_DIR . "/app");
-}
+# what if Xerox wants to be secure?
+define("WWW_DIR", getenv("WWW_DIR") ?: $_SERVER["DOCUMENT_ROOT"]);
+define("APP_DIR", getenv("APP_DIR") ?: WWW_DIR."/app");
+
 
 if(!class_exists("\OUTRAGEweb\Construct\Autoloader", false))
 	require APP_DIR."/lib/OUTRAGEweb/Construct/Autoloader.php";

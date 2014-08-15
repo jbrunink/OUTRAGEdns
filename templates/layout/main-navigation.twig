@@ -19,3 +19,19 @@
 		<a href="/logout/">Log out</a>
 	</li>
 </ul>
+
+{% if true %}
+	<ul class="offset-top">
+		{% if not godmode %}
+			<li>
+				<i class="fa fa-fw fa-gavel"></i>
+				<a href="/admin/on/">Turn on Admin Mode</a>
+			</li>
+		{% else %}
+			<li>
+				<i class="fa fa-fw fa-gavel"></i>
+				<a href="/admin/off/">Turn off Admin Mode</a>
+			</li>
+		{% endif %}
+	</ul>
+{% endif %}
