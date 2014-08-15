@@ -3,18 +3,6 @@
  *	The beginning of the end for all OUTRAGEweb requests.
  */
 
-
-if(!class_exists("\OUTRAGEweb\Construct\Autoloader", false))
-	require $_SERVER["DOCUMENT_ROOT"]."/app/lib/OUTRAGEweb/Construct/Autoloader.php";
-
-
-# bootstrap the autoloader and load the config - crucial for pretty much
-# everything in the system
-\OUTRAGEweb\Construct\Autoloader::register();
-
-$cache = \OUTRAGEweb\Cache\File::getInstance();
-$configuration = \OUTRAGEweb\Configuration\Wallet::getInstance();
-
 if(getenv("WWW_DIR"))
 {
 	define("WWW_DIR", getenv("WWW_DIR"));
@@ -25,11 +13,22 @@ if(getenv("WWW_DIR"))
 
 if(getenv("APP_DIR"))
 {
-        define("APP_DIR", getenv("APP_DIR"));
+	define("APP_DIR", getenv("APP_DIR"));
 } else
 {
-        define("APP_DIR", WWW_DIR . "/app");
+	define("APP_DIR", WWW_DIR . "/app");
 }
+
+if(!class_exists("\OUTRAGEweb\Construct\Autoloader", false))
+	require APP_DIR."/lib/OUTRAGEweb/Construct/Autoloader.php";
+
+
+# bootstrap the autoloader and load the config - crucial for pretty much
+# everything in the system
+\OUTRAGEweb\Construct\Autoloader::register();
+
+$cache = \OUTRAGEweb\Cache\File::getInstance();
+$configuration = \OUTRAGEweb\Configuration\Wallet::getInstance();
 
 if($cache->test("__main_config"))
 {
