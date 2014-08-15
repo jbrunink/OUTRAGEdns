@@ -6,6 +6,11 @@ FileETag MTime Size
 ExpiresActive On
 ExpiresDefault "access plus 1 month"
 
-SetEnv APP_DIR	/var/www/app
-SetEnv WWW_DIR	/var/www
+# APP_DIR should point to the /app folder
+# this is what you do if your name is Xerox and like
+# secure environments (that is putting the app outside WWW_DIR)
+# note: at the moment WWW_DIR has no use
+#
+# SetEnv APP_DIR	/var/www/app
+# SetEnv WWW_DIR	/var/www
 
