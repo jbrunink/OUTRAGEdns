@@ -140,6 +140,15 @@ class Controller extends Entity\Controller
 	
 	
 	/**
+	 *	So, we have a dashboard now.
+	 */
+	public function dashboard()
+	{
+		return $this->response->display("index.twig");
+	}
+	
+	
+	/**
 	 *	Called when we want to let someone into the panel.
 	 */
 	public function login()

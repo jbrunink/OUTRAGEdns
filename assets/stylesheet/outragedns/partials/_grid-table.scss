@@ -10,6 +10,16 @@
 		
 		th
 		{
+			&.check
+			{
+				width: 20px;
+			}
+			
+			&.actions
+			{
+				width: 90px;
+			}
+			
 			color: #FFF;
 		}
 	}
@@ -30,41 +40,51 @@
 		
 		td
 		{
-			ul.actions
+			&.check
 			{
-				margin: 0px;
-				
-				list-style-type: none;
-				
-				li
+				width: 20px;
+			}
+			
+			&.actions
+			{
+				ul
 				{
-					a
-					{
-						@include display(inline-block);
-						
-						color: #000;
-						
-						font-size: 14px;
-						font-weight: normal;
-						
-						text-decoration: none;
-					}
+					margin: 0px;
 					
-					display: inline;
-					line-height: 30px;
+					list-style-type: none;
 					
-					margin-right: 8px;
-				}
-				
-				&.tiny
-				{
 					li
 					{
-						line-height: 18px;
+						a
+						{
+							@include display(inline-block);
+							
+							color: #000;
+							
+							font-size: 14px;
+							font-weight: normal;
+							
+							text-decoration: none;
+						}
+						
+						display: inline;
+						line-height: 30px;
+						
+						margin-right: 8px;
 					}
+					
+					&.tiny
+					{
+						li
+						{
+							line-height: 20px;
+						}
+					}
+					
+					float: right;
 				}
 				
-				float: right;
+				width: 90px;
 			}
 		}
 	}

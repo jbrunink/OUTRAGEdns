@@ -8,6 +8,7 @@ namespace OUTRAGEdns\Zone;
 
 use \OUTRAGEdns\Entity;
 use \OUTRAGEdns\Record;
+use \OUTRAGEdns\User;
 use \OUTRAGEdns\ZoneTemplate;
 
 

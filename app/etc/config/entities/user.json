@@ -14,7 +14,8 @@ entities:
 			remove: { id: true }
 			grid:   { id: false, default: true }
 			
-			account: { id: false, global: true }
+			account:   { id: false, global: true }
+			dashboard: { id: false, global: true }
 		}
 	}
 }

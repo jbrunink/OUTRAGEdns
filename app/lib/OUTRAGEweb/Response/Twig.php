@@ -31,7 +31,7 @@ class Twig extends ResponseAbstract
 		if(!class_exists("Twig_Loader_Filesystem"))
 			\Twig_Autoloader::register();
 		
-		$this->loaders["fs"] = new \Twig_Loader_Filesystem(WWW_DIR."/templates");
+		$this->loaders["fs"] = new \Twig_Loader_Filesystem(WWW_DIR."/templates/");
 		$this->loaders["string"] = new \Twig_Loader_String();
 		
 		$config = array

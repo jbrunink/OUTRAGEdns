@@ -9,7 +9,7 @@
 <form class="form-horizontal" method="POST">
 	<article class="content-wrapper">
 		<fieldset>
-			<legend>Template Information</legend>
+			<legend>Domain Information</legend>
 			
 			{{ forms.text({
 				title: "Name",
@@ -38,6 +38,14 @@
 				value: content.zone.comment
 			}) }}
 		</fieldset>
+		
+		{% if godmode %}
+			<fieldset>
+				<legend>Ownership</legend>
+				
+				{{ forms.select({ title: "Owner", field: "owner", value: content.zone.owner|default(user.id), key: "username", tuple: users }) }}
+			<fieldset>
+		{% endif %}
 	</article>
 	
 	{% if content.id is not empty %}
@@ -49,7 +57,7 @@
 					<th>Value</th>
 					<th>Priority</th>
 					<th>TTL</th>
-					<th>Actions</th>
+					<th class="actions">Actions</th>
 				</tr>
 			</thead>
 			

@@ -84,6 +84,12 @@ if($environment->session->current_users_id)
 	}
 	
 	$router->register("/logout/", [ new \OUTRAGEdns\User\Controller(), "logout" ]);
+	
+	$router->failure(function()
+	{
+		header("Location: /dashboard/");
+		exit;
+	});
 }
 else
 {

@@ -14,8 +14,8 @@
 	{
 		init: function()
 		{
-			this.table.on("click." + Module.component, "ul.actions > li.clone", this.onclone);
-			this.table.on("click." + Module.component, "ul.actions > li.remove", this.onremove);
+			this.table.on("click." + Module.component, ".actions ul > li.clone", this.onclone);
+			this.table.on("click." + Module.component, ".actions ul > li.remove", this.onremove);
 			
 			this.reindex();
 		},
