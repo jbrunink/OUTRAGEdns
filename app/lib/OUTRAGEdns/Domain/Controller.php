@@ -128,8 +128,10 @@ class Controller extends Entity\Controller
 		{
 			$request = Content::find();
 			$request->leftJoin("zones", "zones.domain_id = ".$this->content->db_table.".id");
-			$request->where("zones.owner = ?", $this->response->user->id);
 			$request->sort("id ASC");
+			
+			if(!$this->response->godmode)
+				$request->where("zones.owner = ?", $this->response->user->id);
 			
 			$this->response->domains = $request->invoke("objects");
 		}
