@@ -120,8 +120,10 @@ class Controller extends Entity\Controller
 		if(!$this->response->templates)
 		{
 			$request = Content::find();
-			$request->where("owner = ?", $this->response->user->id);
 			$request->sort("id ASC");
+			
+			if(!$this->response->godmode)
+				$request->where("owner = ?", $this->response->user->id);
 			
 			$this->response->templates = $request->invoke("objects");
 		}
