@@ -49,4 +49,15 @@ class Form extends Validate\Template
 		$records->isArray(true);
 		$records->appendTo($this);
 	}
+	
+	
+	/**
+	 *	Let's validate some things.
+	 */
+	public function validate($input)
+	{
+		parent::validate($input);
+		
+		return count($this->errors) == 0;
+	}
 }

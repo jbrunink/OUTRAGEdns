@@ -10,7 +10,7 @@ use \OUTRAGEweb\Construct;
 use \OUTRAGEweb\Construct\Ability;
 
 
-abstract class Component
+abstract class Component implements Error\MessageInterface
 {
 	/**
 	 *	We'd like to use some delegators to make our life ever so easier.
@@ -47,7 +47,7 @@ abstract class Component
 	/**
 	 *	We'll store all errors here as well.
 	 */
-	protected $errors = [];
+	public $errors = [];
 	
 	
 	/**
@@ -71,6 +71,7 @@ abstract class Component
 	
 	/**
 	 *	Returns a list of all accessable parent properties in this scope.
+	 *	Do I still need this?
 	 */
 	public function getter_property_tree($persistant = false)
 	{
@@ -164,12 +165,13 @@ abstract class Component
 	 */
 	public function error(Component $context, $message = "")
 	{
-		$this->errors[] = (object) array
-		(
-			"component" => $context,
-			"message" => $message,
-		);
+		$error = new Error\Message();
 		
+		$error->name = $context->name;
+		$error->context = $context;
+		$error->message = $message;
+		
+		$this->errors[] = $error;
 		return $this;
 	}
 	
@@ -179,21 +181,28 @@ abstract class Component
 	 */
 	public function errors($named = true)
 	{
-		if($named)
+		if(!$named)
+			return $this->errors;
+		
+		$errors = [];
+		
+		foreach($this->errors as $error)
 		{
-			$set = [];
+			if(!isset($errors[$error->name]))
+				$errors[$error->name] = [];
 			
-			foreach($this->errors as $error)
-			{
-				if(!isset($set[$error->component->name]))
-					$set[$error->component->name] = [];
-				
-				$set[$error->component->name][] = $error->message;
-			}
-			
-			return $set;
+			$errors[$error->name][] = $error->message;
 		}
 		
-		return $this->errors;
+		return $errors; 
+	}
+	
+	
+	/**
+	 *	Turns this component into a string.
+	 */
+	public function __toString()
+	{
+		return (string) ($this->component ?: "");
 	}
 }

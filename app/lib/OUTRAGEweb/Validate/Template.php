@@ -10,9 +10,15 @@ namespace OUTRAGEweb\Validate;
 class Template extends Component
 {
 	/**
-	 *	We shall use this to store values generate from validated input methods.
+	 *	We shall use this to store values generated from validated input methods.
 	 */
-	protected $values = [];
+	public $values = [];
+	
+	
+	/**
+	 *	We shall use this to store errors generated from validated input methods.
+	 */
+	public $errors = [];
 	
 	
 	/**
@@ -153,17 +159,23 @@ class Template extends Component
 	
 	
 	/**
-	 *	Iterate through the templates and invokes the callback with that input
-	 *	passed as an argument.
-	 *
-	 *	The handler is passed three arguments:
-	 *	 - element/component
-	 *	 - key (if array, its key, if scalar null)
-	 *	 - value (if not supplied, null)
+	 *	Validate this template based on fields passed.
 	 */
-	public function iterate($key, $input, $handler)
+	public function validate($input)
+	{
+		$this->values = $this->iterate($input, []);
+		
+		return count($this->errors) == 0;
+	}
+	
+	
+	/**
+	 *	Iterate through a set of values and do the validation.
+	 */
+	protected function iterate($input, $tree = [])
 	{
 		# just to convert things into a nice array
+		# no references please!
 		if(!is_array($input))
 		{
 			if($input instanceof \OUTRAGEweb\Construct\ObjectContainer)
@@ -174,147 +186,102 @@ class Template extends Component
 		
 		# if there's nothing to do just skip!
 		if(!is_array($input))
-			return $this;
+			return false;
 		
-		# go through our input, iterate through our children
+		# and now for the fun bit of iterating through this mess and
+		# doing our validation
+		$offset = count($tree);
+		$pairs = [];
+				
+		# iterate through our defined elements
 		foreach($this->children as $element)
 		{
-			if($element->is_array)
+			$tree[] = $element;
+			
+			# it's probably a good idea to locate the actual value we want to
+			# manipulate here
+			$pointer = $input;
+			
+			if($count = count($tree))
 			{
-				if(!empty($element->component))
+				for($i = $offset; $i < $count; ++$i)
 				{
-					if(!isset($input[$element->component]))
+					$name = (string) $tree[$i];
+					
+					if(!$name)
 						continue;
 					
-					foreach($input[$element->component] as $_key => $_value)
+					if($i == $count)
+						break;
+					
+					if(isset($pointer[$name]))
 					{
-						if(is_array($_value) && !array_filter($_value))
-							continue;
-						
-						if(isset($input[$element->component]))
+						$pointer = &$pointer[$name];
+						continue;
+					}
+					
+					$pointer = null;
+					break;
+				}
+			}
+			
+			# do different things depending on whether this is a template
+			# or not
+			$pair = new Value();
+			
+			$pair->tree = $tree;
+			$pair->element = $element;
+			
+			if($element instanceof Template)
+			{
+				if($element->is_array)
+				{
+					$pair->value = [];
+					
+					if(is_array($pointer))
+					{
+						foreach($pointer as $key => $value)
 						{
-							if($element instanceof Template)
-								$element->iterate($_key, $_value, $handler);
-							else
-								$handler($element, $_key, $_value);
-						}
-						else
-						{
-							if($element instanceof Template)
-								$element->iterate($_key, [], $handler);
-							else
-								$handler($element, $key, null);
+							$tree[] = $key;
+							
+							$pair->value[$key] = $element->iterate($value, $tree);
+							
+							array_pop($tree);
 						}
 					}
 				}
 				else
 				{
-					foreach($input as $_key => $_value)
-					{
-						if(empty($element->component))
-						{
-							if($element instanceof Template)
-								$element->iterate($_key, $_value, $handler);
-						}
-						elseif(isset($input[$element->component]))
-						{
-							if($element instanceof Template)
-								$element->iterate($_key, $_value, $handler);
-							else
-								$handler($element, $_key, $_value);
-						}
-						else
-						{
-							if($element instanceof Template)
-								$element->iterate($_key, [], $handler);
-							else
-								$handler($element, $key, null);
-						}
-					}
+					$pair->value = $element->iterate($pointer, $tree);
 				}
 			}
 			else
 			{
-				if(empty($element->component))
+				if($element->is_array)
 				{
-					if($element instanceof Template)
-						$element->iterate(null, $input, $handler);
-				}
-				elseif(isset($input[$element->component]))
-				{
-					if($element instanceof Template)
-						$element->iterate(null, $input[$element->component], $handler);
-					else
-						$handler($element, $key, $input[$element->component]);
+					$pair->value = [];
+					
+					if(is_array($pointer))
+					{
+						foreach($pointer as $key => $value)
+							$pair->value[$key] = $element->validate($pointer, $pair);
+					}
 				}
 				else
 				{
-					if($element instanceof Template)
-						$element->iterate(null, [], $handler);
-					else
-						$handler($element, $key, null);
+					$pair->value = $element->validate($pointer, $pair);
 				}
 			}
+			
+			$pairs[] = $pair;
+			
+			unset($pair);
+			unset($pointer);
+			
+			array_pop($tree);
 		}
 		
-		return $this;
-	}
-	
-	
-	/**
-	 *	We'll use this to validate elements.
-	 */
-	public function validate($input)
-	{
-		$this->errors = [];
-		$this->values = [];
-		
-		$handler = function($element, $key, $value)
-		{
-			$element->key = $key;
-			
-			$result = $element->validate($value, $this);
-			
-			$tree = $element->property_tree;
-			
-			$target = &$this->values;
-			
-			for($i = 0; $i < $count = count($tree); ++$i)
-			{
-				$node = $tree[$i];
-				
-				if(($i + 1) == $count)
-				{
-					if($element->is_array)
-					{
-						if(!is_array($target[$node]))
-							$target[$node] = [];
-						
-						$target[$node][] = $result;
-					}
-					else
-					{
-						$target[$node] = $result;
-					}
-					
-					break;
-				}
-				
-				if(!isset($target[$node]))
-					$target[$node] = [];
-				
-				$target = &$target[$node];
-			}
-			
-			$element->key = null;
-		};
-		
-		$this->iterate(null, $input, $handler);
-		
-		if(!empty($input[":validate"]))
-			return $this->handleAJAX();
-		
-		return count($this->errors) == 0;
+		return $pairs;
 	}
 	
 	
@@ -324,7 +291,7 @@ class Template extends Component
 	 */
 	public function values()
 	{
-		return $this->values;
+		return Value::flatten($this->values);
 	}
 	
 	

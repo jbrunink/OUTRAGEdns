@@ -38,7 +38,10 @@ class Element extends Component
 		foreach($this->conditions as $condition)
 		{
 			if($condition->clean()->validate($result))
-				$context->error($this, $condition->error());
+			{
+				if($context != null && $context instanceof Error\MessageInterface)
+					$context->error($this, $condition->error());
+			}
 			
 			if($condition instanceof Transformer)
 				$result = $condition->transform($result);
