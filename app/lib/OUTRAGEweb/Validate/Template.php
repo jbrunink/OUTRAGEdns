@@ -249,6 +249,9 @@ class Template extends Component
 							
 							$pair->value[$key] = $element->iterate($value, $tree);
 							
+							if(method_exists($element, "inputValidator"))
+								$element->inputValidator($pair->value[$key]);
+							
 							array_pop($tree);
 						}
 					}
@@ -256,6 +259,9 @@ class Template extends Component
 				else
 				{
 					$pair->value = $element->iterate($pointer, $tree);
+					
+					if(method_exists($element, "inputValidator"))
+						$element->inputValidator($pair->value);
 				}
 			}
 			else

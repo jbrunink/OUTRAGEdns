@@ -8,9 +8,18 @@
 
 namespace OUTRAGEweb\Validate;
 
+use \OUTRAGEweb\Construct;
+use \OUTRAGEweb\Construct\Ability;
+
 
 class Value implements Error\MessageInterface
 {
+	/**
+	 *	Let's use delegation here.
+	 */
+	use Ability\Delegator;
+	
+	
 	/**
 	 *	Where does this pair sit on the family tree?
 	 */
@@ -30,6 +39,15 @@ class Value implements Error\MessageInterface
 	
 	
 	/**
+	 *	Let's get the name of this property, based off of the tree stored within.
+	 */
+	public function getter_name()
+	{
+		return $this->compileTree($this->tree);
+	}
+	
+	
+	/**
 	 *	Add an error to this component, and if a parent somewhere exists,
 	 *	to the parent form as well.
 	 */
@@ -37,7 +55,7 @@ class Value implements Error\MessageInterface
 	{
 		$error = new Error\Message();
 		
-		$error->name = $this->tree ? $this->compileTree($this->tree) : $context->name;
+		$error->name = $this->name ?: $context->name;
 		$error->context = $context;
 		$error->message = $message;
 		
@@ -75,7 +93,7 @@ class Value implements Error\MessageInterface
 	/**
 	 *	Flattens an array of Values into a nested array.
 	 */
-	public static function flatten(array $pairs = [], &$context = [])
+	public static function flatten(array $pairs = [], $offset = 0, &$context = [])
 	{
 		foreach($pairs as $pair)
 		{
@@ -83,7 +101,7 @@ class Value implements Error\MessageInterface
 			
 			if($count = count($pair->tree))
 			{
-				for($i = 0; $i < $count; ++$i)
+				for($i = $offset; $i < $count; ++$i)
 				{
 					$key = (string) $pair->tree[$i];
 					
@@ -102,7 +120,7 @@ class Value implements Error\MessageInterface
 					}
 					else
 					{
-						self::flatten($pair->value, $context);
+						self::flatten($pair->value, $offset, $context);
 					}
 				}
 				else

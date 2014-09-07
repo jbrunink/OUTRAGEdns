@@ -1,6 +1,6 @@
 <?php
 /**
- *	IPv4 check.
+ *	IPv6 check.
  *
  *	Shamelessly procured from the Poweradmin repo:
  *	- https://github.com/poweradmin/poweradmin/blob/master/inc/dns.inc.php
@@ -10,7 +10,7 @@
 namespace OUTRAGEdns\Validate\Conditions;
 
 
-class IPv4 extends \OUTRAGEweb\Validate\Condition
+class IPv6 extends \OUTRAGEweb\Validate\Condition
 {
 	/**
 	 *	Called to check to see what we've passed is correct.
@@ -18,10 +18,10 @@ class IPv4 extends \OUTRAGEweb\Validate\Condition
 	public function validate($input)
 	{
 		if(!$input)
-			return "No valid IPv4 address supplied.";
+			return "No valid IPv6 address supplied.";
 		
-		if(filter_var($input, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) === false)
-			return $this->error = "The IPv4 address supplied is invalid.";
+		if(filter_var($input, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) === false)
+			return $this->error = "The IPv6 address supplied is invalid.";
 		
 		return false;
 	}

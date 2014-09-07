@@ -9,6 +9,7 @@ namespace OUTRAGEdns\Record;
 use OUTRAGEweb\Configuration;
 use OUTRAGEweb\FormElement;
 use OUTRAGEweb\Validate;
+use OUTRAGEdns\Validate\Conditions as Constraint;
 
 
 class Form extends Validate\Template
@@ -52,5 +53,13 @@ class Form extends Validate\Template
 		$prio->label("Priority");
 		$prio->required(true);
 		$prio->appendTo($this);
+	}
+	
+	
+	/**
+	 *	Called to validate things individually.
+	 */
+	public function inputValidator($pairs)
+	{
 	}
 }
