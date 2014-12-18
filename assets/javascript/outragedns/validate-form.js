@@ -100,18 +100,33 @@
 		{
 			var message = errors.join("<br />");
 			
-			var tooltip =
-			{
-				fallback: message,
-				html: true,
-				fade: true,
-				focus: true
-			};
+			element.addClass("error invalid-content");
 			
-			element.addClass("error invalid-content").tipsy(tooltip).tipsy("enable").one("keydown", function()
+			if(element.data("tipsy"))
 			{
-				$(this).removeClass("error invalid-content").tipsy("disable");
-			});
+				var tipsy = element.data("tipsy");
+				
+				tipsy.options.fallback = message;
+				tipsy.enable();
+				tipsy.show();
+			}
+			else
+			{
+				var tooltip =
+				{
+					fallback: message,
+					html: true,
+					fade: true,
+					focus: true
+				};
+				
+				element.tipsy(tooltip).tipsy("enable").one("keydown", function()
+				{
+					$(this).removeClass("error invalid-content").tipsy("disable");
+				});
+			}
+			
+			return element.data("tipsy");
 		}
 	};
 	
