@@ -165,7 +165,7 @@ class Template extends Component
 	{
 		$this->performValidationIteration($input);
 		
-		if(!empty($input[":validate"]))
+		if(!empty($input["::validate"]))
 			return $this->handleAJAX();
 		
 		return count($this->errors) == 0;

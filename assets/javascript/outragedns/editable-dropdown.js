@@ -124,7 +124,7 @@
 	};
 	
 	
-	/* now, init the module! */
+	/* now, init the module */
 	$(function()
 	{
 		$("select.editable-dropdown").each(function()

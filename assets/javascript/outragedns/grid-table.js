@@ -66,7 +66,7 @@
 	};
 	
 	
-	/* now, init the module! */
+	/* now, init the module */
 	$(function()
 	{
 		$(".grid-table").each(function()
