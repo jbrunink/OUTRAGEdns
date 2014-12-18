@@ -8,7 +8,6 @@
 define("WWW_DIR", getenv("WWW_DIR") ?: $_SERVER["DOCUMENT_ROOT"]);
 define("APP_DIR", getenv("APP_DIR") ?: WWW_DIR."/app");
 
-
 if(!class_exists("\OUTRAGEweb\Construct\Autoloader", false))
 	require APP_DIR."/lib/OUTRAGEweb/Construct/Autoloader.php";
 
