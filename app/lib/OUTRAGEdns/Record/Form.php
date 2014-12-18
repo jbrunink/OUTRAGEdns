@@ -51,15 +51,27 @@ class Form extends Validate\Template
 		# content
 		$prio = new FormElement\Text("prio");
 		$prio->label("Priority");
-		$prio->required(true);
+		$prio->required(false);
 		$prio->appendTo($this);
 	}
 	
 	
-	/**
-	 *	Called to validate things individually.
-	 */
-	public function inputValidator($pairs)
+	public function prevalidate($input)
 	{
+		if(empty($input["type"]))
+			return false;
+		
+		switch($input["type"])
+		{
+			case "A":
+				$this->getElement("content")->addCondition(new Constraint\IPv4());
+			break;
+			
+			case "AAAA":
+				$this->getElement("content")->addCondition(new Constraint\IPv6());
+			break;
+		}
+		
+		return true;
 	}
 }

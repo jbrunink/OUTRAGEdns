@@ -106,6 +106,9 @@ abstract class Component implements Error\MessageInterface
 		foreach($this->property_tree as $index => $node)
 			$return .= $index ? "[".$node."]" : $node;
 		
+		if($this->is_array)
+			$return .= "[]";
+		
 		return $return;
 	}
 	
@@ -204,5 +207,14 @@ abstract class Component implements Error\MessageInterface
 	public function __toString()
 	{
 		return (string) ($this->component ?: "");
+	}
+	
+	
+	/**
+	 *	Duplicate things.
+	 */
+	public function duplicate()
+	{
+		return clone $this;
 	}
 }

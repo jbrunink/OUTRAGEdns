@@ -123,4 +123,18 @@ class Element extends Component
 			return $this;
 		}
 	}
+	
+	
+	/**
+	 *	Add a validator
+	 */
+	public function addCondition(Condition $condition, $arguments = [])
+	{
+		$this->conditions[] = $condition;
+		
+		if(method_exists($condition, "arguments"))
+			call_user_func_array([ $condition, "arguments" ], $arguments);
+		
+		return $this;
+	}
 }

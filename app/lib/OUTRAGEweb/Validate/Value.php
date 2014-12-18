@@ -43,7 +43,23 @@ class Value implements Error\MessageInterface
 	 */
 	public function getter_name()
 	{
-		return $this->compileTree($this->tree);
+		return self::compileTree($this->tree);
+	}
+	
+	
+	/**
+	 *	Let's get the name of this item's parent structure.
+	 */
+	public function getter_prefix()
+	{
+		$tree = $this->tree;
+		
+		array_pop($tree);
+		
+		if(!$tree)
+			return "";
+		
+		return self::compileTree($tree);
 	}
 	
 	
@@ -59,7 +75,7 @@ class Value implements Error\MessageInterface
 		$error->context = $context;
 		$error->message = $message;
 		
-		$this->errors[] = $error;
+		$context->errors[] = $error;
 		
 		if(!empty($context->parent))
 		{
@@ -76,11 +92,11 @@ class Value implements Error\MessageInterface
 	/**
 	 *	Compiles a property tree structure into a string structure.
 	 */
-	protected function compileTree(array $tree)
+	public static function compileTree(array $tree)
 	{
 		$name = "";
 		
-		while(!$name)
+		while(!$name && $name !== "0")
 			$name = (string) array_shift($tree);
 		
 		if(count($tree))
@@ -93,7 +109,7 @@ class Value implements Error\MessageInterface
 	/**
 	 *	Flattens an array of Values into a nested array.
 	 */
-	public static function flatten(array $pairs = [], $offset = 0, &$context = [])
+	public static function flatten($pairs = [], $offset = 0, &$context = [])
 	{
 		foreach($pairs as $pair)
 		{
@@ -116,7 +132,7 @@ class Value implements Error\MessageInterface
 					if(isset($pair->element) && $pair->element->is_array)
 					{
 						foreach($pair->value as $item)
-							self::flatten($item, $context);
+							self::flatten($item, $offset, $context);
 					}
 					else
 					{
@@ -134,5 +150,31 @@ class Value implements Error\MessageInterface
 		}
 		
 		return $context;
+	}
+	
+	
+	/**
+	 *	Creates a new value pair, but with this element in some sort of root level.
+	 */
+	public function rebase($offset = null)
+	{
+		if($offset === null)
+			$offset = count($this->tree) - 1;
+		
+		if(!$offset)
+			return $this;
+		
+		$tree = array_slice($this->tree, $offset);
+		
+		if(!$tree)
+			return null;
+		
+		$pair = new self();
+		
+		$pair->tree = $tree;
+		$pair->element = &$this->element;
+		$pair->value = &$this->value;
+		
+		return $pair;
 	}
 }

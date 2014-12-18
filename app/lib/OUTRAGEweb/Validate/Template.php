@@ -163,7 +163,7 @@ class Template extends Component
 	 */
 	public function validate($input)
 	{
-		$this->values = $this->iterate($input, []);
+		$this->performValidationIteration($input);
 		
 		if(!empty($input[":validate"]))
 			return $this->handleAJAX();
@@ -173,12 +173,10 @@ class Template extends Component
 	
 	
 	/**
-	 *	Iterate through a set of values and do the validation.
+	 *	Wrapper to perform validation and return some values, if needed.
 	 */
-	protected function iterate($input, $tree = [])
+	public function performValidationIteration($input, $tree = [])
 	{
-		# just to convert things into a nice array
-		# no references please!
 		if(!is_array($input))
 		{
 			if($input instanceof \OUTRAGEweb\Construct\ObjectContainer)
@@ -187,12 +185,25 @@ class Template extends Component
 				$input = iterator_to_array($input);
 		}
 		
-		# if there's nothing to do just skip!
 		if(!is_array($input))
-			return false;
+			return $this->values = array();
 		
-		# and now for the fun bit of iterating through this mess and
-		# doing our validation
+		if(method_exists($this, "prevalidate"))
+		{
+			if($this->prevalidate($input) === false)
+				return $this->values = array();
+		}
+		
+		return $this->values = $this->iterate($input, $tree);
+	}
+	
+	
+	/**
+	 *	Iterate through a set of values and do the validation.
+	 */
+	protected function iterate($input, $tree = [])
+	{
+		# now for the fun bit of iterating through this mess and doing our validation
 		$offset = count($tree);
 		$pairs = [];
 				
@@ -228,8 +239,7 @@ class Template extends Component
 				}
 			}
 			
-			# do different things depending on whether this is a template
-			# or not
+			# do different things depending on whether this is a template - or not
 			$pair = new Value();
 			
 			$pair->tree = $tree;
@@ -246,11 +256,7 @@ class Template extends Component
 						foreach($pointer as $key => $value)
 						{
 							$tree[] = $key;
-							
-							$pair->value[$key] = $element->iterate($value, $tree);
-							
-							if(method_exists($element, "inputValidator"))
-								$element->inputValidator($pair->value[$key]);
+							$pair->value[$key] = $element->duplicate()->performValidationIteration($value, $tree);
 							
 							array_pop($tree);
 						}
@@ -258,10 +264,7 @@ class Template extends Component
 				}
 				else
 				{
-					$pair->value = $element->iterate($pointer, $tree);
-					
-					if(method_exists($element, "inputValidator"))
-						$element->inputValidator($pair->value);
+					$pair->value = $element->duplicate()->performValidationIteration($value, $tree);
 				}
 			}
 			else
@@ -291,6 +294,21 @@ class Template extends Component
 		}
 		
 		return $pairs;
+	}
+	
+	
+	/**
+	 *	Duplicate this template, making sure that changes to this will *not* affect conditions
+	 *	of its siblings.
+	 */
+	public function duplicate()
+	{
+		$template = clone $this;
+		
+		foreach($template->children as $key => $child)
+			$template->children[$key] = $child->duplicate();
+		
+		return $template;
 	}
 	
 	
