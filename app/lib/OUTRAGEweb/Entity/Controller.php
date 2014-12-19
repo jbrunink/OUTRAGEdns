@@ -59,7 +59,12 @@ abstract class Controller
 		if(!class_exists($class))
 			return null;
 		
-		return new $class();
+		$form = new $class();
+		
+		if($this->content)
+			$form->content = $this->content;
+		
+		return $form;
 	}
 	
 	

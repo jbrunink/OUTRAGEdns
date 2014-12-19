@@ -17,6 +17,23 @@ abstract class Condition
 	
 	
 	/**
+	 *	Pass any arguments onto the arguments handler, if there is one.
+	 */
+	public function __construct()
+	{
+		$arguments = func_get_args();
+		
+		if(count($arguments))
+		{
+			if(method_exists($this, "arguments"))
+				call_user_func_array([ $this, "arguments" ], $arguments);
+		}
+		
+		return true;
+	}
+	
+	
+	/**
 	 *	Use this method to deal with validating the input value.
 	 *
 	 *	Any return value is treated as boolean, however there is a slight cinch.

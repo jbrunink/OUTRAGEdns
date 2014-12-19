@@ -120,7 +120,7 @@
 					focus: true
 				};
 				
-				element.tipsy(tooltip).tipsy("enable").one("keydown", function()
+				element.tipsy(tooltip).tipsy("enable").on("keydown", function()
 				{
 					$(this).removeClass("error invalid-content").tipsy("disable");
 				});

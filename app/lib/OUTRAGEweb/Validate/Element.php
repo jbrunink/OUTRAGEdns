@@ -111,14 +111,20 @@ class Element extends Component
 				}
 			}
 			
-			if(!$target)
+			if($target instanceof Condition)
+			{
+				if(method_exists($target, "arguments"))
+					call_user_func_array([ $target, "arguments" ], $arguments);
+			}
+			else
 			{
 				$target = new $class();
+				
+				if(method_exists($target, "arguments"))
+					call_user_func_array([ $target, "arguments" ], $arguments);
+				
 				$this->conditions[] = $target;
 			}
-			
-			if(method_exists($target, "arguments"))
-				call_user_func_array([ $target, "arguments" ], $arguments);
 			
 			return $this;
 		}
@@ -132,8 +138,11 @@ class Element extends Component
 	{
 		$this->conditions[] = $condition;
 		
-		if(method_exists($condition, "arguments"))
-			call_user_func_array([ $condition, "arguments" ], $arguments);
+		if(!empty($arguments))
+		{
+			if(method_exists($condition, "arguments"))
+				call_user_func_array([ $condition, "arguments" ], $arguments);
+		}
 		
 		return $this;
 	}

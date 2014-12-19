@@ -16,6 +16,13 @@ class Template extends Component
 	
 	
 	/**
+	 *	This will store the initial values that are passed to this form when things are
+	 *	being validated. Do not expect values to be here after validation has happened.
+	 */
+	public $passed = [];
+	
+	
+	/**
 	 *	We shall use this to store errors generated from validated input methods.
 	 */
 	public $errors = [];
@@ -163,7 +170,9 @@ class Template extends Component
 	 */
 	public function validate($input)
 	{
+		$this->passed = $input;
 		$this->performValidationIteration($input);
+		$this->passed = [];
 		
 		if(!empty($input["::validate"]))
 			return $this->handleAJAX();

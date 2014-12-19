@@ -114,6 +114,21 @@ abstract class Component implements Error\MessageInterface
 	
 	
 	/**
+	 *	Find the top-most element of this component. This is very likely, if not
+	 *	always, going to be a template.
+	 */
+	public function getter_root()
+	{
+		$pointer = $this->parent;
+		
+		while($pointer->parent !== null)
+			$pointer = $pointer->parent;
+		
+		return $pointer;
+	}
+	
+	
+	/**
 	 *	Set the name (key?) of this component.
 	 */
 	public function name($name = null)
