@@ -85,5 +85,18 @@
 			
 			$(".grid-table .with-suffix .suffix").attr("title", name).text("." + name);
 		}).trigger("change");
+		
+		{% if config.records.priorities|length %}
+			$(".grid-table").on("change", "[name $= '[type]']", function(event)
+			{
+				var row = $(this).parents("tr:first");
+				var value = $(this).val();
+				var list = {{ config.records.priorities.toArray()|json_encode|raw }} || [];
+				
+				list.indexOf(value) == -1 ? row.find("[name $= '[prio]']").addClass("hide") : row.find("[name $= '[prio]']").removeClass("hide");
+			});
+			
+			$(".grid-table [name $= '[type]']").trigger("change");
+		{% endif %}
 	});
 </script>

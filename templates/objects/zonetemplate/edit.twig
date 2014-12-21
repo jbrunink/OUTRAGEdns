@@ -49,3 +49,21 @@
 		<button class="btn btn-primary" type="submit" name="commit" value="now">{% if content.id %}Update{% else %}Add{% endif %} template</button>
 	</div>
 </form>
+
+{% if config.records.priorities|length %}
+	<script type="text/javascript">
+		$(function()
+		{
+			$(".grid-table").on("change", "[name $= '[type]']", function(event)
+			{
+				var row = $(this).parents("tr:first");
+				var value = $(this).val();
+				var list = {{ config.records.priorities.toArray()|json_encode|raw }} || [];
+				
+				list.indexOf(value) == -1 ? row.find("[name $= '[prio]']").addClass("hide") : row.find("[name $= '[prio]']").removeClass("hide");
+			});
+			
+			$(".grid-table [name $= '[type]']").trigger("change");
+		});
+	</script>
+{% endif %}

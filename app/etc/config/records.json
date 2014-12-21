@@ -25,6 +25,8 @@ records:
 		"TXT"
 	]
 	
+	priorities: [ "MX", "SRV" ]
+	
 	ttl:
 	{
 		"60":    "1 min"

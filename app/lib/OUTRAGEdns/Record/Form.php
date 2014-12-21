@@ -11,7 +11,7 @@ use OUTRAGEweb\FormElement;
 use OUTRAGEweb\Validate;
 use OUTRAGEweb\Validate\Conditions;
 use OUTRAGEdns\Validate\Conditions as Constraint;
-use OUTRAGEdns\ZoneTemplate
+use OUTRAGEdns\ZoneTemplate;
 
 
 class Form extends Validate\Template
