@@ -18,6 +18,8 @@
 			&.actions
 			{
 				width: 90px;
+				padding-right: 16px;
+				text-align: right;
 			}
 			
 			color: #FFF;
@@ -85,6 +87,34 @@
 				}
 				
 				width: 90px;
+			}
+			
+			&.with-suffix
+			{
+				position: relative;
+				
+				.suffix
+				{
+					position: absolute;
+					
+					top: 0;
+					right: 15px;
+					
+					color: #888888;
+					background-color: #FFF;
+					
+					// @todo: figure out how to make this dynamic
+					height: 29px;
+					margin-top: 9px;
+					line-height: 29px;
+					max-width: 100px;
+					
+					white-space: nowrap;
+					overflow: hidden;
+					text-overflow: ellipsis;
+					
+					@include noselect();
+				}
 			}
 		}
 	}

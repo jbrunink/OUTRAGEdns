@@ -12,6 +12,10 @@ use OUTRAGEdns\Record;
 class Form extends Record\Form
 {
 	/**
-	 *	Intentionally left blank, everything is now handled in the record form.
+	 *	What's the domain suffix?
 	 */
+	public function getSuffix($input)
+	{
+		return (strlen($input["name"]) > 0 ? "." : "")."[".Content::MARKER_ZONE."]";
+	}
 }

@@ -1,6 +1,7 @@
 <tr{% if class %} class="{{ class|e }}"{% endif %}>
-	<td>
-		<input type="text" name="records[{% if index is not empty %}{{ index|e }}{% endif %}][name]" value="{{ content.name|e }}" />
+	<td class="with-suffix">
+		<input type="text" name="records[{% if index is not empty %}{{ index|e }}{% endif %}][name]" value="{{ content.prefix|e }}" />
+		<div class="suffix">.{{ suffix|default(content.parent.name)|e }}</div>
 	</td>
 	
 	<td>
@@ -18,7 +19,7 @@
 	</td>
 	
 	<td>
-		<input type="text" name="records[{% if index is not empty %}{{ index|e }}{% endif %}][content]" value="{{ content.content|e }}" />
+		<input type="text" name="records[{% if index is not empty %}{{ index|e }}{% endif %}][content]" value="{{ content.content|e }}"{% if content.type == "SOA" %} readonly="readonly"{% endif %} />
 	</td>
 	
 	<td>

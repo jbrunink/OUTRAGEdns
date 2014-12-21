@@ -6,6 +6,7 @@
 
 namespace OUTRAGEdns\ZoneTemplate;
 
+use OUTRAGEweb\Configuration;
 use OUTRAGEweb\FormElement;
 use OUTRAGEweb\Validate;
 use OUTRAGEdns\ZoneTemplateRecord;
@@ -20,19 +21,17 @@ class Form extends Validate\Template
 	{
 		parent::rules();
 		
-		# fieldset for info
-		$info = new FormElement\Fieldset();
-		$info->appendTo($this);
+		$config = Configuration\Wallet::getInstance();
 		
 		# name
 		$name = new FormElement\Text("name");
 		$name->required(true);
-		$name->appendTo($info);
+		$name->appendTo($this);
 		
-		# description
-		$descr = new FormElement\Text("descr");
-		$descr->required(false);
-		$descr->appendTo($info);
+		# comments
+		$comment = new FormElement\Textarea("comment");
+		$comment->required(false);
+		$comment->appendTo($this);
 		
 		# records
 		$records = new ZoneTemplateRecord\Form("records");

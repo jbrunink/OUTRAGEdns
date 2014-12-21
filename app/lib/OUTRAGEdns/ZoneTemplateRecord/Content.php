@@ -13,6 +13,18 @@ use \OUTRAGEdns\ZoneTemplate;
 class Content extends Entity\Content
 {
 	/**
+	 *	Marker used to denote pseudo domains.
+	 */
+	const MARKER_ZONE = "ZONE";
+	
+	
+	/**
+	 *	Marker used to denote pseudo serial numbers.
+	 */
+	const MARKER_SERIAL = "SERIAL";
+	
+	
+	/**
 	 *	What template does this record template belong to?
 	 */
 	public function getter_parent()
@@ -21,5 +33,15 @@ class Content extends Entity\Content
 			return null;
 		
 		return ZoneTemplate\Content::find()->where("id = ?", $this->zone_templ_id)->invoke("first");
+	}
+	
+	
+	/**
+	 *	Returns the record name without the name of the parent record - in this
+	 *	case, the [ZONE] marker.
+	 */
+	public function getter_prefix()
+	{
+		return preg_replace("/\\.?".preg_quote("[".self::MARKER_ZONE."]")."$/", "", $this->name);
 	}
 }

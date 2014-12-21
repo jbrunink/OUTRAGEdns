@@ -22,6 +22,15 @@ class Content extends Entity\Content
 	
 	
 	/**
+	 *	Returns the record name without the name of the parent record.
+	 */
+	public function getter_prefix()
+	{
+		return preg_replace("/\\.?".preg_quote($this->parent->name)."$/", "", $this->name);
+	}
+	
+	
+	/**
 	 *	Called when saving a new record.
 	 */
 	public function save($post = array())

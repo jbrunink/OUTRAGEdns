@@ -52,21 +52,21 @@
 		<table class="grid-table">
 			<thead>
 				<tr>
-					<th>Name</th>
-					<th>Type</th>
-					<th>Value</th>
-					<th>Priority</th>
-					<th>TTL</th>
-					<th class="actions">Actions</th>
+					<th width="30%">Name</th>
+					<th width="10%">Type</th>
+					<th width="30%">Value</th>
+					<th width="10%">Priority</th>
+					<th width="10%">TTL</th>
+					<th width="10%" class="actions">Actions</th>
 				</tr>
 			</thead>
 			
 			<tbody>
 				{% for record in content.records %}
-					{% include "objects/record/grid-item.twig" with { content: record } %}
+					{% include "objects/record/grid-item.twig" with { content: record, suffix: content.name } %}
 				{% endfor %}
 				
-				{% include "objects/record/grid-item.twig" with { content: null } %}
+				{% include "objects/record/grid-item.twig" with { content: null, suffix: content.name } %}
 			</tbody>
 		</table>
 	{% endif %}
@@ -75,3 +75,15 @@
 		<button class="btn btn-primary" type="submit" name="commit" value="now">{% if content.id %}Update{% else %}Add{% endif %} domain</button>
 	</div>
 </form>
+
+<script type="text/javascript">
+	$(function()
+	{
+		$("[name = 'name']").on("keyup change", function(event)
+		{
+			var name = $(this).val() || "";
+			
+			$(".grid-table .with-suffix .suffix").attr("title", name).text("." + name);
+		}).trigger("change");
+	});
+</script>

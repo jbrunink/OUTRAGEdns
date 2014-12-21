@@ -11,6 +11,7 @@ use \OUTRAGEdns\Record;
 use \OUTRAGEdns\User;
 use \OUTRAGEdns\Zone;
 use \OUTRAGEdns\ZoneTemplate;
+use \OUTRAGEdns\ZoneTemplateRecord;
 
 
 class Content extends Entity\Content
@@ -60,7 +61,12 @@ class Content extends Entity\Content
 		if(!$this->id)
 			return null;
 		
-		return Record\Content::find()->where("domain_id = ?", $this->id)->sort("id ASC")->invoke("objects");
+		$records = Record\Content::find()->where("domain_id = ?", $this->id)->sort("id ASC")->invoke("objects");
+		
+		foreach($records as $record)
+			$record->parent = $this;
+		
+		return $records;
 	}
 	
 	
@@ -73,6 +79,27 @@ class Content extends Entity\Content
 			return 0;
 		
 		return Record\Content::find()->where("domain_id = ?", $this->id)->invoke("count");
+	}
+	
+	
+	/**
+	 *	Get the latest serial of this domain.
+	 */
+	public function getter_serial()
+	{
+		$invalid = '0';
+		
+		foreach($this->records as $record)
+		{
+			if($record->type != "SOA")
+				continue;
+			
+			$parts = explode(" ", $record->content);
+			
+			return isset($parts[2]) ? $parts[2] : $invalid;
+		}
+		
+		return $invalid;
 	}
 	
 	
@@ -110,7 +137,7 @@ class Content extends Entity\Content
 		
 		if($this->template)
 		{
-			$exports = $this->template->export([ "ZONE" => $this->name, "SERIAL" => 0 ]);
+			$exports = $this->template->export([ "@", $this->name, ZoneTemplateRecord\Content::MARKER_ZONE => $this->name, ZoneTemplateRecord\Content::MARKER_SERIAL => $this->generateFreshSerial() ]);
 			
 			foreach($exports as $export)
 			{
@@ -159,6 +186,52 @@ class Content extends Entity\Content
 			}
 		}
 		
+		$this->updateSerial();
+		
 		return $this->id;
+	}
+	
+	
+	/**
+	 *	Updates the serial record, based on whatever is passed to it.
+	 */
+	public function updateSerial($serial = null)
+	{
+		if($serial === null)
+			$serial = $this->generateFreshSerial();
+		
+		foreach($this->records as $record)
+		{
+			if($record->type != "SOA")
+				continue;
+			
+			$parts = explode(" ", $record->content);
+			$parts[2] = $serial;
+			
+			return $record->edit([ "content" => implode(" ", $parts) ]);
+		}
+		
+		return false;
+	}
+	
+	
+	/**
+	 *	Use this to generate a new fresh, clean serial based on uh, previous serials
+	 *	or something or other.
+	 *
+	 *	Relies on the same poor method that everyone else is used to doing, you know,
+	 *	date and an index and the such.
+	 */
+	public function generateFreshSerial()
+	{
+		if($this->serial === "0")
+			return sprintf("%s%02d", date("Ymd"), 0);
+		
+		$result = null;
+		
+		if(preg_match("/^".date("Ymd")."(\d{2})$/", $this->serial, $result))
+			return sprintf("%s%02d", date("Ymd"), (int) $result[1] + 1);
+		
+		return sprintf("%s%02d", date("Ymd"), 0);
 	}
 }
