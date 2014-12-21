@@ -20,7 +20,7 @@
 	</li>
 </ul>
 
-{% if true %}
+{% if user.is_admin is not empty %}
 	<ul class="offset-top">
 		{% if not godmode %}
 			<li>

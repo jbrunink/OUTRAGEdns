@@ -16,6 +16,10 @@
 			{{ forms.text({     title: "E-mail",      field: "email",       value: content.email       }) }}
 			{{ forms.textarea({ title: "Description", field: "description", value: content.description }) }}
 			
+			{% if godmode %}
+				{{ forms.select({ title: "Role", field: "is_admin", value: content.is_admin, tuple: { 0: "User", 1: "Admin" } }) }}
+			{% endif %}
+			
 			<hr />
 			
 			{{ forms.password({ title: "Password",  field: "password", placeholder: "New password" }) }}

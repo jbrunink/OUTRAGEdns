@@ -84,6 +84,29 @@ if($environment->session->current_users_id)
 	
 	$router->register("/logout/", [ new \OUTRAGEdns\User\Controller(), "logout" ]);
 	
+	$router->register("/admin/:mode/", function($mode) use ($environment)
+	{
+		$object = new \OUTRAGEdns\User\Content();
+		$object->load($environment->session->current_users_id);
+		
+		switch($mode)
+		{
+			case "on":
+				if($object->is_admin)
+				{
+					$environment->session->_global_admin_mode = 1;
+					break;
+				}
+			
+			case "off":
+				$environment->session->_global_admin_mode = 0;
+			break;
+		}
+		
+		header("Location: ".(!empty($environment->headers->Referer) ? $environment->headers->Referer : "/dashboard/"));
+		exit;
+	});
+	
 	$router->failure(function()
 	{
 		header("Location: /dashboard/");

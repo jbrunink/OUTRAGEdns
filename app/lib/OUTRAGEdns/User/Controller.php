@@ -19,6 +19,9 @@ class Controller extends Entity\Controller
 	{
 		$this->form->rulesAdd();
 		
+		if($this->response->godmode)
+			$this->form->rulesAdmin();
+		
 		if(!empty($this->request->post->commit))
 		{
 			if($this->form->validate($this->request->post->toArray()))
@@ -53,6 +56,9 @@ class Controller extends Entity\Controller
 	public function edit($id)
 	{
 		$this->form->rulesEdit();
+		
+		if($this->response->godmode)
+			$this->form->rulesAdmin();
 		
 		if(!$this->content->id)
 			$this->content->load($id);

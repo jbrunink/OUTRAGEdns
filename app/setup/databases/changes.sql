@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS `users` (
 	`fullname` varchar(255) NOT NULL,
 	`email` varchar(255) NOT NULL,
 	`description` text NOT NULL,
-	`perm_templ` tinyint(4) NOT NULL,
+	`perm_templ` tinyint(4) NOT NULL, -- not really used, kept for consistency
 	`active` tinyint(4) NOT NULL DEFAULT '1',
 	`use_ldap` tinyint(4) NOT NULL DEFAULT '0',
 	PRIMARY KEY (`id`)
@@ -48,6 +48,14 @@ CREATE TABLE IF NOT EXISTS `zone_templ_records` (
 	CONSTRAINT `template` FOREIGN KEY (`zone_templ_id`) REFERENCES `zone_templ` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+
+-- you'll need to have this bit too - kept separately so that users can just "upgrade"
+-- from the various versions (or perhaps if you're that way inclined, run them in parallel?
+ALTER TABLE `users`
+	ADD `is_admin` TINYINT(1) NOT NULL DEFAULT '0';
+
+
+-- you don't really need this bit, it's just an example
 START TRANSACTION;
 	INSERT INTO `users` (`id`, `username`, `password`, `fullname`, `email`, `active`)
 	VALUES

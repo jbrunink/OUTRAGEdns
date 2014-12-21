@@ -33,10 +33,13 @@ class Controller extends Entity\Controller
 			$this->response->user = new User\Content();
 			$this->response->user->load($this->request->session->current_users_id);
 			
-			$this->request->session->_global_admin_mode = 1;
-			
 			if($this->request->session->_global_admin_mode)
-				$this->response->godmode = true;
+			{
+				if($this->response->user->is_admin)
+					$this->response->godmode = true;
+				else
+					$this->request->session->_global_admin_mode = 0;
+			}
 		}
 		
 		if($this->response->godmode)

@@ -63,4 +63,15 @@ class Form extends Validate\Template
 	{
 		$this->getElement("password")->required(false)->password(false);
 	}
+	
+	
+	/**
+	 *	Mutating the rules for the folks in godmode.
+	 */
+	public function rulesAdmin()
+	{
+		$is_admin = new FormElement\Text("is_admin");
+		$is_admin->required(false);
+		$is_admin->appendTo($this);
+	}
 }
