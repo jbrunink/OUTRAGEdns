@@ -1,0 +1,22 @@
+{
+	"config":
+	{
+		"bin-dir": "app/ext/bin",
+		"cache-dir": "app/cache/ext/composer",
+		"vendor-dir": "app/ext/lib"
+	},
+	
+	"repositories":
+	[
+        {
+            "url": "ssh://git@git.typefish.co.uk:Westie/outrageweb.git",
+            "type": "git"
+        }
+    ],
+    
+    "require":
+    {
+        "twig/twig": "1.*",
+        "westie/outrageweb": "*"
+    }
+}
