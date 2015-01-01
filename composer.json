@@ -8,15 +8,27 @@
 	
 	"repositories":
 	[
-        {
-            "url": "ssh://git@git.typefish.co.uk:Westie/outrageweb.git",
-            "type": "git"
-        }
-    ],
+		{
+			"type": "package",
+			
+			"package":
+			{
+				"name": "westie/outrageweb",
+				"version": "1.0",
+				
+				"source":
+				{
+					"url": "git@git.typefish.co.uk:Westie/outrageweb.git",
+					"type": "git",
+					"reference": "master"
+				}
+			}
+		}
+	],
     
     "require":
     {
         "twig/twig": "1.*",
-        "westie/outrageweb": "*"
+        "westie/outrageweb": "1.*"
     }
 }

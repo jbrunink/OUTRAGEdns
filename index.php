@@ -8,14 +8,13 @@
 define("WWW_DIR", getenv("WWW_DIR") ?: $_SERVER["DOCUMENT_ROOT"]);
 define("APP_DIR", getenv("APP_DIR") ?: WWW_DIR."/app");
 
-if(!class_exists("\OUTRAGEweb\Construct\Autoloader", false))
-	require APP_DIR."/lib/OUTRAGEweb/Construct/Autoloader.php";
+
+# let's now use composer because i'd potentially like to use my
+# framework in other places
+require APP_DIR."/ext/lib/autoload.php";
 
 
-# bootstrap the autoloader and load the config - crucial for pretty much
-# everything in the system
-\OUTRAGEweb\Construct\Autoloader::register();
-
+# and now load the config
 $cache = \OUTRAGEweb\Cache\File::getInstance();
 $configuration = \OUTRAGEweb\Configuration\Wallet::getInstance();
 
