@@ -14,6 +14,10 @@ define("APP_DIR", getenv("APP_DIR") ?: WWW_DIR."/app");
 require APP_DIR."/ext/lib/autoload.php";
 
 
+var_dump(class_exists("\OUTRAGEweb\Cache\File"));
+exit;
+
+
 # and now load the config
 $cache = \OUTRAGEweb\Cache\File::getInstance();
 $configuration = \OUTRAGEweb\Configuration\Wallet::getInstance();

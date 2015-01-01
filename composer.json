@@ -2,7 +2,7 @@
 	"config":
 	{
 		"bin-dir": "app/ext/bin",
-		"cache-dir": "app/cache/ext/composer",
+		"cache-dir": "app/ext/cache",
 		"vendor-dir": "app/ext/lib"
 	},
 	
@@ -14,17 +14,27 @@
 			"package":
 			{
 				"name": "westie/outrageweb",
-				"version": "1.0",
+				"version": "1.0.0",
 				
 				"source":
 				{
 					"url": "git@git.typefish.co.uk:Westie/outrageweb.git",
 					"type": "git",
 					"reference": "master"
+				},
+    			
+				"autoload":
+				{
+					"psr-4": { "OUTRAGEweb\\": "lib/OUTRAGEweb" }
 				}
 			}
 		}
 	],
+    
+	"autoload":
+	{
+		"psr-4": { "OUTRAGEdns\\": "app/lib/OUTRAGEdns" }
+	},
     
     "require":
     {
