@@ -12,47 +12,28 @@ use \OUTRAGEweb\Construct;
 class Result extends Construct\ObjectContainer
 {
 	/**
-	 *	Database result resource.
+	 *	What was the original expression?
 	 */
 	protected $expression = null;
-	protected $result = null;
 	
-	public $num_rows = null;
+	
+	/**
+	 *	Return the number of rows
+	 */
+	public function getter_num_rows()
+	{
+		return $this->count();
+	}
 	
 	
 	/**
 	 *	Called when the result has been initiated.
 	 */
-	public function __construct($expression, \mysqli_result $result)
+	public function __construct($expression)
 	{
-		$this->result = $result;
 		$this->expression = $expression;
 		
-		while(($item = $result->fetch_assoc()))
-			$this->push(new \ArrayObject($item));
-		
-		$this->num_rows = $this->result->num_rows;
-		
 		return true;
-	}
-	
-	
-	/**
-	 *	Called when this result has been removed.
-	 */
-	public function __destruct()
-	{
-		$this->result->free();
-		$this->result = null;
-	}
-	
-	
-	/**
-	 *	Retrieve to the actual result.
-	 */
-	public function result()
-	{
-		return $this->result;
 	}
 	
 	

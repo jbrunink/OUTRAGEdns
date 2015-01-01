@@ -49,7 +49,7 @@ class Connection
 		if(!$config)
 			$config = $this->config->database->production;
 		
-		$this->connection = new \MySQLi($config["host"], $config["username"], $config["password"], $config["database"], $config["port"]);
+		$this->connection = new \PDO("mysql:host=".$config["host"].";port=".$config["port"].";dbname=".$config["database"], $config["username"], $config["password"]);
 	}
 	
 	
@@ -83,107 +83,33 @@ class Connection
 	/**
 	 *	Send off a query.
 	 */
-	public function query($expression = null, array $arguments = null)
+	public function query($expression = null, array $arguments = null, $named = false)
 	{
-		if($expression === null)
-			return $this->select();
+		$stmt = $this->connection->prepare($expression);
 		
-		$result = null;
-		
-		if($arguments == null)
-		{
-			++$this->count;
-			
-			$result = $this->connection->query($expression);
-		}
+		if($arguments === null)
+			$stmt->execute();
 		else
+			$stmt->execute($named ? $arguments : array_values($arguments));
+		
+		if($stmt->errorCode() !== "00000")
 		{
-			$args = "";
+			if($this->transaction)
+				$this->transaction_error = true;
 			
-			foreach($arguments as &$argument)
-			{
-				switch(gettype($argument))
-				{
-					case "boolean":
-					{
-						$args .= "i";
-						$argument = (integer) $argument;
-						
-						break;
-					}
-					
-					case "integer":
-					{
-						$args .= "i";
-						break;
-					}
-					
-					case "double":
-					{
-						$args .= "d";
-						break;
-					}
-					
-					case "string":
-					{
-						$args .= "s";
-						break;
-					}
-					
-					case "array":
-					case "object":
-					{
-						$args .= "b";
-						$argument = serialize($argument);
-						
-						break;
-					}
-					
-					case "NULL":
-					{
-						$args .= "s";
-						$argument = "null";
-					}
-					
-					default:
-					{
-						throw new \Exception("Invalid argument input type");
-						break;
-					}
-				}
-			}
-			
-			++$this->count;
-			
-			array_unshift($arguments, $args);
-			$statement = $this->connection->prepare($expression);
-			
-			if($statement === false)
-			{
-				if($this->transaction)
-					$this->transaction_error = true;
-				
-				return null;
-			}
-			
-			$reflection = new \ReflectionClass($statement);
-			$reflection->getMethod("bind_param")->invokeArgs($statement, $arguments);
-			
-			$statement->execute();
-			
-			$result = $statement->get_result();
+			throw new \Exception("Database error: [".implode(", ", $stmt->errorInfo())."] with query '".$stmt->queryString."'");
 		}
 		
-		if($result instanceof \mysqli_result)
-			return new Result($expression, $result);
+		++$this->count;
 		
-		if($this->connection->error)
-			throw new \Exception("Database error: ".$this->connection->error." with query '".$expression."'");
+		$result = new Result($stmt->queryString);
 		
-		if($this->transaction)
-			$this->transaction_error = true;
+		while($item = $stmt->fetch(\PDO::FETCH_ASSOC))
+			$result->push(new \ArrayObject($item));
 		
-		return null;
+		$stmt->closeCursor();
+		
+		return $result;
 	}
 	
 	
@@ -199,9 +125,11 @@ class Connection
 			return array_keys($cache->load($key));
 		
 		$details = [];
-		$result = $this->connection->query("DESCRIBE ".$this->quoteIdentifier($table));
 		
-		while(($item = $result->fetch_assoc()))
+		$stmt = $this->connection->prepare("DESCRIBE ".$this->quoteIdentifier($table));
+		$stmt->execute();
+		
+		while($item = $stmt->fetch(\PDO::FETCH_ASSOC))
 		{
 			$description = [];
 			$spec = [];
@@ -275,7 +203,7 @@ class Connection
 		
 		$this->query("INSERT INTO ".$this->quoteIdentifier($table)." (".implode(", ", $keys).") VALUES (".implode(", ", $fragments).")", $values);
 		
-		return $this->connection->insert_id;
+		return $this->connection->lastInsertId();
 	}
 	
 	
@@ -381,7 +309,7 @@ class Connection
 	 */
 	public function begin()
 	{
-		$this->connection->autocommit(false);
+		$this->connection->beginTransaction();
 		
 		$this->transaction = true;
 		$this->transaction_error = false;
@@ -396,7 +324,6 @@ class Connection
 	public function commit()
 	{
 		$this->connection->commit();
-		$this->connection->autocommit(true);
 		
 		$this->transaction = false;
 		$this->transaction_error = null;
@@ -411,7 +338,6 @@ class Connection
 	public function rollback()
 	{
 		$this->connection->rollback();
-		$this->connection->autocommit(true);
 		
 		$this->transaction = false;
 		$this->transaction_error = null;
@@ -464,7 +390,7 @@ class Connection
 		if(is_int($value))
 			return $value;
 		
-		return "'".$this->connection->escape_string((string) $value)."'";
+		return $this->connection->quote($value);
 	}
 	
 	
@@ -514,7 +440,7 @@ class Connection
 			return $identifier;
 		}
 		
-		return "`".$this->connection->escape_string((string) $identifier)."`";
+		return "`".((string) $identifier)."`";
 	}
 	
 	
@@ -523,6 +449,6 @@ class Connection
 	 */
 	public function quoteTable($database, $table)
 	{
-		return $this->db->quoteIdentifier($database).".".$this->db->quoteIdentifier($table);
+		return $this->quoteIdentifier($database).".".$this->quoteIdentifier($table);
 	}
 }

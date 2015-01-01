@@ -35,7 +35,7 @@ class Controller extends Entity\Controller
 			
 			if($this->request->session->_global_admin_mode)
 			{
-				if($this->response->user->is_admin)
+				if($this->response->user->admin)
 					$this->response->godmode = true;
 				else
 					$this->request->session->_global_admin_mode = 0;

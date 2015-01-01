@@ -92,7 +92,7 @@ if($environment->session->current_users_id)
 		switch($mode)
 		{
 			case "on":
-				if($object->is_admin)
+				if($object->admin)
 				{
 					$environment->session->_global_admin_mode = 1;
 					break;

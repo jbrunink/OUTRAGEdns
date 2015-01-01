@@ -17,7 +17,8 @@
 			{{ forms.textarea({ title: "Description", field: "description", value: content.description }) }}
 			
 			{% if godmode %}
-				{{ forms.select({ title: "Role", field: "is_admin", value: content.is_admin, tuple: { 0: "User", 1: "Admin" } }) }}
+				{{ forms.select({ title: "Role",   field: "admin",  value: content.admin,  tuple: { 0: "User", 1: "Admin" } }) }}
+				{{ forms.select({ title: "Active", field: "active", value: content.active, tuple: { 0: "Inactive", 1: "Active" } }) }}
 			{% endif %}
 			
 			<hr />

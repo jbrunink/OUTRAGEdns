@@ -70,8 +70,12 @@ class Form extends Validate\Template
 	 */
 	public function rulesAdmin()
 	{
-		$is_admin = new FormElement\Text("is_admin");
-		$is_admin->required(false);
-		$is_admin->appendTo($this);
+		$admin = new FormElement\Text("admin");
+		$admin->required(false);
+		$admin->appendTo($this);
+		
+		$active = new FormElement\Text("active");
+		$active->required(false);
+		$active->appendTo($this);
 	}
 }
