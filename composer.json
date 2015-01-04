@@ -6,39 +6,34 @@
 		"vendor-dir": "app/ext/lib"
 	},
 	
-	"repositories":
-	[
-		{
-			"type": "package",
-			
-			"package":
-			{
-				"name": "westie/outrageweb",
-				"version": "1.0.0",
-				
-				"source":
-				{
-					"url": "git@git.typefish.co.uk:Westie/outrageweb.git",
-					"type": "git",
-					"reference": "master"
-				},
-    			
-				"autoload":
-				{
-					"psr-4": { "OUTRAGEweb\\": "lib/OUTRAGEweb" }
-				}
-			}
-		}
-	],
+    "require":
+    {
+        "twig/twig": "1.*",
+        "pear/services_json": "dev-trunk",
+        "pear/pear_exception": "dev-master",
+        "westie/outrageweb": "dev-master"
+    },
+    
+    "repositories":
+    [
+    	{
+    		"type": "vcs",
+    		"url": "git@git.typefish.co.uk:Westie/outrageweb.git"
+    	},
+    	
+    	{
+    		"type": "vcs",
+    		"url": "git@github.com:pear/Services_JSON.git"
+    	},
+    	
+    	{
+    		"type": "vcs",
+    		"url": "git@github.com:pear/PEAR_Exception.git"
+    	}
+    ],
     
 	"autoload":
 	{
 		"psr-4": { "OUTRAGEdns\\": "app/lib/OUTRAGEdns" }
-	},
-    
-    "require":
-    {
-        "twig/twig": "1.*",
-        "westie/outrageweb": "1.*"
-    }
+	}
 }
