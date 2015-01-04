@@ -123,8 +123,12 @@ class Content extends Entity\Content
 			$zone->save($set);
 		
 		# do stuff with records
+		$changed = false;
+		
 		if(array_key_exists("records", $post))
 		{
+			$changed = true;
+			
 			foreach($post["records"] as $item)
 			{
 				if(empty($item["domain_id"]))
@@ -137,6 +141,7 @@ class Content extends Entity\Content
 		
 		if($this->template)
 		{
+			$changed = true;
 			$exports = $this->template->export([ "@", $this->name, ZoneTemplateRecord\Content::MARKER_ZONE => $this->name, ZoneTemplateRecord\Content::MARKER_SERIAL => $this->generateFreshSerial() ]);
 			
 			foreach($exports as $export)
@@ -147,6 +152,12 @@ class Content extends Entity\Content
 				$record->save($export);
 			}
 		}
+		
+		unset($this->records);
+		unset($this->records_no);
+		
+		if($changed)
+			$this->log("records", [ "records" => $this->records ]);
 		
 		return $this->id;
 	}
@@ -171,8 +182,12 @@ class Content extends Entity\Content
 				$this->zone->edit($set);
 		}
 		
+		$changed = false;
+		
 		if(array_key_exists("records", $post))
 		{
+			$changed = true;
+			
 			$record = new Record\Content();
 			$record->db->delete($record->db_table, "domain_id = ".$this->db->quote($this->id));
 			
@@ -187,6 +202,12 @@ class Content extends Entity\Content
 		}
 		
 		$this->updateSerial();
+		
+		unset($this->records);
+		unset($this->records_no);
+		
+		if($changed)
+			$this->log("records", [ "records" => $this->records ]);
 		
 		return $this->id;
 	}

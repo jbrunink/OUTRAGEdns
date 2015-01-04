@@ -35,4 +35,25 @@ class Content extends Entity\Content
 		
 		return $actions;
 	}
+	
+	
+	/**
+	 *	It would be good to log certain things.
+	 */
+	public function log($action, $state = null)
+	{
+		if(!$this->id)
+			return false;
+		
+		$post = array
+		(
+			"content_type" => get_class($this),
+			"content_id" => $this->id,
+			"action" => $action,
+			"state" => serialize($state),
+			"the_date" => time(),
+		);
+		
+		return $this->db->insert("logs", $post);
+	}
 }

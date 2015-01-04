@@ -1,6 +1,5 @@
--- these changes should match up to poweradmin - i'm hoping to get something like
--- 100% consistency with poweradmin in terms of records and templates. i don't care
--- about permissions... thankfully.
+-- this block represents tables that currently exist within poweradmin, so you
+-- should be able to upgrade to OUTRAGEdns if you just omit adding this stuff in
 
 CREATE TABLE IF NOT EXISTS `users` (
 	`id` int(11) NOT NULL AUTO_INCREMENT,
@@ -48,6 +47,20 @@ CREATE TABLE IF NOT EXISTS `zone_templ_records` (
 	CONSTRAINT `template` FOREIGN KEY (`zone_templ_id`) REFERENCES `zone_templ` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+
+-- you will need to install these tables though, this is custom functionality that does not
+-- really exist within poweradmin
+CREATE TABLE `logs` (
+	`id` int(11) NOT NULL AUTO_INCREMENT,
+	`content_type` varchar(64) NOT NULL,
+	`content_id` int(11) NOT NULL,
+	`action` varchar(32) NOT NULL,
+	`state` longblob NOT NULL,
+	`the_date` int(11) NOT NULL,
+	PRIMARY KEY (`id`),
+	KEY `content` (`content_type`,`content_id`),
+	KEY `action` (`content_type`,`content_id`,`action`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- you'll need to have this bit too - kept separately so that users can just "upgrade"
 -- from the various versions (or perhaps if you're that way inclined, run them in parallel?

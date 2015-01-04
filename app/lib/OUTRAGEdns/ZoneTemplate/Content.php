@@ -61,8 +61,12 @@ class Content extends Entity\Content
 		if(!parent::save($post))
 			return false;
 		
+		$changed = false;
+		
 		if(array_key_exists("records", $post))
 		{
+			$changed = true;
+			
 			foreach($post["records"] as $item)
 			{
 				if(empty($item["zone_templ_id"]))
@@ -72,6 +76,12 @@ class Content extends Entity\Content
 				$record->save($item);
 			}
 		}
+		
+		unset($this->records);
+		unset($this->records_no);
+		
+		if($changed)
+			$this->log("records", [ "records" => $this->records ]);
 		
 		return $this->id;
 	}
@@ -88,8 +98,12 @@ class Content extends Entity\Content
 		if(!parent::edit($post))
 			return false;
 		
+		$changed = false;
+		
 		if(array_key_exists("records", $post))
 		{
+			$changed = true;
+			
 			$record = new ZoneTemplateRecord\Content();
 			$record->db->delete($record->db_table, "zone_templ_id = ".$this->db->quote($this->id));
 			
@@ -102,6 +116,12 @@ class Content extends Entity\Content
 				$record->save($item);
 			}
 		}
+			
+		unset($this->records);
+		unset($this->records_no);
+		
+		if($changed)
+			$this->log("records", [ "records" => $this->records ]);
 		
 		return $this->id;
 	}
