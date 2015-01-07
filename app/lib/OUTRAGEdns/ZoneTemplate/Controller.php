@@ -59,6 +59,14 @@ class Controller extends Entity\Controller
 		if(!$this->content->id)
 			$this->content->load($id);
 		
+		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->response->user->id))
+		{
+			new Notification\Error("You don't have access to this zone template.");
+			
+			header("Location: ".$this->content->actions->grid);
+			exit;
+		}
+		
 		if(!empty($this->request->post->commit))
 		{
 			if($this->form->validate($this->request->post->toArray()))
@@ -91,6 +99,14 @@ class Controller extends Entity\Controller
 	{
 		if(!$this->content->id)
 			$this->content->load($id);
+		
+		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->response->user->id))
+		{
+			new Notification\Error("You don't have access to this zone template.");
+			
+			header("Location: ".$this->content->actions->grid);
+			exit;
+		}
 		
 		try
 		{

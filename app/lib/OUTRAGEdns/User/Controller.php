@@ -51,7 +51,7 @@ class Controller extends Entity\Controller
 	
 	
 	/**
-	 *	Called when we want to edit a domain.
+	 *	Called when we want to edit a user.
 	 */
 	public function edit($id)
 	{
@@ -62,6 +62,14 @@ class Controller extends Entity\Controller
 		
 		if(!$this->content->id)
 			$this->content->load($id);
+		
+		if(!$this->content->id || (!$this->response->godmode && $this->content->id !== $this->response->user->id))
+		{
+			new Notification\Error("You don't have access to this user.");
+			
+			header("Location: ".$this->content->actions->grid);
+			exit;
+		}
 		
 		if(!empty($this->request->post->commit))
 		{
@@ -99,6 +107,14 @@ class Controller extends Entity\Controller
 		if(!$this->content->id)
 			$this->content->load($id);
 		
+		if(!$this->content->id || (!$this->response->godmode && $this->content->id !== $this->response->user->id))
+		{
+			new Notification\Error("You don't have access to this user.");
+			
+			header("Location: ".$this->content->actions->grid);
+			exit;
+		}
+		
 		try
 		{
 			$this->content->db->begin();
@@ -124,6 +140,12 @@ class Controller extends Entity\Controller
 	 */
 	public function grid()
 	{
+		if(!$this->response->godmode)
+		{
+			header("Location: /");
+			exit;
+		}
+		
 		if(!$this->response->users)
 		{
 			$request = Content::find();
