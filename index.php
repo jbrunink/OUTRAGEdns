@@ -41,6 +41,7 @@ $environment = new \OUTRAGEweb\Request\Environment();
 # and now, what we need to do is find out what path we need to go down.
 # should I make this cleaner or should I just stick to doing things the
 # new fashioned way?
+$user = new \OUTRAGEdns\User\Controller();
 $router = new \OUTRAGEweb\Request\Router();
 
 if($environment->session->current_users_id)
@@ -68,14 +69,14 @@ if($environment->session->current_users_id)
 			if(!class_exists($class))
 				continue;
 			
-			$router->register($route, [ $controller, $action ]);
+			$router->register($route, [ $controller, $action ])->before([ $controller, "init" ]);
 			
 			if($settings->default)
-				$router->register("/".$endpoint."/", $route);
+				$router->register("/".$endpoint."/", $route)->before([ $controller, "init" ]);
 		}
 	}
 	
-	$router->register("/logout/", [ new \OUTRAGEdns\User\Controller(), "logout" ]);
+	$router->register("/logout/", [ $user, "logout" ])->before([ $user, "init" ]);
 	
 	$router->register("/admin/:mode/", function($mode) use ($environment)
 	{
@@ -108,7 +109,7 @@ if($environment->session->current_users_id)
 }
 else
 {
-	$router->register("/login/", [ new \OUTRAGEdns\User\Controller(), "login" ]);
+	$router->register("/login/", [ $user, "login" ])->before([ $user, "init" ]);
 	
 	$router->failure(function()
 	{

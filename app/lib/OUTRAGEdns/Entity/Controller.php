@@ -6,8 +6,10 @@
 
 namespace OUTRAGEdns\Entity;
 
-use \OUTRAGEweb\Entity;
 use \OUTRAGEweb\Configuration;
+use \OUTRAGEweb\Entity;
+use \OUTRAGEweb\Request\Environment;
+use \OUTRAGEweb\Response;
 use \OUTRAGEdns\User;
 
 
@@ -17,8 +19,10 @@ class Controller extends Entity\Controller
 	 *	This method is called before the path is executed - this can be used to prepare
 	 *	stuff like content before it's time for stuff to be performed on it.
 	 */
-	public function init()
+	public function init(Environment $environment)
 	{
+		$this->setEnvironment($environment);
+		
 		if($this->content)
 			$this->response->content = $this->content;
 		
