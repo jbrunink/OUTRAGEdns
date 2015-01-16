@@ -19,7 +19,7 @@
 	</td>
 	
 	<td>
-		<input type="text" name="records[{% if index is not empty %}{{ index|e }}{% endif %}][content]" value="{{ content.content|e }}"{% if content.type == "SOA" %} readonly="readonly"{% endif %} />
+		<input type="text" name="records[{% if index is not empty %}{{ index|e }}{% endif %}][content]" value="{{ content.content|e }}" />
 	</td>
 	
 	<td>
