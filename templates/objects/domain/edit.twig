@@ -49,7 +49,33 @@
 	</article>
 	
 	{% if content.id is not empty %}
-		<table class="grid-table">
+		<table class="grid-table" data-grid-table-group="records">
+			<thead>
+				<tr>
+					<th width="22%">Name</th>
+					<th width="15%">Primary NS</th>
+					<th width="15%">Contact</th>
+					<th width="8%">Serial</th>
+					<th width="8%">Refresh</th>
+					<th width="8%">Retry</th>
+					<th width="8%">Expire</th>
+					<th width="8%">Minimum</th>
+					<th width="8%">TTL</th>
+				</tr>
+			</thead>
+			
+			<tbody>
+				{% if records.soa|length %}
+					{% for record in records.soa %}
+						{% include "objects/record/grid-item-soa.twig" with { parent: content, content: record, suffix: content.name } %}
+					{% endfor %}
+				{% else %}
+					{% include "objects/record/grid-item-soa.twig" with { parent: content, content: null, suffix: content.name } %}
+				{% endif %}
+			</tbody>
+		</table>
+		
+		<table class="grid-table" data-grid-table-group="records">
 			<thead>
 				<tr>
 					<th width="30%">Name</th>
@@ -62,11 +88,11 @@
 			</thead>
 			
 			<tbody>
-				{% for record in content.records %}
-					{% include "objects/record/grid-item.twig" with { content: record, suffix: content.name } %}
+				{% for record in records.list %}
+					{% include "objects/record/grid-item.twig" with { parent: content, content: record, suffix: content.name } %}
 				{% endfor %}
 				
-				{% include "objects/record/grid-item.twig" with { content: null, suffix: content.name } %}
+				{% include "objects/record/grid-item.twig" with { parent: content, content: null, suffix: content.name } %}
 			</tbody>
 		</table>
 	{% endif %}

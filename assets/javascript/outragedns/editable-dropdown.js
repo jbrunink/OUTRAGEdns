@@ -3,7 +3,7 @@
 	/* declare the module */
 	var Module = function(select)
 	{
-		this.select = $(select).data(Module.component, this);
+		this.select = $(select);
 		
 		this.input = undefined;
 		this.trigger = undefined;
@@ -12,6 +12,7 @@
 	};
 	
 	Module.component = "editable-dropdown";
+	
 	
 	/* and then the methods */
 	Module.prototype =
@@ -124,12 +125,6 @@
 	};
 	
 	
-	/* now, init the module */
-	$(function()
-	{
-		$("select.editable-dropdown").each(function()
-		{
-			return new Module(this);
-		});
-	});
+	/* define as a module */
+	$.module.push([ "select.editable-dropdown", Module ]);
 })(window.jQuery);

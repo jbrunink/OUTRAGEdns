@@ -3,11 +3,12 @@
 	/* declare the module */
 	var Module = function(form)
 	{
-		this.form = $(form).data(Module.component, this);
+		this.form = $(form);
 		this.init();
 	};
 	
 	Module.component = "validate-form";
+	
 	
 	/* and then the methods */
 	Module.prototype =
@@ -132,11 +133,5 @@
 	
 	
 	/* now, init the module */
-	$(function()
-	{
-		$("form.validate-form").each(function()
-		{
-			return new Module(this);
-		});
-	});
+	$.module.push([ "form.validate-form", Module ]);
 })(window.jQuery);

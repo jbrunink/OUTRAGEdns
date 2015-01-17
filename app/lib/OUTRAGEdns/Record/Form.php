@@ -53,6 +53,7 @@ class Form extends Validate\Template
 		# content
 		$prio = new FormElement\Text("prio");
 		$prio->label("Priority");
+		$prio->default("0");
 		$prio->required(false);
 		$prio->appendTo($this);
 	}
@@ -78,6 +79,45 @@ class Form extends Validate\Template
 		
 		switch($input["type"])
 		{
+			case "SOA":
+				$mname = new FormElement\Text("mname");
+				$mname->label("Primary NS");
+				$mname->required(true);
+				$mname->appendTo($this);
+				
+				$rname = new FormElement\Text("rname");
+				$rname->label("Contact");
+				$rname->required(true);
+				$rname->appendTo($this);
+				
+				$refresh = new FormElement\Text("refresh");
+				$refresh->label("Refresh");
+				$refresh->required(true);
+				$refresh->appendTo($this);
+				
+				$refresh = new FormElement\Text("serial");
+				$refresh->label("Serial");
+				$refresh->required(true);
+				$refresh->appendTo($this);
+				
+				$retry = new FormElement\Text("retry");
+				$retry->label("Retry");
+				$retry->required(true);
+				$retry->appendTo($this);
+				
+				$expire = new FormElement\Text("expire");
+				$expire->label("Expire");
+				$expire->required(true);
+				$expire->appendTo($this);
+				
+				$minimum = new FormElement\Text("minimum");
+				$minimum->label("Minimum");
+				$minimum->required(true);
+				$minimum->appendTo($this);
+				
+				$this->getElement("content")->required(false);
+			break;
+			
 			case "A":
 				$this->getElement("content")->addCondition(new Constraint\IPv4());
 			break;

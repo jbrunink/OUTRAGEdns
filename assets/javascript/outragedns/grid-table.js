@@ -3,11 +3,12 @@
 	/* declare the module */
 	var Module = function(table)
 	{
-		this.table = $(table).data(Module.component, this);
+		this.table = $(table);
 		this.init();
 	};
 	
 	Module.component = "grid-table";
+	
 	
 	/* and then the methods */
 	Module.prototype =
@@ -22,13 +23,28 @@
 		
 		reindex: function()
 		{
-			this.table.find("tbody > tr").each(function(index)
+			var offset = 0;
+			
+			if(this.table.attr("data-grid-table-group"))
 			{
-				$(this).find("[name]").each(function()
+				$("table.grid-table[data-grid-table-group = '" + this.table.attr("data-grid-table-group") + "']").find("tbody > tr").each(function(index)
 				{
-					$(this).attr("name", $(this).attr("name").replace(/^(.*?)\[.*?\](.*?)$/, "$1[" + index + "]$2"));
+					$(this).find("[name]").each(function()
+					{
+						$(this).attr("name", $(this).attr("name").replace(/^(.*?)\[.*?\](.*?)$/, "$1[" + (offset + index) + "]$2"));
+					});
 				});
-			});
+			}
+			else
+			{
+				this.table.find("tbody > tr").each(function(index)
+				{
+					$(this).find("[name]").each(function()
+					{
+						$(this).attr("name", $(this).attr("name").replace(/^(.*?)\[.*?\](.*?)$/, "$1[" + (offset + index) + "]$2"));
+					});
+				});
+			}
 		},
 		
 		onclone: function(event)
@@ -67,11 +83,5 @@
 	
 	
 	/* now, init the module */
-	$(function()
-	{
-		$(".grid-table").each(function()
-		{
-			return new Module(this);
-		});
-	});
+	$.module.push([ "table.grid-table", Module ]);
 })(window.jQuery);

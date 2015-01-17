@@ -95,6 +95,39 @@ class Controller extends Entity\Controller
 		if(!$this->response->templates)
 			$this->response->templates = ZoneTemplate\Content::find()->where("owner = ?", $this->response->user->id)->order("name ASC")->invoke("objects");
 		
+		# list all the nameservers that are currently defined
+		$this->response->nameservers = [];
+		
+		if(!empty($this->config->records->soa->nameservers))
+			$this->response->nameservers = array_merge($this->response->nameservers, $this->config->records->soa->nameservers->toArray());
+		
+		# oh, and it's a good idea to separate out the SOA record(s) from the other
+		# records, that way we can make the SOA independently editable
+		$this->response->records = array
+		(
+			"soa" => [],
+			"list" => [],
+		);
+		
+		foreach($this->content->records as $record)
+		{
+			switch($record->type)
+			{
+				case "SOA":
+					$this->response->records["soa"][] = $record;
+				break;
+				
+				case "NS":
+					$this->response->nameservers[] = $record->content;
+				
+				default:
+					$this->response->records["list"][] = $record;
+				break;
+			}
+		}
+		
+		$this->response->nameservers = array_unique($this->response->nameservers);
+		
 		return $this->response->display("index.twig");
 	}
 	

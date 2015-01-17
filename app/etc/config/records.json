@@ -27,19 +27,28 @@ records:
 	
 	priorities: [ "MX", "SRV" ]
 	
+	soa:
+	{
+		nameservers: [ "ns1.test.tld", "ns2.test.tld" ]
+	}
+	
 	ttl:
 	{
-		"60":    "1 min"
-		"300":   "5 mins"
-		"3600":  "1 hr"
-		"14400": "4 hrs"
-		"43200": "12 hrs"
-		"86400": "24 hrs"
+		"60":     "1 min"
+		"300":    "5 mins"
+		"600":    "10 mins"
+		"3600":   "1 hr"
+		"7200":   "2 hrs"
+		"10800":  "3 hrs"
+		"14400":  "4 hrs"
+		"43200":  "12 hrs"
+		"86400":  "24 hrs"
+		"604800": "1 wk"
 	}
 	
 	synctypes:
 	{
-		"NATIVE": "Native",
-		"MASTER": "Master",
+		"NATIVE": "Native (DB Replication)",
+		"MASTER": "Master (AXFR)",
 	}
 }
