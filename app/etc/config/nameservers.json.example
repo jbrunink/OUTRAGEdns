@@ -1,0 +1,7 @@
+records:
+{
+	soa:
+	{
+		nameservers: [ "ns1.test.tld", "ns2.test.tld" ]
+	}
+}

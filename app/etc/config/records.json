@@ -25,11 +25,11 @@ records:
 		"TXT"
 	]
 	
-	priorities: [ "MX", "SRV" ]
+	priorities: [ "MX", "SRV" ],
 	
 	soa:
 	{
-		nameservers: [ "ns1.test.tld", "ns2.test.tld" ]
+		nameservers: []
 	}
 	
 	ttl:
