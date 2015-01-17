@@ -47,6 +47,12 @@ class Controller extends Entity\Controller
 			}
 		}
 		
+		# list all the nameservers that are currently defined
+		$this->response->nameservers = [];
+		
+		if(!empty($this->config->records->soa->nameservers))
+			$this->response->nameservers = array_merge($this->response->nameservers, $this->config->records->soa->nameservers->toArray());
+		
 		return $this->response->display("index.twig");
 	}
 	
