@@ -15,19 +15,28 @@ require APP_DIR."/ext/lib/autoload.php";
 
 
 # and now load the config
-$cache = \OUTRAGEweb\Cache\File::getInstance();
-$configuration = \OUTRAGEweb\Configuration\Wallet::getInstance();
+use \OUTRAGEweb\Cache\File as Cache;
+use \OUTRAGEweb\Configuration\Wallet as Wallet;
+use \OUTRAGEweb\Configuration\Loader\WeakJSON as ConfigLoader;
+use \OUTRAGEweb\Request\Environment as Environment;
+use \OUTRAGEweb\Request\Router as Router;
+use \OUTRAGEdns\User as User;
+
+$cache = Cache::getInstance();
+$configuration = Wallet::getInstance();
 
 if($cache->test("__main_config"))
 {
-	$configuration->populateContainerRecursively($cache->load("__main_config"));
+	$configuration->load($cache->load("__main_config"));
 }
 else
 {
-	$configuration->load(APP_DIR."/etc/config/*.json");
-	$configuration->load(APP_DIR."/etc/config/entities/*.json");
+	$loader = new ConfigLoader();
 	
-	$cache->save("__main_config", $configuration->toArray());
+	$loader->import(APP_DIR."/etc/config/*.json");
+	$loader->import(APP_DIR."/etc/config/entities/*.json");
+	
+	$configuration->load($loader);
 }
 
 session_start();
@@ -35,14 +44,14 @@ session_start();
 
 # perhaps it's a good idea to init our request environment, we don't need to
 # do anything else here as default functionality is handled by the getters
-$environment = new \OUTRAGEweb\Request\Environment();
+$environment = new Environment();
 
 
 # and now, what we need to do is find out what path we need to go down.
 # should I make this cleaner or should I just stick to doing things the
 # new fashioned way?
-$user = new \OUTRAGEdns\User\Controller();
-$router = new \OUTRAGEweb\Request\Router();
+$user = new User\Controller();
+$router = new Router();
 
 if($environment->session->current_users_id)
 {
@@ -80,7 +89,7 @@ if($environment->session->current_users_id)
 	
 	$router->register("/admin/:mode/", function($mode) use ($environment)
 	{
-		$object = new \OUTRAGEdns\User\Content();
+		$object = new User\Content();
 		$object->load($environment->session->current_users_id);
 		
 		switch($mode)
