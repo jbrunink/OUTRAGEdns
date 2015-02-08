@@ -337,6 +337,9 @@ class Content extends Entity\Content
 					$max_type_len = max($max_type_len, strlen($record->type));
 				}
 				
+				if(!$use_prefix)
+					$max_name_len += 1;
+				
 				foreach($this->records as $record)
 				{
 					$name = $use_prefix ? $record->prefix : $record->name.".";
