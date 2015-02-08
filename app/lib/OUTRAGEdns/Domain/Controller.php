@@ -153,7 +153,7 @@ class Controller extends Entity\Controller
 			$this->content->db->begin();
 			$this->content->remove();
 			$this->content->db->commit();
-				
+			
 			new Notification\Success("Successfully removed the domain: ".$this->content->name);
 		}
 		catch(Exception $exception)
@@ -164,6 +164,138 @@ class Controller extends Entity\Controller
 		}
 		
 		header("Location: ".$this->content->actions->grid);
+		exit;
+	}
+	
+	
+	/**
+	 *	Called when we want to export this record.
+	 */
+	public function export($id)
+	{
+		if(!$this->content->id)
+			$this->content->load($id);
+		
+		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->response->user->id))
+		{
+			new Notification\Error("You don't have access to this domain.");
+			
+			header("Location: ".$this->content->actions->grid);
+			exit;
+		}
+		
+		$format = !empty($this->request->get->format) ? strtolower($this->request->get->format) : "json";
+		$use_prefix = !empty($this->request->get->prefix);
+		
+		switch($format)
+		{
+			case "json":
+				header("Content-Type: application/json");
+				
+				$response = [ "domain" => $this->content->name, "records" => [] ];
+				
+				foreach($this->content->records as $record)
+				{
+					$store = $record->toArray();
+					
+					unset($store["id"]);
+					unset($store["domain_id"]);
+					
+					if($use_prefix)
+						$store["name"] = $record->prefix;
+					
+					$response["records"][] = $store;
+				}
+				
+				echo json_encode($response);
+			break;
+			
+			case "xml":
+				header("Content-Type: application/xml");
+				
+				$response = new \SimpleXmlElement("<records></records>");
+				$response->addAttribute("domain", $this->content->name);
+				
+				foreach($this->content->records as $record)
+				{
+					$store = $record->toArray();
+					
+					unset($store["id"]);
+					unset($store["domain_id"]);
+					
+					if($use_prefix)
+						$store["name"] = $record->prefix;
+					
+					$child = $response->addChild("record");
+					
+					foreach($store as $key => $value)
+						$child->addChild($key, $value);
+				}
+				
+				echo $response->asXML();
+			break;
+			
+			case "bind":
+				header("Content-Type: text/plain");
+				
+				$response = [];
+				
+				$response[] = ';';
+				$response[] = ';    Created by OUTRAGEdns';
+				$response[] = ';';
+				$response[] = '';
+				
+				$response[] = sprintf('$ORIGIN %s', $this->content->name);
+				$response[] = sprintf('$TTL %s', "1h");
+				$response[] = '';
+				
+				$max_name_len = 0;
+				$max_ttl_len = 0;
+				$max_type_len = 0;
+				
+				foreach($this->content->records as $record)
+				{
+					$name = $use_prefix ? $record->prefix : $record->name;
+					
+					$max_name_len = max($max_name_len, strlen($name ?: "@"));
+					$max_ttl_len = max($max_ttl_len, strlen((string) $record->ttl));
+					$max_type_len = max($max_type_len, strlen($record->type));
+				}
+				
+				foreach($this->content->records as $record)
+				{
+					$name = $use_prefix ? $record->prefix : $record->name;
+					
+					switch($record->type)
+					{
+						case "SOA":
+							$parts = explode(" ", $record->content);
+							
+							$response[] = sprintf("%s %s IN %s %s %s (", $use_prefix ? "@" : $this->content->name, $record->ttl, $record->type, $parts[0], $parts[1]);
+							$response[] = str_pad("", 4).sprintf("%s ; %s", $parts[2], "serial");
+							$response[] = str_pad("", 4).sprintf("%s ; %s", $parts[3], "refresh");
+							$response[] = str_pad("", 4).sprintf("%s ; %s", $parts[4], "retry");
+							$response[] = str_pad("", 4).sprintf("%s ; %s", $parts[5], "expire");
+							$response[] = str_pad("", 4).sprintf("%s ; %s", $parts[6], "minimum");
+							$response[] = ")";
+							$response[] = '';
+						break;
+						
+						case "MX":
+						case "SRV":
+							$response[] = sprintf("%s %s IN %s %s %s", str_pad($name ?: "@", $max_name_len), str_pad($record->ttl, $max_ttl_len), str_pad($record->type, $max_type_len), $record->prio, $record->content);
+						break;
+						
+						default:
+							$response[] = sprintf("%s %s IN %s %s", str_pad($name ?: "@", $max_name_len), str_pad($record->ttl, $max_ttl_len), str_pad($record->type, $max_type_len), $record->content);
+						break;
+					}
+				}
+				
+				echo implode("\r\n", $response);
+			break;
+		}
+		
 		exit;
 	}
 	

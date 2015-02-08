@@ -12,6 +12,7 @@ entities:
 			add:    { id: false }
 			edit:   { id: true }
 			remove: { id: true }
+			export: { id: true }
 			grid:   { id: false, default: true }
 		}
 	}

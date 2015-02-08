@@ -18,6 +18,14 @@
 	</td>
 	
 	<td>
+		{% if content.serial == "0" %}
+			&mdash;
+		{% else %}
+			{{ content.serial }}
+		{% endif %}
+	</td>
+	
+	<td>
 		{{ content.records_no }}
 	</td>
 	

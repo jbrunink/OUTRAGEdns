@@ -6,16 +6,18 @@
 	<table class="grid-table">
 		<thead>
 			<tr>
-				<th class="check"></th>
+				<th width="0%" class="check"></th>
 				
 				{% if godmode %}
-					<th>Owner</th>
+					<th width="20%">Owner</th>
+					<th width="20%">Name</th>
+				{% else %}
+					<th width="40%">Name</th>
 				{% endif %}
 				
-				<th>Name</th>
-				<th>Description</th>
-				<th>No. of records</th>
-				<th class="actions">Actions</th>
+				<th width="40%">Description</th>
+				<th width="20%">No. of records</th>
+				<th width="0%" class="actions">Actions</th>
 			</tr>
 		</thead>
 		
