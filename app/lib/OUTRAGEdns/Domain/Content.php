@@ -346,7 +346,7 @@ class Content extends Entity\Content
 						case "SOA":
 							$parts = explode(" ", $record->content);
 							
-							$response[] = sprintf("%s %s IN %s %s %s (", $use_prefix ? "@" : $this->name, $record->ttl, $record->type, $parts[0], $parts[1]);
+							$response[] = sprintf("%s %s IN %s %s %s (", $use_prefix ? "@" : $this->name.".", $record->ttl, $record->type, $parts[0], $parts[1]);
 							$response[] = str_pad("", 4).sprintf("%s ; %s", $parts[2], "serial");
 							$response[] = str_pad("", 4).sprintf("%s ; %s", $parts[3], "refresh");
 							$response[] = str_pad("", 4).sprintf("%s ; %s", $parts[4], "retry");
