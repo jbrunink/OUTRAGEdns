@@ -255,4 +255,129 @@ class Content extends Entity\Content
 		
 		return sprintf("%s%02d", date("Ymd"), 0);
 	}
+	
+	
+	/**
+	 *	Export the records to a string.
+	 */
+	public function export($format = "json", $use_prefix = true)
+	{
+		switch($format)
+		{
+			case "json":
+				$response = [ "domain" => $this->name, "records" => [] ];
+				
+				if($use_prefix)
+					$response["prefix"] = true;
+				
+				foreach($this->records as $record)
+				{
+					$store = $record->toArray();
+					
+					unset($store["id"]);
+					unset($store["domain_id"]);
+					
+					if($use_prefix)
+						$store["name"] = $record->prefix;
+					
+					$response["records"][] = $store;
+				}
+				
+				return json_encode($response);
+			break;
+			
+			case "xml":
+				$response = new \SimpleXmlElement("<records></records>");
+				$response->addAttribute("domain", $this->name);
+				
+				if($use_prefix)
+					$response->addAttribute("prefix", 1);
+				
+				foreach($this->records as $record)
+				{
+					$store = $record->toArray();
+					
+					unset($store["id"]);
+					unset($store["domain_id"]);
+					
+					if($use_prefix)
+						$store["name"] = $record->prefix;
+					
+					$child = $response->addChild("record");
+					
+					foreach($store as $key => $value)
+						$child->addChild($key, $value);
+				}
+				
+				return $response->asXML();
+			break;
+			
+			case "bind":
+				$response = [];
+				
+				$response[] = ';';
+				$response[] = ';    Created by OUTRAGEdns';
+				$response[] = ';';
+				$response[] = '';
+				
+				$response[] = sprintf('$ORIGIN %s', $this->name.".");
+				$response[] = sprintf('$TTL %s', "3600");
+				$response[] = '';
+				
+				$max_name_len = 0;
+				$max_ttl_len = 0;
+				$max_type_len = 0;
+				
+				foreach($this->records as $record)
+				{
+					$name = $use_prefix ? $record->prefix : $record->name;
+					
+					$max_name_len = max($max_name_len, strlen($name ?: "@"));
+					$max_ttl_len = max($max_ttl_len, strlen((string) $record->ttl));
+					$max_type_len = max($max_type_len, strlen($record->type));
+				}
+				
+				foreach($this->records as $record)
+				{
+					$name = $use_prefix ? $record->prefix : $record->name.".";
+					
+					switch($record->type)
+					{
+						case "SOA":
+							$parts = explode(" ", $record->content);
+							
+							$response[] = sprintf("%s %s IN %s %s %s (", $use_prefix ? "@" : $this->name, $record->ttl, $record->type, $parts[0], $parts[1]);
+							$response[] = str_pad("", 4).sprintf("%s ; %s", $parts[2], "serial");
+							$response[] = str_pad("", 4).sprintf("%s ; %s", $parts[3], "refresh");
+							$response[] = str_pad("", 4).sprintf("%s ; %s", $parts[4], "retry");
+							$response[] = str_pad("", 4).sprintf("%s ; %s", $parts[5], "expire");
+							$response[] = str_pad("", 4).sprintf("%s ; %s", $parts[6], "minimum");
+							$response[] = ")";
+							$response[] = '';
+						break;
+						
+						case "MX":
+						case "SRV":
+							$response[] = sprintf("%s %s IN %s %s %s", str_pad($name ?: "@", $max_name_len), str_pad($record->ttl, $max_ttl_len), str_pad($record->type, $max_type_len), $record->prio, $record->content.".");
+						break;
+						
+						case "NS":
+						case "CNAME":
+							$response[] = sprintf("%s %s IN %s %s", str_pad($name ?: "@", $max_name_len), str_pad($record->ttl, $max_ttl_len), str_pad($record->type, $max_type_len), $record->content.".");
+						break;
+						
+						default:
+							$response[] = sprintf("%s %s IN %s %s", str_pad($name ?: "@", $max_name_len), str_pad($record->ttl, $max_ttl_len), str_pad($record->type, $max_type_len), $record->content);
+						break;
+					}
+				}
+				
+				$response[] = '';
+				
+				return implode("\r\n", $response);
+			break;
+		}
+		
+		return null;
+	}
 }
