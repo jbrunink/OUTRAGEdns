@@ -191,15 +191,24 @@ class Controller extends Entity\Controller
 		{
 			case "json":
 				header("Content-Type: application/json");
+				
+				if(empty($this->request->get->preview))
+					header('Content-Disposition: attachment; filename="'.$this->content->name.'.json"');
 			break;
 			
 			case "xml":
 				header("Content-Type: application/xml");
+				
+				if(empty($this->request->get->preview))
+					header('Content-Disposition: attachment; filename="'.$this->content->name.'.xml"');
 			break;
 			
 			case "bind":
 			default:
 				header("Content-Type: text/plain");
+				
+				if(empty($this->request->get->preview))
+					header('Content-Disposition: attachment; filename="'.$this->content->name.'.txt"');
 			break;
 		}
 		
