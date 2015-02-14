@@ -41,8 +41,8 @@
     {
         "post-update-cmd":
         [
-            "ls app/cache/blocks && rm -rf app/cache/blocks/*",
-            "ls app/cache/templates && rm -rf app/cache/templates/*"
+            "ls app/cache/blocks > /dev/null && rm -rf app/cache/blocks/*",
+            "ls app/cache/templates > /dev/null && rm -rf app/cache/templates/*"
         ]
     }
 }
