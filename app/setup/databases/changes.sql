@@ -1,3 +1,4 @@
+-- POWERADMIN BLOCK --
 -- this block represents tables that currently exist within poweradmin, so you
 -- should be able to upgrade to OUTRAGEdns if you just omit adding this stuff in
 
@@ -48,6 +49,7 @@ CREATE TABLE IF NOT EXISTS `zone_templ_records` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
+-- OUTRAGEDNS BLOCK --
 -- you will need to install these tables though, this is custom functionality that does not
 -- really exist within poweradmin
 CREATE TABLE `logs` (
@@ -70,7 +72,7 @@ ALTER TABLE `users`
 
 -- you don't really need this bit, it's just an example
 START TRANSACTION;
-	INSERT INTO `users` (`id`, `username`, `password`, `fullname`, `email`, `active`)
+	INSERT INTO `users` (`id`, `username`, `password`, `fullname`, `email`, `active`, `is_admin`)
 	VALUES
-		(null, "admin", SHA1("ifacetherisk"), "David Weston", "outragedns@typefish.co.uk", 1);
+		(null, "admin", SHA1("ifacetherisk"), "Boring User", "outragedns@localhost", 1, 1);
 COMMIT;
