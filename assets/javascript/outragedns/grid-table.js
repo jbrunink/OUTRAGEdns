@@ -15,15 +15,54 @@
 	{
 		init: function()
 		{
+			var self = this;
+			
 			this.table.on("click." + Module.component, ".actions ul > li.clone", this.onclone);
 			this.table.on("click." + Module.component, ".actions ul > li.remove", this.onremove);
 			
 			this.reindex();
+			
+			if(this.table.hasClass("sortable"))
+			{
+				var sortable =
+				{
+					axis: "y",
+					items: "> tbody > tr:not(.placeholder-row)",
+					containment: "parent",
+					helper: "clone",
+					
+					start: function(event, ui)
+					{
+						var rows = ui.helper.find("td");
+						
+						$(this).find("thead th").each(function(index)
+						{
+							var row = rows.eq(index);
+							
+							if(!row.hasClass("actions"))
+								row.css("width", $(this).width() + "px");
+						});
+						
+						ui.helper.addClass("sortable-item");
+					},
+					
+					update: function(event, ui)
+					{
+						self.reindex();
+					},
+				};
+				
+				this.table.sortable(sortable);
+				this.table.addClass("has-sortable");
+			}
 		},
 		
 		reindex: function()
 		{
 			var offset = 0;
+			
+			if(this.table.hasClass("has-sortable"))
+				this.table.sortable("refresh");
 			
 			if(this.table.attr("data-grid-table-group"))
 			{

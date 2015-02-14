@@ -1,7 +1,5 @@
 .grid-table
 {
-	border: 1px solid $form-input-border-colour;
-	
 	thead
 	{
 		@include texture(#222);
@@ -35,6 +33,33 @@
 			&:nth-child(2n)
 			{
 				background-color: #FFF;
+				
+				td.move-bar
+				{
+					background-color: darken(#FFF, 6%);
+				}
+			}
+			
+			&.sortable-item
+			{
+				opacity: 0.7;
+			}
+			
+			&.placeholder-row
+			{
+				td.move-bar
+				{
+					cursor: default;
+				}
+			}
+			
+			&.ui-sortable-placeholder
+			{
+				td
+				{
+					font-size: 0px;
+					line-height: 0px;
+				}
 			}
 			
 			border-top: 1px solid $form-input-border-colour;
@@ -89,6 +114,15 @@
 				width: 90px;
 			}
 			
+			&.move-bar
+			{
+				font-size: 0px;
+				line-height: 0px;
+				
+				background-color: darken(#FAFAFA, 6%);
+				cursor: move;
+			}
+			
 			&.with-suffix
 			{
 				position: relative;
@@ -119,5 +153,19 @@
 		}
 	}
 	
+	&.tall-rows
+	{
+		tbody
+		{
+			tr
+			{
+				height: 4.4em;
+			}
+		}
+	}
+	
 	@extend %content-wrapper-generic;
+	
+	border: 1px solid $form-input-border-colour;
+	background-color: lighten($form-input-border-colour, 10%);
 }
