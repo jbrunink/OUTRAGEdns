@@ -17,17 +17,17 @@
     "repositories":
     [
     	{
-    		"type": "vcs",
-    		"url": "git@git.typefish.co.uk:Westie/outrageweb.git"
+    		"type": "git",
+    		"url": "https://git.typefish.co.uk/Westie/outrageweb.git"
     	},
     	
     	{
-    		"type": "vcs",
+    		"type": "git",
     		"url": "git@github.com:pear/Services_JSON.git"
     	},
     	
     	{
-    		"type": "vcs",
+    		"type": "git",
     		"url": "git@github.com:pear/PEAR_Exception.git"
     	}
     ],
@@ -35,5 +35,14 @@
 	"autoload":
 	{
 		"psr-4": { "OUTRAGEdns\\": "app/lib/OUTRAGEdns" }
-	}
+	},
+    
+    "scripts":
+    {
+        "post-update-cmd":
+        [
+            "ls app/cache/blocks && rm -rf app/cache/blocks/*",
+            "ls app/cache/templates && rm -rf app/cache/templates/*"
+        ]
+    }
 }

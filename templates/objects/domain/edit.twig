@@ -102,6 +102,23 @@
 	</div>
 </form>
 
+{% if content.id is not empty %}
+	<form class="export-form form-horizontal" method="GET" action="{{ content.actions.export }}">
+		<div class="pull-left">
+			<select name="format">
+				<option value="">Choose export</option>
+				<option value="bind">BIND9</option>
+				<option value="xml">XML</option>
+				<option value="json">JSON</option>
+			</select>
+			
+			<input type="hidden" name="prefix" value="1" />
+		</div>
+	</form>
+{% endif %}
+
+<br />
+
 <script type="text/javascript">
 	$(function()
 	{
@@ -123,6 +140,13 @@
 			});
 			
 			$(".grid-table [name $= '[type]']").trigger("change");
+		{% endif %}
+		
+		{% if content.id is not empty %}
+			$(".export-form [name = 'format']").on("change", function()
+			{
+				$(this.form).trigger("submit");
+			});
 		{% endif %}
 	});
 </script>
