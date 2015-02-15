@@ -40,11 +40,6 @@
 				}
 			}
 			
-			&.sortable-item
-			{
-				opacity: 0.7;
-			}
-			
 			&.placeholder-row
 			{
 				td.move-bar
@@ -162,6 +157,22 @@
 				height: 4.4em;
 			}
 		}
+	}
+	
+	&.is-sorting
+	{
+		tbody
+		{
+			tr
+			{
+				&.sortable-item
+				{
+					background-color: #DBFFF0;
+				}
+			}
+		}
+		
+		transform: transform3d(0,0,0);
 	}
 	
 	@extend %content-wrapper-generic;

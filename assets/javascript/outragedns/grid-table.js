@@ -30,6 +30,7 @@
 					items: "> tbody > tr:not(.placeholder-row)",
 					containment: "parent",
 					helper: "clone",
+					handle: ".move-bar",
 					
 					start: function(event, ui)
 					{
@@ -37,18 +38,17 @@
 						
 						$(this).find("thead th").each(function(index)
 						{
-							var row = rows.eq(index);
-							
-							if(!row.hasClass("actions"))
-								row.css("width", $(this).width() + "px");
+							var row = rows.eq(index).css("width", $(this).width() + "px");
 						});
 						
 						ui.helper.addClass("sortable-item");
+						self.table.addClass("is-sorting");
 					},
 					
 					update: function(event, ui)
 					{
 						self.reindex();
+						self.table.removeClass("is-sorting");
 					},
 				};
 				
