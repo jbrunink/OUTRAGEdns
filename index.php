@@ -7,6 +7,9 @@
 # let's show all errors
 ini_set("display_errors", "On");
 
+if(!date_default_timezone_get())
+	date_default_timezone_set("UTC");
+
 
 # what if Xerox wants to be secure?
 define("WWW_DIR", getenv("WWW_DIR") ?: $_SERVER["DOCUMENT_ROOT"]);
