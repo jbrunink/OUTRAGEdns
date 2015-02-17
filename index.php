@@ -7,7 +7,7 @@
 # let's show all errors
 ini_set("display_errors", "On");
 
-if(!date_default_timezone_get())
+if(!ini_get("date.timezone"))
 	date_default_timezone_set("UTC");
 
 
