@@ -1,0 +1,13 @@
+<h1>View revisions of '{{ content.name }}'</h1>
+
+<article class="content-wrapper">
+	<ul>
+		{% for revision in revisions %}
+			<li>
+				<a href="{{ content.actions.edit }}?revision={{ revision.id }}">
+					Revision from {{ revision.the_date|date('jS M Y') }} at {{ revision.the_date|date('H:i') }}
+				</a>
+			</li>
+		{% endfor %}
+	</ul>
+</article>

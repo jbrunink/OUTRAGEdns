@@ -20,6 +20,12 @@
 				text-align: right;
 			}
 			
+			&.last
+			{
+				text-align: right;
+				padding-right: 1em;
+			}
+			
 			color: #FFF;
 		}
 	}

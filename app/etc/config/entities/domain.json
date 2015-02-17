@@ -9,11 +9,12 @@ entities:
 		
 		actions:
 		{
-			add:    { id: false }
-			edit:   { id: true }
-			remove: { id: true }
-			export: { id: true }
-			grid:   { id: false, default: true }
+			add:       { id: false }
+			edit:      { id: true }
+			export:    { id: true }
+			remove:    { id: true }
+			revisions: { id: true }
+			grid:      { id: false, default: true }
 		}
 	}
 }

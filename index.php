@@ -4,6 +4,10 @@
  */
 
 
+# let's show all errors
+ini_set("display_errors", "On");
+
+
 # what if Xerox wants to be secure?
 define("WWW_DIR", getenv("WWW_DIR") ?: $_SERVER["DOCUMENT_ROOT"]);
 define("APP_DIR", getenv("APP_DIR") ?: WWW_DIR."/app");

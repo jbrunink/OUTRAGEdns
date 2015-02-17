@@ -109,20 +109,63 @@ class Controller extends Entity\Controller
 			"list" => [],
 		);
 		
-		foreach($this->content->records as $record)
+		if(!empty($this->request->get->revision))
 		{
-			switch($record->type)
+			$stmt = $this->content->db->select()
+			             ->from("logs")
+			             ->select([ "the_date", "state" ])
+			             ->where("id = ?", $this->request->get->revision)
+			             ->where("content_type = ?", get_class($this->content))
+			             ->where("content_id = ?", $this->content->id)
+			             ->where("action = ?", "records")
+			             ->order("the_date DESC");
+			
+			$response = $stmt->invoke();
+			
+			if(!count($response))
 			{
-				case "SOA":
-					$this->response->records["soa"][] = $record;
-				break;
-				
-				case "NS":
-					$this->response->nameservers[] = $record->content;
-				
-				default:
-					$this->response->records["list"][] = $record;
-				break;
+				header("Location: ".$this->content->actions->edit);
+				exit;
+			}
+			
+			$state = unserialize($response[0]["state"]);
+			
+			foreach($state["records"] as $record)
+			{
+				switch($record->type)
+				{
+					case "SOA":
+						$this->response->records["soa"][] = $record;
+					break;
+					
+					case "NS":
+						$this->response->nameservers[] = $record->content;
+					
+					default:
+						$this->response->records["list"][] = $record;
+					break;
+				}
+			}
+			
+			new Notification\Success("You are currently editing records that were last active on ".date('jS M Y \a\t H:i', $response[0]["the_date"]).'.');
+		}
+		else
+		{
+			foreach($this->content->records as $record)
+			{
+				switch($record->type)
+				{
+					case "SOA":
+						$this->response->records["soa"][] = $record;
+					break;
+					
+					case "NS":
+						$this->response->nameservers[] = $record->content;
+					
+					default:
+						$this->response->records["list"][] = $record;
+					break;
+				}
 			}
 		}
 		
@@ -214,6 +257,36 @@ class Controller extends Entity\Controller
 		
 		echo $this->content->export($format, $use_prefix);		
 		exit;
+	}
+	
+	
+	/**
+	 *	Called when we want to retrieve the history.
+	 */
+	public function revisions($id)
+	{
+		if(!$this->content->id)
+			$this->content->load($id);
+		
+		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->response->user->id))
+		{
+			new Notification\Error("You don't have access to this domain.");
+			
+			header("Location: ".$this->content->actions->grid);
+			exit;
+		}
+		
+		$stmt = $this->content->db->select()
+		             ->from("logs")
+		             ->select([ "id", "the_date" ])
+		             ->where("content_type = ?", get_class($this->content))
+		             ->where("content_id = ?", $this->content->id)
+		             ->where("action = ?", "records")
+		             ->order("the_date DESC");
+		
+		$this->response->revisions = $stmt->invoke()->toArray();
+		
+		return $this->response->display("index.twig");
 	}
 	
 	

@@ -65,7 +65,7 @@ class Content extends Entity\Content
 	/**
 	 *	Called to save the user.
 	 */
-	public function save($post)
+	public function save($post = array())
 	{
 		return parent::save($post);
 	}
@@ -74,7 +74,7 @@ class Content extends Entity\Content
 	/**
 	 *	Called to edit the user.
 	 */
-	public function edit($post)
+	public function edit($post = array())
 	{
 		if(empty($post["password"]))
 			unset($post["password"]);

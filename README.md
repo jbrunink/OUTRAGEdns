@@ -14,7 +14,7 @@ I wouldn't suggest copying and pasting this into your terminal because hey, I ha
 
 	mysql -u root --database < app/setup/databases/powerdns.sql
 	mysql -u root --database < app/setup/databases/changes.sql
-    composer install
+    composer install -o
     
     cp app/etc/config/database.json.example app/etc/config/database.json
     vi app/etc/config/database.json
@@ -29,7 +29,7 @@ If you currently have a PowerDNS and Poweradmin installation, bless you, and ple
  - Pass: `ifacetherisk`
 
 ## Updating things and clearing the cache
-    composer update
+    composer update -o
 
 ## Licensing
 I think that's all I need to note at the moment. Oh, and the licence would have been GPL because I thought, hey, let's use some ideas from the Poweradmin repo but since no real specific code actually was transferred, I've chosen to offer it under the MIT/Expat Licence (included in the repo) - and if you want it under something such as the WTFPL then feel free to ask.
