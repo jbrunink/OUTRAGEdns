@@ -2,12 +2,16 @@
 
 <article class="content-wrapper">
 	<ul>
-		{% for revision in revisions %}
-			<li>
-				<a href="{{ content.actions.edit }}?revision={{ revision.id }}">
-					Revision from {{ revision.the_date|date('jS M Y') }} at {{ revision.the_date|date('H:i') }}
-				</a>
-			</li>
-		{% endfor %}
+		{% if revisions|length %}
+			{% for revision in revisions %}
+				<li>
+					<a href="{{ content.actions.edit }}?revision={{ revision.id }}">
+						Revision from {{ revision.the_date|date('jS M Y') }} at {{ revision.the_date|date('H:i') }}
+					</a>
+				</li>
+			{% endfor %}
+		{% else %}
+			<p>This domain has no revisions.</p>
+		{% endif %}
 	</ul>
 </article>

@@ -113,13 +113,13 @@ if($environment->session->current_users_id)
 			break;
 		}
 		
-		header("Location: ".(!empty($environment->headers->Referer) ? $environment->headers->Referer : "/dashboard/"));
+		header("Location: ".(!empty($environment->headers->Referer) ? $environment->headers->Referer : "/domains/grid/"));
 		exit;
 	});
 	
 	$router->failure(function()
 	{
-		header("Location: /dashboard/");
+		header("Location: /domains/grid/");
 		exit;
 	});
 }

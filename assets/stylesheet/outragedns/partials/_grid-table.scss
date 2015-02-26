@@ -173,12 +173,15 @@
 			{
 				&.sortable-item
 				{
-					background-color: #DBFFF0;
+					background-color: #FFF;
+					box-shadow: 0px 0px 15px #AAA;
+					border: 1px solid #AAA;
+					margin-left: -1px;
 				}
 			}
 		}
 		
-		transform: transform3d(0,0,0);
+		transform: transform3d(0, 0, 0);
 	}
 	
 	@extend %content-wrapper-generic;
