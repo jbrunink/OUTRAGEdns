@@ -94,6 +94,7 @@
 			var duplicate = $(this).parents("tr").first().clone().hide();
 			
 			duplicate.appendTo(table).fadeIn("fast");
+			duplicate.inherit();
 			
 			$(this).parents("table").data(Module.component).reindex();
 		},

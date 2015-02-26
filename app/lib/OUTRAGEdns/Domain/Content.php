@@ -260,17 +260,50 @@ class Content extends Entity\Content
 	/**
 	 *	Export the records to a string.
 	 */
-	public function export($format = "json", $use_prefix = true)
+	public function export($format = "json", $use_prefix = true, $revision_id = null)
 	{
+		$time = time();
+		$records = array();
+		
+		if(isset($revision_id))
+		{
+			$stmt = $this->db->select()
+			             ->from("logs")
+			             ->select([ "the_date", "state" ])
+			             ->where("id = ?", $revision_id)
+			             ->where("content_type = ?", get_class($this))
+			             ->where("content_id = ?", $this->id)
+			             ->where("action = ?", "records")
+			             ->order("the_date DESC");
+			
+			$response = $stmt->invoke();
+			
+			if(count($response))
+			{
+				$time = 0;
+				$state = unserialize($response[0]["state"]);
+				
+				if(!empty($state["records"]))
+				{
+					$time = $response[0]["the_date"];
+					$records = $state["records"];
+				}
+			}
+		}
+		else
+		{
+			$records = $this->records;
+		}
+		
 		switch($format)
 		{
 			case "json":
-				$response = [ "domain" => $this->name, "records" => [] ];
+				$response = [ "domain" => $this->name, "records" => [], "from" => date("r", $time) ];
 				
 				if($use_prefix)
 					$response["prefix"] = true;
 				
-				foreach($this->records as $record)
+				foreach($records as $record)
 				{
 					$store = $record->toArray();
 					
@@ -289,11 +322,12 @@ class Content extends Entity\Content
 			case "xml":
 				$response = new \SimpleXmlElement("<records></records>");
 				$response->addAttribute("domain", $this->name);
+				$response->addAttribute("from", date("r", $time));
 				
 				if($use_prefix)
 					$response->addAttribute("prefix", 1);
 				
-				foreach($this->records as $record)
+				foreach($records as $record)
 				{
 					$store = $record->toArray();
 					
@@ -317,6 +351,7 @@ class Content extends Entity\Content
 				
 				$response[] = ';';
 				$response[] = ';    Created by OUTRAGEdns';
+				$response[] = ';    Exported from records that were active on '.date("r", $time);
 				$response[] = ';';
 				$response[] = '';
 				
@@ -328,7 +363,7 @@ class Content extends Entity\Content
 				$max_ttl_len = 0;
 				$max_type_len = 0;
 				
-				foreach($this->records as $record)
+				foreach($records as $record)
 				{
 					$name = $use_prefix ? $record->prefix : $record->name;
 					
@@ -340,7 +375,7 @@ class Content extends Entity\Content
 				if(!$use_prefix)
 					$max_name_len += 1;
 				
-				foreach($this->records as $record)
+				foreach($records as $record)
 				{
 					$name = $use_prefix ? $record->prefix : $record->name.".";
 					

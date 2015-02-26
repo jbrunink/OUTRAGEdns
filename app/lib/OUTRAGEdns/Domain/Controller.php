@@ -130,20 +130,23 @@ class Controller extends Entity\Controller
 			
 			$state = unserialize($response[0]["state"]);
 			
-			foreach($state["records"] as $record)
+			if(!empty($state["records"]))
 			{
-				switch($record->type)
+				foreach($state["records"] as $record)
 				{
-					case "SOA":
-						$this->response->records["soa"][] = $record;
-					break;
-					
-					case "NS":
-						$this->response->nameservers[] = $record->content;
-					
-					default:
-						$this->response->records["list"][] = $record;
-					break;
+					switch($record->type)
+					{
+						case "SOA":
+							$this->response->records["soa"][] = $record;
+						break;
+						
+						case "NS":
+							$this->response->nameservers[] = $record->content;
+						
+						default:
+							$this->response->records["list"][] = $record;
+						break;
+					}
 				}
 			}
 			
@@ -255,7 +258,12 @@ class Controller extends Entity\Controller
 			break;
 		}
 		
-		echo $this->content->export($format, $use_prefix);		
+		$revision_id = null;
+		
+		if(!empty($this->request->get->revision))
+			$revision_id = $this->request->get->revision;
+		
+		echo $this->content->export($format, $use_prefix, $revision_id);		
 		exit;
 	}
 	

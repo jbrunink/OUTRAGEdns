@@ -114,6 +114,10 @@
 			</select>
 			
 			<input type="hidden" name="prefix" value="1" />
+			
+			{% if request.get.revision is not empty %}
+				<input type="hidden" name="revision" value="{{ request.get.revision }}" />
+			{% endif %}
 		</div>
 	</form>
 {% endif %}

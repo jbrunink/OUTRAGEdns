@@ -46,7 +46,7 @@ class Content extends Entity\Content
 		if(!$this->id)
 			return null;
 		
-		return Domain\Content::find()->where("owner = ?", $this->id)->sort("id ASC")->invoke("objects");
+		return Domain\Content::find()->leftJoin("zones", "zones.domain_id = domains.id")->where("zones.owner = ?", $this->id)->sort("id ASC")->invoke("objects");
 	}
 	
 	
@@ -58,7 +58,7 @@ class Content extends Entity\Content
 		if(!$this->id)
 			return 0;
 		
-		return Domain\Content::find()->where("owner = ?", $this->id)->invoke("count");
+		return Domain\Content::find()->leftJoin("zones", "zones.domain_id = domains.id")->where("zones.owner = ?", $this->id)->invoke("count");
 	}
 	
 	
