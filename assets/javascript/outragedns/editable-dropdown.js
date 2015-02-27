@@ -119,6 +119,7 @@
 				this.input.val(value);
 			
 			this.select.trigger(Module.component + "-spawn-input", [ this.input ]);
+			this.input.trigger("focus");
 			
 			return this.input;
 		}
