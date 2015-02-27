@@ -38,16 +38,19 @@ class Content extends Entity\Content
 		if(!isset($post["change_date"]))
 			$post["change_date"] = time();
 		
-		if($post["type"] === "SOA" && !isset($post["content"]))
+		if(array_key_exists("type", $post))
 		{
-			$post["content"] = sprintf("%s %s %s %d %d %d %d", $post["mname"], $post["rname"], $post["serial"], $post["refresh"], $post["retry"], $post["expire"], $post["minimum"]);
-			
-			unset($post["mname"]);
-			unset($post["rname"]);
-			unset($post["refresh"]);
-			unset($post["retry"]);
-			unset($post["expire"]);
-			unset($post["minimum"]);
+	    	if($post["type"] === "SOA" && !isset($post["content"]))
+    		{
+    			$post["content"] = sprintf("%s %s %s %d %d %d %d", $post["mname"], $post["rname"], $post["serial"], $post["refresh"], $post["retry"], $post["expire"], $post["minimum"]);
+    			
+    			unset($post["mname"]);
+    			unset($post["rname"]);
+    			unset($post["refresh"]);
+    			unset($post["retry"]);
+    			unset($post["expire"]);
+    			unset($post["minimum"]);
+    		}
 		}
 		
 		return parent::save($post);
