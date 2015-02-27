@@ -23,12 +23,12 @@
     	
     	{
     		"type": "git",
-    		"url": "git@github.com:pear/Services_JSON.git"
+    		"url": "https://github.com/pear/Services_JSON.git"
     	},
     	
     	{
     		"type": "git",
-    		"url": "git@github.com:pear/PEAR_Exception.git"
+    		"url": "https://github.com/pear/PEAR_Exception.git"
     	}
     ],
     
