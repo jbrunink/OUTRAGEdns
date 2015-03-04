@@ -72,7 +72,7 @@ ALTER TABLE `users`
 
 -- you don't really need this bit, it's just an example
 START TRANSACTION;
-	INSERT INTO `users` (`id`, `username`, `password`, `fullname`, `email`, `active`, `is_admin`)
+	INSERT INTO `users` (`id`, `username`, `password`, `fullname`, `email`, `active`, `admin`)
 	VALUES
 		(null, "admin", SHA1("ifacetherisk"), "Boring User", "outragedns@localhost", 1, 1);
 COMMIT;
