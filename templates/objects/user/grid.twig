@@ -14,9 +14,17 @@
 		</thead>
 		
 		<tbody>
-			{% for item in users %}
-				{% include "objects/user/grid-item.twig" with { content: item } %}
-			{% endfor %}
+			{% if users|length %}
+				{% for item in users %}
+					{% include "objects/user/grid-item.twig" with { content: item } %}
+				{% endfor %}
+			{% else %}
+				<tr>
+					<td colspan="4">
+						No users found
+					</td>
+				</tr>
+			{% endif %}
 		</tbody>
 	</table>
 	

@@ -22,9 +22,17 @@
 		</thead>
 		
 		<tbody>
-			{% for template in templates %}
-				{% include "objects/zonetemplate/grid-item.twig" with { content: template } %}
-			{% endfor %}
+			{% if templates|length %}
+				{% for template in templates %}
+					{% include "objects/zonetemplate/grid-item.twig" with { content: template } %}
+				{% endfor %}
+			{% else %}
+				<tr>
+					<td colspan="{% if godmode %}6{% else %}5{% endif %}">
+						No templates found
+					</td>
+				</tr>
+			{% endif %}
 		</tbody>
 	</table>
 	

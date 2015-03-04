@@ -23,9 +23,17 @@
 		</thead>
 		
 		<tbody>
-			{% for domain in domains %}
-				{% include "objects/domain/grid-item.twig" with { content: domain } %}
-			{% endfor %}
+			{% if domains|length %}
+				{% for domain in domains %}
+					{% include "objects/domain/grid-item.twig" with { content: domain } %}
+				{% endfor %}
+			{% else %}
+				<tr>
+					<td colspan="{% if godmode %}7{% else %}6{% endif %}">
+						No domains found
+					</td>
+				</tr>
+			{% endif %}
 		</tbody>
 	</table>
 	
