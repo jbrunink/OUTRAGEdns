@@ -67,7 +67,7 @@ CREATE TABLE `logs` (
 -- you'll need to have this bit too - kept separately so that users can just "upgrade"
 -- from the various versions (or perhaps if you're that way inclined, run them in parallel?
 ALTER TABLE `users`
-	ADD `is_admin` TINYINT(1) NOT NULL DEFAULT '0';
+	ADD `admin` TINYINT(1) NOT NULL DEFAULT '0';
 
 
 -- you don't really need this bit, it's just an example
