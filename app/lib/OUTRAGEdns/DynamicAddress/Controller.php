@@ -281,7 +281,7 @@ class Controller extends Entity\Controller
 			unset($domain->records);
 			
 			$domain->updateSerial();
-			$domain->log("records", [ "records" => $this->records ]);
+			$domain->log("records", [ "records" => $domain->records ]);
 		}
 		
 		$this->content->db->commit();
