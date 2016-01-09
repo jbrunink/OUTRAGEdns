@@ -76,3 +76,23 @@ START TRANSACTION;
 	VALUES
 		(null, "admin", SHA1("ifacetherisk"), "Boring User", "outragedns@localhost", 1, 1);
 COMMIT;
+
+
+-- This section is for custom dynamic DNS interfaces
+-- DW, 09/01
+CREATE TABLE `dynamic_addresses` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `owner` int(11) DEFAULT NULL,
+  `name` varchar(64) DEFAULT NULL,
+  `token` varchar(128) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
+
+CREATE TABLE `dynamic_addresses_records` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `dynamic_address_id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `parent` (`dynamic_address_id`),
+  CONSTRAINT `id` FOREIGN KEY (`dynamic_address_id`) REFERENCES `dynamic_addresses` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB;

@@ -1,0 +1,18 @@
+entities:
+{
+	dynamicaddressrecord:
+	{
+		namespace: "OUTRAGEdns.DynamicAddressRecord"
+		
+		type: "dynamicaddressrecord"
+		table: "dynamic_addresses_records"
+		
+		actions:
+		{
+			add:    { id: false }
+			edit:   { id: true }
+			remove: { id: true }
+			grid:   { id: false, default: true }
+		}
+	}
+}

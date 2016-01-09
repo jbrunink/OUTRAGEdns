@@ -1,0 +1,39 @@
+{% import "/includes/macros/form.twig" as forms %}
+
+<h1>List all dynamic addresses</h1>
+
+<form class="form-horizontal" method="POST">
+	<table class="grid-table">
+		<thead>
+			<tr>
+				<th width="0%" class="check"></th>
+				
+				{% if godmode %}
+					<th width="35%">Owner</th>
+					<th width="35%">Name</th>
+				{% else %}
+					<th width="70%">Name</th>
+				{% endif %}
+				
+				<th width="15%">No. of records</th>
+				<th width="15%" class="actions last">Actions</th>
+			</tr>
+		</thead>
+		
+		<tbody>
+			{% if domains|length %}
+				{% for domain in domains %}
+					{% include "objects/dynamicaddress/grid-item.twig" with { content: domain } %}
+				{% endfor %}
+			{% else %}
+				<tr>
+					<td colspan="{% if godmode %}7{% else %}6{% endif %}">
+						No dynamic addresses found
+					</td>
+				</tr>
+			{% endif %}
+		</tbody>
+	</table>
+	
+	<a class="button pull-right" href="{{ content.actions.add }}">Add dynamic address</a>
+</form>

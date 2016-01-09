@@ -1,0 +1,34 @@
+<tr{% if class %} class="{{ class|e }}"{% endif %}>
+	<td class="move-bar">
+	</td>
+	
+	<td class="with-suffix">
+		<select name="records[]">
+			<option value=""></option>
+			
+			{% for domain, items in available_records %}
+				<optgroup label="{{ domain|e }}">
+					{% for item in items %}
+						<option value="{{ item|e }}"{% if record == item %} selected="selected"{% endif %}>{{ item|e }}</option>
+					{% endfor %}
+				</optgroup>
+			{% endfor %}
+		</select>
+	</td>
+	
+	<td class="actions">
+		<ul>
+			<li class="clone">
+				<a href="#" class="tooltip" title="Clone">
+					<i class="fa fa-plus"></i>
+				</a>
+			</li>
+			
+			<li class="remove">
+				<a href="#" class="tooltip" title="Remove">
+					<i class="fa fa-trash-o"></i>
+				</a>
+			</li>
+		</ul>
+	</td>
+</tr>

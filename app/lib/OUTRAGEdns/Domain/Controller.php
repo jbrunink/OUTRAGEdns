@@ -29,7 +29,7 @@ class Controller extends Entity\Controller
 					$values = $this->form->values();
 					
 					if(empty($values["owner"]))
-						$values["owner"] = $this->response->user;
+						$values["owner"] = $this->response->user->id;
 					
 					$this->content->save($values);
 					$this->content->db->commit();

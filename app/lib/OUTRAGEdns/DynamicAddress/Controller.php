@@ -1,0 +1,264 @@
+<?php
+/**
+ *	Dynamic address model for OUTRAGEdns
+ */
+
+
+namespace OUTRAGEdns\DynamicAddress;
+
+use \OUTRAGEdns\Entity;
+use \OUTRAGEdns\Notification;
+
+
+class Controller extends Entity\Controller
+{
+	/**
+	 *	Called when we want to add a domain.
+	 */
+	public function add()
+	{
+		if(!empty($this->request->post->commit))
+		{
+			if($this->form->validate($this->request->post->toArray()))
+			{
+				try
+				{
+					$this->content->db->begin();
+					
+					$values = $this->form->values();
+					
+					if(empty($values["owner"]))
+						$values["owner"] = $this->response->user->id;
+					
+					if(empty($values["token"]))
+						$values["token"] = sha1(json_encode($values).uniqid().rand(1, 5000));
+					
+					$this->content->save($values);
+					$this->content->db->commit();
+					
+					new Notification\Success("Successfully created the domain: ".$this->content->name);
+					
+					header("Location: ".$this->content->actions->edit);
+					exit;
+				}
+				catch(Exception $exception)
+				{
+					$this->content->db->rollback();
+					
+					new Notification\Error("This domain wasn't added due to an internal error.");
+				}
+			}
+		}
+		
+		return $this->response->display("index.twig");
+	}
+	
+	
+	/**
+	 *	Called when we want to edit a domain.
+	 */
+	public function edit($id)
+	{
+		if(!$this->content->id)
+			$this->content->load($id);
+		
+		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->response->user->id))
+		{
+			new Notification\Error("You don't have access to this domain.");
+			
+			header("Location: ".$this->content->actions->grid);
+			exit;
+		}
+		
+		if(!empty($this->request->post->commit))
+		{
+			if($this->form->validate($this->request->post->toArray()))
+			{
+				try
+				{
+					$this->content->db->begin();
+					
+					$values = $this->form->values();
+					
+					if(empty($values["token"]))
+						$values["token"] = sha1(json_encode($values).uniqid().rand(1, 5000));
+					
+					$this->content->edit($values);
+					$this->content->db->commit();
+					
+					new Notification\Success("Successfully updated the domain: ".$this->content->name);
+				}
+				catch(Exception $exception)
+				{
+					$this->content->db->rollback();
+					
+					new Notification\Error("This zone template wasn't edited due to an internal error.");
+				}
+			}
+		}
+		
+		# grab a list of currently selected domains
+		$list = [];
+		
+		foreach($this->content->records as $record)
+		{
+			if($record->targets)
+				$list[] = $record->targets[0]->name;
+		}
+		
+		$this->response->selected_records = $list;
+		
+		# we will need to get the list of domains that this user owns
+		# and use this as the basis for our list
+		$list = [];
+		
+		foreach($this->content->user->domains as $domain)
+		{
+			foreach($domain->records as $record)
+			{
+				switch($record->type)
+				{
+					case "A":
+					case "AAAA":
+						if(!isset($list[$domain->name]))
+							$list[$domain->name] = array();
+						
+						$list[$domain->name][] = $record->name;
+					break;
+				}
+			}
+			
+			if(isset($list[$domain->name]))
+				$list[$domain->name] = array_unique($list[$domain->name]);
+		}
+		
+		$this->response->available_records = $list;
+		
+		return $this->response->display("index.twig");
+	}
+	
+	
+	/**
+	 *	Called when we want to remove a domain.
+	 */
+	public function remove($id)
+	{
+		if(!$this->content->id)
+			$this->content->load($id);
+		
+		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->response->user->id))
+		{
+			new Notification\Error("You don't have access to this domain.");
+			
+			header("Location: ".$this->content->actions->grid);
+			exit;
+		}
+		
+		try
+		{
+			$this->content->db->begin();
+			$this->content->remove();
+			$this->content->db->commit();
+			
+			new Notification\Success("Successfully removed the domain: ".$this->content->name);
+		}
+		catch(Exception $exception)
+		{
+			$this->content->db->rollback();
+			
+			new Notification\Error("This zone template wasn't removed due to an internal error.");
+		}
+		
+		header("Location: ".$this->content->actions->grid);
+		exit;
+	}
+	
+	
+	/**
+	 *	Called when we want show the grid view.
+	 */
+	public function grid()
+	{
+		if(!$this->response->domains)
+		{
+			$request = Content::find();
+			$request->sort("id ASC");
+			
+			if(!$this->response->godmode)
+				$request->where("owner = ?", $this->response->user->id);
+			
+			$this->response->domains = $request->invoke("objects");
+		}
+		
+		return $this->response->display("index.twig");
+	}
+	
+	
+	/**
+	 *	Called when we want to update records with a new IP address.
+	 */
+	public function updateDynamicAddresses($token)
+	{
+		$this->content = Content::find()->where("token = ?", $token)->invoke("first");
+		
+		if(!$this->content)
+		{
+			header("HTTP/1.1 404 Not Found");
+			exit;
+		}
+		
+		$this->content->db->begin();
+		
+		# first we need to build a list of domains that will be
+		# affected - useful for revision management
+		$domains = [];
+		
+		foreach($this->content->records as $record)
+		{
+			if(!$record->targets)
+				continue;
+			
+			$domain_id = $record->targets[0]->domain_id;
+			
+			if(empty($domains[$domain_id]))
+				$domains[$domain_id] = $record->targets[0]->parent;
+		}
+		
+		# and then we need to go through all the records we have, change
+		# the value to what is required...
+		$ip_addr = $_SERVER["REMOTE_ADDR"];
+		$ip_type = null;
+		
+		if(filter_var($ip_addr, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4))
+			$ip_type = "A";
+		if(filter_var($ip_addr, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6))
+			$ip_type = "AAAA";
+		
+		# and now hunt through all the records, being ruthless
+		# in their replacement
+		foreach($this->content->records as $record)
+		{
+			if(!$record->targets)
+				continue;
+			
+			foreach($record->targets as $target)
+			{
+				if($target->type == $ip_type)
+					$target->edit([ "content" => $ip_addr ]);
+			}
+		}
+		
+		# now we dive back to the domains - we need to update the serial and
+		# log the changes to version management.
+		foreach($domains as $domain)
+		{
+			unset($domain->records);
+			
+			$domain->updateSerial();
+			$domain->log("records", [ "records" => $this->records ]);
+		}
+		
+		$this->content->db->commit();
+		exit;
+	}
+}

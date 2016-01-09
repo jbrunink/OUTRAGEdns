@@ -134,6 +134,9 @@ else
 	});
 }
 
+# router is also required for the snazzy dynamic DNS feature
+$router->register("/dynamic-dns/:token/", [ new \OUTRAGEdns\DynamicAddress\Controller(), "updateDynamicAddresses" ]);
+
 
 # run our router!
 $router->invoke($environment);
