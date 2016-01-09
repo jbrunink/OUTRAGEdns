@@ -50,6 +50,32 @@ class Controller extends Entity\Controller
 			}
 		}
 		
+		# we will need to get the list of domains that this user owns
+		# and use this as the basis for our list
+		$list = [];
+		
+		foreach($this->response->user->domains as $domain)
+		{
+			foreach($domain->records as $record)
+			{
+				switch($record->type)
+				{
+					case "A":
+					case "AAAA":
+						if(!isset($list[$domain->name]))
+							$list[$domain->name] = array();
+						
+						$list[$domain->name][] = $record->name;
+					break;
+				}
+			}
+			
+			if(isset($list[$domain->name]))
+				$list[$domain->name] = array_unique($list[$domain->name]);
+		}
+		
+		$this->response->available_records = $list;
+		
 		return $this->response->display("index.twig");
 	}
 	
