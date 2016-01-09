@@ -235,21 +235,6 @@ class Controller extends Entity\Controller
 		
 		$this->content->db->begin();
 		
-		# first we need to build a list of domains that will be
-		# affected - useful for revision management
-		$domains = [];
-		
-		foreach($this->content->records as $record)
-		{
-			if(!$record->targets)
-				continue;
-			
-			$domain_id = $record->targets[0]->domain_id;
-			
-			if(empty($domains[$domain_id]))
-				$domains[$domain_id] = $record->targets[0]->parent;
-		}
-		
 		# and then we need to go through all the records we have, change
 		# the value to what is required...
 		$ip_addr = $_SERVER["REMOTE_ADDR"];
@@ -262,6 +247,8 @@ class Controller extends Entity\Controller
 		
 		# and now hunt through all the records, being ruthless
 		# in their replacement
+		$domains = [];
+		
 		foreach($this->content->records as $record)
 		{
 			if(!$record->targets)
@@ -269,8 +256,13 @@ class Controller extends Entity\Controller
 			
 			foreach($record->targets as $target)
 			{
-				if($target->type == $ip_type)
+				if($target->type == $ip_type && $target->content != $ip_addr)
+				{
+					if(!isset($domains[$target->parent->id]))
+						$domains[$target->parent->id] = $target->parent;
+					
 					$target->edit([ "content" => $ip_addr ]);
+				}
 			}
 		}
 		
