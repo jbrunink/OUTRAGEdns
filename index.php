@@ -24,24 +24,35 @@ $whoops->register();
 
 
 # and now load the config
+use \OUTRAGEdns\User as User;
 use \OUTRAGEweb\Cache\File as Cache;
 use \OUTRAGEweb\Configuration\Wallet as Wallet;
 use \OUTRAGEweb\Request\Environment as Environment;
 use \OUTRAGEweb\Request\Router as Router;
-use \OUTRAGEdns\User as User;
-
 use Symfony\Component\Yaml\Yaml;
 
-$array = [];
+$cache = Cache::getInstance();
 
-foreach(glob(APP_DIR."/etc/config/*.yaml") as $file)
-	$array = array_merge_recursive($array, Yaml::parse(file_get_contents($file)));
-
-foreach(glob(APP_DIR."/etc/config/entities/*.yaml") as $file)
-	$array = array_merge_recursive($array, Yaml::parse(file_get_contents($file)));
-
-$configuration = Wallet::getInstance();
-$configuration->load($array);
+if($cache->test("site-config"))
+{
+	$configuration = Wallet::getInstance();
+	$configuration->load($cache->load("site-config"));
+}
+else
+{
+	$array = [];
+	
+	foreach(glob(APP_DIR."/etc/config/*.yaml") as $file)
+		$array = array_merge_recursive($array, Yaml::parse(file_get_contents($file)));
+	
+	foreach(glob(APP_DIR."/etc/config/entities/*.yaml") as $file)
+		$array = array_merge_recursive($array, Yaml::parse(file_get_contents($file)));
+	
+	$configuration = Wallet::getInstance();
+	$configuration->load($array);
+	
+	$cache->save("site-config", $array);
+}
 
 session_start();
 
