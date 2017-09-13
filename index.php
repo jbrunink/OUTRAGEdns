@@ -5,8 +5,6 @@
 
 
 # let's show all errors
-ini_set("display_errors", "On");
-
 if(!ini_get("date.timezone"))
 	date_default_timezone_set("UTC");
 
@@ -18,33 +16,32 @@ define("APP_DIR", getenv("APP_DIR") ?: WWW_DIR."/app");
 
 # let's now use composer because i'd potentially like to use my
 # framework in other places
-require APP_DIR."/ext/lib/autoload.php";
+require WWW_DIR."/vendor/autoload.php";
+
+$whoops = new \Whoops\Run();
+$whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler());
+$whoops->register();
 
 
 # and now load the config
 use \OUTRAGEweb\Cache\File as Cache;
 use \OUTRAGEweb\Configuration\Wallet as Wallet;
-use \OUTRAGEweb\Configuration\Loader\WeakJSON as ConfigLoader;
 use \OUTRAGEweb\Request\Environment as Environment;
 use \OUTRAGEweb\Request\Router as Router;
 use \OUTRAGEdns\User as User;
 
-$cache = Cache::getInstance();
-$configuration = Wallet::getInstance();
+use Symfony\Component\Yaml\Yaml;
 
-if($cache->test("__main_config"))
-{
-	$configuration->load($cache->load("__main_config"));
-}
-else
-{
-	$loader = new ConfigLoader();
-	
-	$loader->import(APP_DIR."/etc/config/*.json");
-	$loader->import(APP_DIR."/etc/config/entities/*.json");
-	
-	$configuration->load($loader);
-}
+$array = [];
+
+foreach(glob(APP_DIR."/etc/config/*.yaml") as $file)
+	$array = array_merge_recursive($array, Yaml::parse(file_get_contents($file)));
+
+foreach(glob(APP_DIR."/etc/config/entities/*.yaml") as $file)
+	$array = array_merge_recursive($array, Yaml::parse(file_get_contents($file)));
+
+$configuration = Wallet::getInstance();
+$configuration->load($array);
 
 session_start();
 

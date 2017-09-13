@@ -1,0 +1,16 @@
+--- 
+entities: 
+  zone: 
+    actions: 
+      add: 
+        id: false
+      edit: 
+        id: true
+      grid: 
+        default: true
+        id: false
+      remove: 
+        id: true
+    namespace: OUTRAGEdns.Zone
+    table: zones
+    type: zone

@@ -1,0 +1,44 @@
+--- 
+records: 
+  priorities: 
+    - MX
+    - SRV
+  soa: 
+    nameservers: []
+  synctypes: 
+    MASTER: "Master (AXFR)"
+    NATIVE: "Native (DB Replication)"
+  ttl: 
+    10800: "3 hrs"
+    14400: "4 hrs"
+    300: "5 mins"
+    3600: "1 hr"
+    43200: "12 hrs"
+    60: "1 min"
+    600: "10 mins"
+    604800: "1 wk"
+    7200: "2 hrs"
+    86400: "24 hrs"
+  types: 
+    - A
+    - AAAA
+    - AFSDB
+    - CERT
+    - CNAME
+    - DNSKEY
+    - DS
+    - HINFO
+    - KEY
+    - LOC
+    - MX
+    - NAPTR
+    - NS
+    - NSEC
+    - PTR
+    - RP
+    - RRSIG
+    - SOA
+    - SPF
+    - SSHFP
+    - SRV
+    - TXT

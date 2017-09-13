@@ -1,16 +1,11 @@
 {
-	"config": { 
-		"bin-dir":"app/ext/bin",
-		"cache-dir":"app/ext/cache",
-		"vendor-dir":"app/ext/lib"
-	},
 	"require": {  
 		"twig/twig":"1.*",
-		"pear/services_json":"dev-trunk",
-		"pear/pear_exception":"dev-master",
 		"westie/outrageweb":"dev-master",
 		"outragelib/delegator":"dev-master",
-		"outragelib/validate": "dev-master"
+		"outragelib/validate": "dev-master",
+		"symfony/yaml": "^4.0@dev",
+		"filp/whoops": "^2.0@dev"
 	},
 	"repositories": [  
 		{

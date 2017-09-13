@@ -1,0 +1,22 @@
+--- 
+entities: 
+  user: 
+    actions: 
+      account: 
+        global: true
+        id: false
+      add: 
+        id: false
+      dashboard: 
+        global: true
+        id: false
+      edit: 
+        id: true
+      grid: 
+        default: true
+        id: false
+      remove: 
+        id: true
+    namespace: OUTRAGEdns.User
+    table: users
+    type: user

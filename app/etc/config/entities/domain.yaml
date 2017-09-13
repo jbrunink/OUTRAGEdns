@@ -1,0 +1,20 @@
+--- 
+entities: 
+  domain: 
+    actions: 
+      add: 
+        id: false
+      edit: 
+        id: true
+      export: 
+        id: true
+      grid: 
+        default: true
+        id: false
+      remove: 
+        id: true
+      revisions: 
+        id: true
+    namespace: OUTRAGEdns.Domain
+    table: domains
+    type: domain
