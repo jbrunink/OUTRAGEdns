@@ -19,13 +19,13 @@ class Controller extends Entity\Controller
 	{
 		if(!empty($this->request->post->commit))
 		{
-			if($this->form->validate($this->request->post->toArray()))
+			if($this->form->validate($this->request->post))
 			{
 				try
 				{
 					$this->content->db->begin();
 					
-					$values = $this->form->values();
+					$values = $this->form->getValues();
 					
 					if(empty($values["owner"]))
 						$values["owner"] = $this->response->user->id;
@@ -98,13 +98,13 @@ class Controller extends Entity\Controller
 		
 		if(!empty($this->request->post->commit))
 		{
-			if($this->form->validate($this->request->post->toArray()))
+			if($this->form->validate($this->request->post))
 			{
 				try
 				{
 					$this->content->db->begin();
 					
-					$values = $this->form->values();
+					$values = $this->form->getValues();
 					
 					if(empty($values["token"]))
 						$values["token"] = sha1(json_encode($values).uniqid().rand(1, 5000));

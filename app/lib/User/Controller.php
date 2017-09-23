@@ -24,12 +24,12 @@ class Controller extends Entity\Controller
 		
 		if(!empty($this->request->post->commit))
 		{
-			if($this->form->validate($this->request->post->toArray()))
+			if($this->form->validate($this->request->post))
 			{
 				try
 				{
 					$this->content->db->begin();
-					$this->content->save($this->form->values());
+					$this->content->save($this->form->getValues());
 					$this->content->db->commit();
 					
 					new Notification\Success("Successfully added this user.");
@@ -73,12 +73,12 @@ class Controller extends Entity\Controller
 		
 		if(!empty($this->request->post->commit))
 		{
-			if($this->form->validate($this->request->post->toArray()))
+			if($this->form->validate($this->request->post))
 			{
 				try
 				{
 					$this->content->db->begin();
-					$this->content->edit($this->form->values());
+					$this->content->edit($this->form->getValues());
 					$this->content->db->commit();
 					
 					if($this->request->session->current_users_id == $this->content->id)
@@ -185,9 +185,9 @@ class Controller extends Entity\Controller
 		
 		$form = new FormAuthenticate();
 		
-		if($form->validate($this->request->post->toArray()))
+		if($form->validate($this->request->post))
 		{
-			if($this->content->authenticate($this->request, $form->values()))
+			if($this->content->authenticate($this->request, $form->getValues()))
 			{
 				header("Location: /");
 				exit;

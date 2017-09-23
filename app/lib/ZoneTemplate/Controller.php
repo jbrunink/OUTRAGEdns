@@ -19,13 +19,13 @@ class Controller extends Entity\Controller
 	{
 		if(!empty($this->request->post->commit))
 		{
-			if($this->form->validate($this->request->post->toArray()))
+			if($this->form->validate($this->request->post))
 			{
 				try
 				{
 					$this->content->db->begin();
 					
-					$values = $this->form->values();
+					$values = $this->form->getValues();
 					
 					if($this->response->user)
 						$values["owner"] = $this->response->user;
@@ -75,12 +75,12 @@ class Controller extends Entity\Controller
 		
 		if(!empty($this->request->post->commit))
 		{
-			if($this->form->validate($this->request->post->toArray()))
+			if($this->form->validate($this->request->post))
 			{
 				try
 				{
 					$this->content->db->begin();
-					$this->content->edit($this->form->values());
+					$this->content->edit($this->form->getValues());
 					$this->content->db->commit();
 					
 					new Notification\Success("Successfully updated the zone template: ".$this->content->name);

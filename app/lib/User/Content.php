@@ -67,6 +67,9 @@ class Content extends Entity\Content
 	 */
 	public function save($post = array())
 	{
+		if(!empty($post["password"]))
+			$post["password"] = sha1($post["password"]);
+		
 		return parent::save($post);
 	}
 	
@@ -78,6 +81,8 @@ class Content extends Entity\Content
 	{
 		if(empty($post["password"]))
 			unset($post["password"]);
+		else
+			$post["password"] = sha1($post["password"]);
 		
 		return parent::edit($post);
 	}
@@ -93,7 +98,7 @@ class Content extends Entity\Content
 		
 		$target = $this->find()
 		               ->where("username LIKE ?", $credentials["username"])
-		               ->where("password LIKE ?", $credentials["password"])
+		               ->where("password LIKE ?", sha1($credentials["password"]))
 		               ->where("active = 1")
 		               ->invoke("first");
 		

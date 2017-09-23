@@ -6,42 +6,39 @@
 
 namespace OUTRAGEdns\User;
 
-use OUTRAGEweb\FormElement;
-use OUTRAGEweb\Validate;
+use \OUTRAGEdns\Validate\Element;
+use \OUTRAGEdns\Validate\ElementList;
 
 
-class Form extends Validate\Template
+class Form extends ElementList
 {
 	/**
 	 *	Define what fields we want this form to have.
 	 */
 	public function rules()
 	{
-		parent::rules();
-		
 		# fullname
-		$fullname = new FormElement\Text("fullname");
+		$fullname = new Element("fullname");
 		$fullname->required(true);
 		$fullname->appendTo($this);
 		
 		# username
-		$username = new FormElement\Text("username");
+		$username = new Element("username");
 		$username->required(true);
 		$username->appendTo($this);
 		
 		# password
-		$password = new FormElement\Text("password");
-		$password->password(false);
+		$password = new Element("password");
 		$password->required(false);
 		$password->appendTo($this);
 		
 		# description
-		$description = new FormElement\Textarea("description");
+		$description = new Element("description");
 		$description->required(false);
 		$description->appendTo($this);
 		
 		# email
-		$email = new FormElement\Text("email");
+		$email = new Element("email");
 		$email->required(true);
 		$email->appendTo($this);
 	}
@@ -52,7 +49,7 @@ class Form extends Validate\Template
 	 */
 	public function rulesAdd()
 	{
-		$this->getElement("password")->required(true)->password(true);
+		$this->getElement("password")->required(true);
 	}
 	
 	
@@ -61,7 +58,7 @@ class Form extends Validate\Template
 	 */
 	public function rulesEdit()
 	{
-		$this->getElement("password")->required(false)->password(false);
+		$this->getElement("password")->required(false);
 	}
 	
 	
@@ -70,11 +67,11 @@ class Form extends Validate\Template
 	 */
 	public function rulesAdmin()
 	{
-		$admin = new FormElement\Text("admin");
+		$admin = new Element("admin");
 		$admin->required(false);
 		$admin->appendTo($this);
 		
-		$active = new FormElement\Text("active");
+		$active = new Element("active");
 		$active->required(false);
 		$active->appendTo($this);
 	}

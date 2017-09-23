@@ -6,54 +6,55 @@
 
 namespace OUTRAGEdns\Record;
 
-use OUTRAGEweb\Configuration;
-use OUTRAGEweb\FormElement;
-use OUTRAGEweb\Validate;
-use OUTRAGEweb\Validate\Conditions;
-use OUTRAGEdns\Validate\Conditions as Constraint;
-use OUTRAGEdns\ZoneTemplate;
+use \OUTRAGEdns\Validate\Constraint;
+use \OUTRAGEdns\Validate\Constraint\FullyQualifiedDomainName;
+use \OUTRAGEdns\Validate\Constraint\IPv4;
+use \OUTRAGEdns\Validate\Constraint\IPv6;
+use \OUTRAGEdns\Validate\Element;
+use \OUTRAGEdns\Validate\ElementList;
+use \OUTRAGEdns\ZoneTemplate\Form as ZoneTemplateForm;
+use \OUTRAGElib\Validate\Transformer\StringModifier;
+use \OUTRAGEweb\Configuration;
 
 
-class Form extends Validate\Template
+class Form extends ElementList
 {
 	/**
 	 *	Define what fields we want this form to have.
 	 */
 	public function rules()
 	{
-		parent::rules();
-		
 		$config = Configuration\Wallet::getInstance();
 		
 		# name
-		$name = new FormElement\Text("name");
-		$name->label("Record");
+		$name = new Element("name");
+		$name->setLabel("Record");
 		$name->required(false);
 		$name->appendTo($this);
 		
 		# type
-		$type = new FormElement\Text("type");
-		$type->label("Type");
+		$type = new Element("type");
+		$type->setLabel("Type");
 		$type->contains($config->records->types->toArray());
 		$type->required(true);
 		$type->appendTo($this);
 		
 		# content
-		$content = new FormElement\Text("content");
-		$content->label("Content");
+		$content = new Element("content");
+		$content->setLabel("Content");
 		$content->required(true);
 		$content->appendTo($this);
 		
 		# content
-		$ttl = new FormElement\Text("ttl");
-		$ttl->label("TTL");
+		$ttl = new Element("ttl");
+		$ttl->setLabel("TTL");
 		$ttl->required(true);
 		$ttl->appendTo($this);
 		
 		# content
-		$prio = new FormElement\Text("prio");
-		$prio->label("Priority");
-		$prio->default("0");
+		$prio = new Element("prio");
+		$prio->setLabel("Priority");
+		$prio->setDefault("0");
 		$prio->required(false);
 		$prio->appendTo($this);
 	}
@@ -72,7 +73,7 @@ class Form extends Validate\Template
 		# to type in their full domain name to make an entry, let's add a
 		# suffix transformer, to make PowerDNS and woot happy.
 		if($suffix = $this->getSuffix($input))
-			$this->getElement("name")->addCondition(new Conditions\StringModifier($suffix, Conditions\StringModifier::SUFFIX));
+			$this->getElement("name")->addConstraint(new StringModifier($suffix, StringModifier::SUFFIX));
 		
 		# now choose what things we need to validate against
 		$input["type"] = strtoupper($input["type"]);
@@ -80,38 +81,38 @@ class Form extends Validate\Template
 		switch($input["type"])
 		{
 			case "SOA":
-				$mname = new FormElement\Text("mname");
-				$mname->label("Primary NS");
+				$mname = new Element("mname");
+				$mname->setLabel("Primary NS");
 				$mname->required(true);
 				$mname->appendTo($this);
 				
-				$rname = new FormElement\Text("rname");
-				$rname->label("Contact");
+				$rname = new Element("rname");
+				$rname->setLabel("Contact");
 				$rname->required(true);
 				$rname->appendTo($this);
 				
-				$refresh = new FormElement\Text("refresh");
-				$refresh->label("Refresh");
+				$refresh = new Element("refresh");
+				$refresh->setLabel("Refresh");
 				$refresh->required(true);
 				$refresh->appendTo($this);
 				
-				$refresh = new FormElement\Text("serial");
-				$refresh->label("Serial");
+				$refresh = new Element("serial");
+				$refresh->setLabel("Serial");
 				$refresh->required(true);
 				$refresh->appendTo($this);
 				
-				$retry = new FormElement\Text("retry");
-				$retry->label("Retry");
+				$retry = new Element("retry");
+				$retry->setLabel("Retry");
 				$retry->required(true);
 				$retry->appendTo($this);
 				
-				$expire = new FormElement\Text("expire");
-				$expire->label("Expire");
+				$expire = new Element("expire");
+				$expire->setLabel("Expire");
 				$expire->required(true);
 				$expire->appendTo($this);
 				
-				$minimum = new FormElement\Text("minimum");
-				$minimum->label("Minimum");
+				$minimum = new Element("minimum");
+				$minimum->setLabel("Minimum");
 				$minimum->required(true);
 				$minimum->appendTo($this);
 				
@@ -119,16 +120,16 @@ class Form extends Validate\Template
 			break;
 			
 			case "A":
-				$this->getElement("content")->addCondition(new Constraint\IPv4());
+				$this->getElement("content")->addConstraint(new IPv4());
 			break;
 			
 			case "AAAA":
-				$this->getElement("content")->addCondition(new Constraint\IPv6());
+				$this->getElement("content")->addConstraint(new IPv6());
 			break;
 			
 			case "CNAME":
-				if($this instanceof ZoneTemplate\Form == false)
-					$this->getElement("content")->addCondition(new Constraint\FullyQualifiedDomainName());
+				if($this instanceof ZoneTemplateForm == false)
+					$this->getElement("content")->addConstraint(new FullyQualifiedDomainName());
 			break;
 		}
 		
