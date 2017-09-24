@@ -6,6 +6,7 @@
 
 namespace OUTRAGEdns\Record;
 
+use \OUTRAGEdns\Configuration\Configuration;
 use \OUTRAGEdns\Validate\Constraint;
 use \OUTRAGEdns\Validate\Constraint\FullyQualifiedDomainName;
 use \OUTRAGEdns\Validate\Constraint\IPv4;
@@ -14,7 +15,6 @@ use \OUTRAGEdns\Validate\Element;
 use \OUTRAGEdns\Validate\ElementList;
 use \OUTRAGEdns\ZoneTemplate\Form as ZoneTemplateForm;
 use \OUTRAGElib\Validate\Transformer\StringModifier;
-use \OUTRAGEweb\Configuration;
 
 
 class Form extends ElementList
@@ -24,7 +24,7 @@ class Form extends ElementList
 	 */
 	public function rules()
 	{
-		$config = Configuration\Wallet::getInstance();
+		$configuration = Configuration::getInstance();
 		
 		# name
 		$name = new Element("name");
@@ -35,7 +35,7 @@ class Form extends ElementList
 		# type
 		$type = new Element("type");
 		$type->setLabel("Type");
-		$type->contains($config->records->types->toArray());
+		$type->contains($configuration->records->types->toArray());
 		$type->required(true);
 		$type->appendTo($this);
 		

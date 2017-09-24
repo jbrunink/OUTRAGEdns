@@ -6,12 +6,19 @@
 
 namespace OUTRAGEdns\Entity;
 
-use \OUTRAGEweb\Entity;
+use \OUTRAGEdns\Configuration\Configuration;
 use \OUTRAGEweb\Construct;
+use \OUTRAGEweb\Entity;
 
 
 class Content extends Entity\Content
 {
+	/**
+	 *	Use custom delegator trait
+	 */
+	use DelegatorTrait;
+	
+	
 	/**
 	 *	Let's define some actions.
 	 */

@@ -9,7 +9,6 @@ namespace OUTRAGEdns\ZoneTemplate;
 use \OUTRAGEdns\Validate\Element;
 use \OUTRAGEdns\Validate\ElementList;
 use \OUTRAGEdns\ZoneTemplateRecord\Form as ZoneTemplateRecordForm; 
-use \OUTRAGEweb\Configuration;
 
 
 class Form extends ElementList

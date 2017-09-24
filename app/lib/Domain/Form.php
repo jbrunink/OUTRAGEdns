@@ -6,10 +6,10 @@
 
 namespace OUTRAGEdns\Domain;
 
+use \OUTRAGEdns\Configuration\Configuration;
 use \OUTRAGEdns\Record\Form as RecordForm; 
 use \OUTRAGEdns\Validate\Element;
 use \OUTRAGEdns\Validate\ElementList;
-use \OUTRAGEweb\Configuration;
 
 
 class Form extends ElementList
@@ -19,7 +19,7 @@ class Form extends ElementList
 	 */
 	public function rules()
 	{
-		$config = Configuration\Wallet::getInstance();
+		$configuration = Configuration::getInstance();
 		
 		# name
 		$name = new Element("name");
@@ -29,7 +29,7 @@ class Form extends ElementList
 		# type
 		$type = new Element("type");
 		$type->required(true);
-		$type->contains($config->records->synctypes->toArrayKeys());
+		$type->contains(array_keys($configuration->records->synctypes->toArray()));
 		$type->appendTo($this);
 		
 		# zone template

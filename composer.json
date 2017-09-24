@@ -5,7 +5,10 @@
 		"outragelib/delegator":"dev-master",
 		"outragelib/validate": "dev-master",
 		"symfony/yaml": "^4.0@dev",
-		"filp/whoops": "^2.0@dev"
+		"filp/whoops": "^2.0@dev",
+		"silex/silex": "~2.0",
+		"symfony/cache": "^4.0@dev",
+		"outragelib/objectlist": "dev-master"
 	},
 	"repositories": [  
 		{
