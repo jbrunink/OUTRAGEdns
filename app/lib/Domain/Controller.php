@@ -19,7 +19,7 @@ class Controller extends Entity\Controller
 	public function add()
 	{
 		if(!empty($this->request->post->commit))
-		{
+		{	
 			if($this->form->validate($this->request->post))
 			{
 				try

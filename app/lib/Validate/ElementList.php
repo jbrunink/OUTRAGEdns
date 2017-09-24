@@ -16,12 +16,12 @@ class ElementList extends ElementListParent
 		# this fun thing is for ajax validation, weirdly enough
 		if(!empty($_POST["::validate"]))
 		{
-			$result = array
+			$output = array
 			(
 				"errors" => $this->getErrors() ?: false,
 			);
 			
-			echo json_encode($result, JSON_PRETTY_PRINT);
+			echo json_encode($output, JSON_PRETTY_PRINT);
 			exit;
 		}
 		

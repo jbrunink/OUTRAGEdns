@@ -52,10 +52,10 @@
 			
 			this.form.find(":input[name]").not(":disabled").each(function()
 			{
-				var clone = $(this).clone().data(Module.component + "-element", this);
+				var clone = $(this).clone();
 				
-				if(!clone.val())
-					clone.val($(this).val());
+				clone.data(Module.component + "-element", this);
+				clone.val($(this).val());
 				
 				elements.push(clone[0]);
 			});
