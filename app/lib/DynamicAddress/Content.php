@@ -1,7 +1,4 @@
 <?php
-/**
- *	Dynamic address model for OUTRAGEdns
- */
 
 
 namespace OUTRAGEdns\DynamicAddress;
@@ -21,7 +18,7 @@ class Content extends Entity\Content
 		if(!$this->owner)
 			return null;
 		
-		return User\Content::find()->where("id = ?", $this->owner)->invoke("first");
+		return User\Content::find()->where([ "id" => $this->owner ])->get("first");
 	}
 	
 	
@@ -34,7 +31,7 @@ class Content extends Entity\Content
 		if(!$this->id)
 			return null;
 		
-		$records = DynamicAddressRecord\Content::find()->where("dynamic_address_id = ?", $this->id)->sort("id ASC")->invoke("objects");
+		$records = DynamicAddressRecord\Content::find()->where([ "dynamic_address_id" => $this->id ])->order("id ASC")->get("objects");
 		
 		foreach($records as $record)
 			$record->parent = $this;
@@ -51,7 +48,7 @@ class Content extends Entity\Content
 		if(!$this->id)
 			return 0;
 		
-		return DynamicAddressRecord\Content::find()->where("dynamic_address_id = ?", $this->id)->invoke("count");
+		return DynamicAddressRecord\Content::find()->where([ "dynamic_address_id" => $this->id ])->get("count");
 	}
 	
 	
@@ -99,8 +96,8 @@ class Content extends Entity\Content
 		
 		if(array_key_exists("records", $post))
 		{
-			$record = new DynamicAddressRecord\Content();
-			$record->db->delete($record->db_table, "dynamic_address_id = ".$this->db->quote($this->id));
+			foreach($this->records as $record)
+				$record->remove();
 			
 			foreach($post["records"] as $item)
 			{

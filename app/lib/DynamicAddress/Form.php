@@ -1,7 +1,4 @@
 <?php
-/**
- *	Dynamic address model for OUTRAGEdns
- */
 
 
 namespace OUTRAGEdns\DynamicAddress;

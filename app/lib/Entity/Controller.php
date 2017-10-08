@@ -1,7 +1,4 @@
 <?php
-/**
- *	OUTRAGEdns specific stuff for content and models, etc.
- */
 
 
 namespace OUTRAGEdns\Entity;
@@ -18,7 +15,7 @@ class Controller extends Entity\Controller
 	/**
 	 *	Use custom delegator trait
 	 */
-	use DelegatorTrait;
+	use EntityDelegatorTrait;
 	
 	
 	/**
@@ -53,7 +50,7 @@ class Controller extends Entity\Controller
 		}
 		
 		if($this->response->godmode)
-			$this->response->users = User\Content::find()->where("active = 1")->order("id ASC")->invoke("objects");
+			$this->response->users = User\Content::find()->where("active = 1")->order("id ASC")->get("objects");
 		
 		$this->request->session->_notification_messages = [];
 		return true;

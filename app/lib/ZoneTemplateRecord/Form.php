@@ -1,7 +1,4 @@
 <?php
-/**
- *	Form for managing ZoneTemplateRecords.
- */
 
 
 namespace OUTRAGEdns\ZoneTemplateRecord;

@@ -1,7 +1,4 @@
 <?php
-/**
- *	ZoneTemplate model for OUTRAGEdns
- */
 
 
 namespace OUTRAGEdns\ZoneTemplate;
@@ -22,7 +19,7 @@ class Content extends Entity\Content
 		if(!$this->owner)
 			return null;
 		
-		return User\Content::find()->where("id = ?", $this->owner)->invoke("first");
+		return User\Content::find()->where([ "id" => $this->owner ])->get("first");
 	}
 	
 	
@@ -34,7 +31,7 @@ class Content extends Entity\Content
 		if(!$this->id)
 			return null;
 		
-		return ZoneTemplateRecord\Content::find()->where("zone_templ_id = ?", $this->id)->sort("id ASC")->invoke("objects");
+		return ZoneTemplateRecord\Content::find()->where([ "zone_templ_id" => $this->id ])->order("id ASC")->get("objects");
 	}
 	
 	
@@ -46,7 +43,7 @@ class Content extends Entity\Content
 		if(!$this->id)
 			return 0;
 		
-		return ZoneTemplateRecord\Content::find()->where("zone_templ_id = ?", $this->id)->invoke("count");
+		return ZoneTemplateRecord\Content::find()->where([ "zone_templ_id" => $this->id ])->get("count");
 	}
 	
 	
@@ -104,8 +101,8 @@ class Content extends Entity\Content
 		{
 			$changed = true;
 			
-			$record = new ZoneTemplateRecord\Content();
-			$record->db->delete($record->db_table, "zone_templ_id = ".$this->db->quote($this->id));
+			foreach($this->records as $record)
+				$record->remove();
 			
 			foreach($post["records"] as $item)
 			{

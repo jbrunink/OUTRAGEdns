@@ -1,7 +1,4 @@
 <?php
-/**
- *	ZoneTemplateRecord model for OUTRAGEdns
- */
 
 
 namespace OUTRAGEdns\ZoneTemplateRecord;
@@ -32,7 +29,7 @@ class Content extends Entity\Content
 		if(!$this->zone_templ_id)
 			return null;
 		
-		return ZoneTemplate\Content::find()->where("id = ?", $this->zone_templ_id)->invoke("first");
+		return ZoneTemplate\Content::find()->where([ "id" => $this->zone_templ_id ])->get("first");
 	}
 	
 	

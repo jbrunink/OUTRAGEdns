@@ -1,7 +1,4 @@
 <?php
-/**
- *	Domain model for OUTRAGEdns
- */
 
 
 namespace OUTRAGEdns\Domain;
@@ -22,9 +19,11 @@ class Controller extends Entity\Controller
 		{	
 			if($this->form->validate($this->request->post))
 			{
+				$connection = $this->db->getAdapter()->getDriver()->getConnection();
+				
 				try
 				{
-					$this->content->db->begin();
+					$connection->beginTransaction();
 					
 					$values = $this->form->getValues();
 					
@@ -32,7 +31,8 @@ class Controller extends Entity\Controller
 						$values["owner"] = $this->response->user->id;
 					
 					$this->content->save($values);
-					$this->content->db->commit();
+
+					$connection->commit();
 					
 					new Notification\Success("Successfully created the domain: ".$this->content->name);
 					
@@ -41,7 +41,7 @@ class Controller extends Entity\Controller
 				}
 				catch(Exception $exception)
 				{
-					$this->content->db->rollback();
+					$connection->rollback();
 					
 					new Notification\Error("This domain wasn't added due to an internal error.");
 				}
@@ -49,7 +49,7 @@ class Controller extends Entity\Controller
 		}
 		
 		if(!$this->response->templates)
-			$this->response->templates = ZoneTemplate\Content::find()->where("owner = ?", $this->response->user->id)->order("name ASC")->invoke("objects");
+			$this->response->templates = ZoneTemplate\Content::find()->where([ "owner" => $this->response->user->id ])->order("name ASC")->get("objects");
 		
 		return $this->response->display("index.twig");
 	}
@@ -75,17 +75,21 @@ class Controller extends Entity\Controller
 		{
 			if($this->form->validate($this->request->post))
 			{
+				$connection = $this->db->getAdapter()->getDriver()->getConnection();
+				
 				try
 				{
-					$this->content->db->begin();
+					$connection->beginTransaction();
+					
 					$this->content->edit($this->form->getValues());
-					$this->content->db->commit();
+					
+					$connection->commit();
 					
 					new Notification\Success("Successfully updated the domain: ".$this->content->name);
 				}
 				catch(Exception $exception)
 				{
-					$this->content->db->rollback();
+					$connection->rollback();
 					
 					new Notification\Error("This zone template wasn't edited due to an internal error.");
 				}
@@ -93,7 +97,7 @@ class Controller extends Entity\Controller
 		}
 		
 		if(!$this->response->templates)
-			$this->response->templates = ZoneTemplate\Content::find()->where("owner = ?", $this->response->user->id)->order("name ASC")->invoke("objects");
+			$this->response->templates = ZoneTemplate\Content::find()->where([ "owner" => $this->response->user->id ])->order("name ASC")->get("objects");
 		
 		# list all the nameservers that are currently defined
 		$this->response->nameservers = [];
@@ -111,16 +115,21 @@ class Controller extends Entity\Controller
 		
 		if(!empty($this->request->get->revision))
 		{
-			$stmt = $this->content->db->select()
-			             ->from("logs")
-			             ->select([ "the_date", "state" ])
-			             ->where("id = ?", $this->request->get->revision)
-			             ->where("content_type = ?", get_class($this->content))
-			             ->where("content_id = ?", $this->content->id)
-			             ->where("action = ?", "records")
-			             ->order("the_date DESC");
+			$select = $this->db->select();
 			
-			$response = $stmt->invoke();
+			$select->from("logs")
+				   ->columns([ "the_date", "state" ])
+				   ->where([ "id" => $this->request->get->revision ])
+				   ->where([ "content_type" => get_class($this->content) ])
+				   ->where([ "content_id" => $this->content->id ])
+				   ->where([ "action" => "records" ])
+				   ->limit(1)
+				   ->order("the_date DESC");
+			
+			$statement = $this->db->prepareStatementForSqlObject($select);
+			$result = $statement->execute();
+			
+			$response = iterator_to_array($result);
 			
 			if(!count($response))
 			{
@@ -194,17 +203,21 @@ class Controller extends Entity\Controller
 			exit;
 		}
 		
+		$connection = $this->db->getAdapter()->getDriver()->getConnection();
+		
 		try
 		{
-			$this->content->db->begin();
+			$connection->beginTransaction();
+			
 			$this->content->remove();
-			$this->content->db->commit();
+			
+			$connection->commit();
 			
 			new Notification\Success("Successfully removed the domain: ".$this->content->name);
 		}
 		catch(Exception $exception)
 		{
-			$this->content->db->rollback();
+			$connection->rollback();
 			
 			new Notification\Error("This zone template wasn't removed due to an internal error.");
 		}
@@ -284,15 +297,19 @@ class Controller extends Entity\Controller
 			exit;
 		}
 		
-		$stmt = $this->content->db->select()
-		             ->from("logs")
-		             ->select([ "id", "the_date" ])
-		             ->where("content_type = ?", get_class($this->content))
-		             ->where("content_id = ?", $this->content->id)
-		             ->where("action = ?", "records")
-		             ->order("the_date DESC");
+		$select = $this->db->select();
 		
-		$this->response->revisions = $stmt->invoke()->toArray();
+		$select->from("logs")
+			   ->columns([ "id", "the_date" ])
+			   ->where([ "content_type" => get_class($this->content) ])
+			   ->where([ "content_id" => $this->content->id ])
+			   ->where([ "action" => "records" ])
+			   ->order("the_date DESC");
+		
+		$statement = $this->db->prepareStatementForSqlObject($select);
+		$result = $statement->execute();
+		
+		$this->response->revisions = iterator_to_array($result);
 		
 		return $this->response->display("index.twig");
 	}
@@ -306,13 +323,13 @@ class Controller extends Entity\Controller
 		if(!$this->response->domains)
 		{
 			$request = Content::find();
-			$request->leftJoin("zones", "zones.domain_id = ".$this->content->db_table.".id");
-			$request->sort("id ASC");
+			$request->join("zones", "zones.domain_id = domains.id");
+			$request->order("id ASC");
 			
 			if(!$this->response->godmode)
-				$request->where("zones.owner = ?", $this->response->user->id);
+				$request->where([ "zones.owner" => $this->response->user->id ]);
 			
-			$this->response->domains = $request->invoke("objects");
+			$this->response->domains = $request->get("objects");
 		}
 		
 		return $this->response->display("index.twig");

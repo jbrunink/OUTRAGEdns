@@ -1,7 +1,4 @@
 <?php
-/**
- *	Domain model for OUTRAGEdns
- */
 
 
 namespace OUTRAGEdns\Domain;
@@ -24,7 +21,7 @@ class Content extends Entity\Content
 		if(!$this->id)
 			return null;
 		
-		return Zone\Content::find()->where("domain_id = ?", $this->id)->invoke("first");
+		return Zone\Content::find()->where([ "domain_id" => $this->id ])->get("first");
 	}
 	
 	
@@ -61,7 +58,7 @@ class Content extends Entity\Content
 		if(!$this->id)
 			return null;
 		
-		$records = Record\Content::find()->where("domain_id = ?", $this->id)->sort("id ASC")->invoke("objects");
+		$records = Record\Content::find()->where([ "domain_id" => $this->id ])->order("id ASC")->get("objects");
 		
 		foreach($records as $record)
 			$record->parent = $this;
@@ -78,7 +75,7 @@ class Content extends Entity\Content
 		if(!$this->id)
 			return 0;
 		
-		return Record\Content::find()->where("domain_id = ?", $this->id)->invoke("count");
+		return Record\Content::find()->where([ "domain_id" => $this->id ])->get("count");
 	}
 	
 	
@@ -87,7 +84,7 @@ class Content extends Entity\Content
 	 */
 	public function getter_serial()
 	{
-		$invalid = '0';
+		$invalid = "0";
 		
 		foreach($this->records as $record)
 		{
@@ -188,8 +185,8 @@ class Content extends Entity\Content
 		{
 			$changed = true;
 			
-			$record = new Record\Content();
-			$record->db->delete($record->db_table, "domain_id = ".$this->db->quote($this->id));
+			foreach($this->records as $record)
+				$record->remove();
 			
 			foreach($post["records"] as $item)
 			{
@@ -267,16 +264,21 @@ class Content extends Entity\Content
 		
 		if(isset($revision_id))
 		{
-			$stmt = $this->db->select()
-			             ->from("logs")
-			             ->select([ "the_date", "state" ])
-			             ->where("id = ?", $revision_id)
-			             ->where("content_type = ?", get_class($this))
-			             ->where("content_id = ?", $this->id)
-			             ->where("action = ?", "records")
-			             ->order("the_date DESC");
+			$select = $this->db->select();
 			
-			$response = $stmt->invoke();
+			$select->from("logs")
+				   ->columns([ "the_date", "state" ])
+				   ->where([ "id" => $revision_id ])
+				   ->where([ "content_type" => get_class($this) ])
+				   ->where([ "content_id" => $this->id ])
+				   ->where([ "action" => "records" ])
+				   ->limit(1)
+				   ->order("the_date DESC");
+			
+			$statement = $this->db->prepareStatementForSqlObject($select);
+			$result = $statement->execute();
+			
+			$response = iterator_to_array($result);
 			
 			if(count($response))
 			{

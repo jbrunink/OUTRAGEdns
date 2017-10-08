@@ -4,17 +4,18 @@
 namespace OUTRAGEdns\Entity;
 
 use \OUTRAGEdns\Configuration\Configuration;
-use \OUTRAGEdns\Database\Binding\MySQL\Connection as Connection;
+use \OUTRAGEdns\Database\Connection;
+use \ReflectionObject;
 
 
-trait DelegatorTrait
+trait EntityDelegatorTrait
 {
 	/**
 	 *	Returns this object's class name.
 	 */
 	public function getter_class()
 	{
-		return (new \ReflectionObject($this))->name;
+		return (new ReflectionObject($this))->name;
 	}
 	
 	
@@ -23,7 +24,7 @@ trait DelegatorTrait
 	 */
 	public function getter_namespace()
 	{
-		return (new \ReflectionObject($this))->getNamespaceName();
+		return (new ReflectionObject($this))->getNamespaceName();
 	}
 	
 	

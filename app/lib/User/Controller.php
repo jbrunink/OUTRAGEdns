@@ -1,7 +1,4 @@
 <?php
-/**
- *	User model for OUTRAGEdns
- */
 
 
 namespace OUTRAGEdns\User;
@@ -26,11 +23,15 @@ class Controller extends Entity\Controller
 		{
 			if($this->form->validate($this->request->post))
 			{
+				$connection = $this->db->getAdapter()->getDriver()->getConnection();
+				
 				try
 				{
-					$this->content->db->begin();
+					$connection->beginTransaction();
+					
 					$this->content->save($this->form->getValues());
-					$this->content->db->commit();
+					
+					$connection->commit();
 					
 					new Notification\Success("Successfully added this user.");
 					
@@ -39,7 +40,7 @@ class Controller extends Entity\Controller
 				}
 				catch(Exception $exception)
 				{
-					$this->content->db->rollback();
+					$connection->rollback();
 					
 					new Notification\Error("This user wasn't added due to an internal.");
 				}
@@ -75,11 +76,15 @@ class Controller extends Entity\Controller
 		{
 			if($this->form->validate($this->request->post))
 			{
+				$connection = $this->db->getAdapter()->getDriver()->getConnection();
+				
 				try
 				{
-					$this->content->db->begin();
+					$connection->beginTransaction();
+					
 					$this->content->edit($this->form->getValues());
-					$this->content->db->commit();
+
+					$connection->commit();
 					
 					if($this->request->session->current_users_id == $this->content->id)
 						new Notification\Success("Successfully updated your profile.");
@@ -88,7 +93,7 @@ class Controller extends Entity\Controller
 				}
 				catch(Exception $exception)
 				{
-					$this->content->db->rollback();
+					$connection->rollback();
 					
 					new Notification\Error("This user wasn't edited due to an internal.");
 				}
@@ -115,17 +120,21 @@ class Controller extends Entity\Controller
 			exit;
 		}
 		
+		$connection = $this->db->getAdapter()->getDriver()->getConnection();
+		
 		try
 		{
-			$this->content->db->begin();
+			$connection->beginTransaction();
+			
 			$this->content->remove();
-			$this->content->db->commit();
+			
+			$connection->commit();
 			
 			new Notification\Success("Successfully removed this user.");
 		}
 		catch(Exception $exception)
 		{
-			$this->content->db->rollback();
+			$connection->rollback();
 					
 			new Notification\Error("This user wasn't removed due to an internal.");
 		}
@@ -149,9 +158,9 @@ class Controller extends Entity\Controller
 		if(!$this->response->users)
 		{
 			$request = Content::find();
-			$request->sort("id ASC");
+			$request->order("id ASC");
 			
-			$this->response->users = $request->invoke("objects");
+			$this->response->users = $request->get("objects");
 		}
 		
 		return $this->response->display("index.twig");

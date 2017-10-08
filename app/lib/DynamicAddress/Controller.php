@@ -1,7 +1,4 @@
 <?php
-/**
- *	Dynamic address model for OUTRAGEdns
- */
 
 
 namespace OUTRAGEdns\DynamicAddress;
@@ -21,9 +18,11 @@ class Controller extends Entity\Controller
 		{
 			if($this->form->validate($this->request->post))
 			{
+				$connection = $this->db->getAdapter()->getDriver()->getConnection();
+				
 				try
 				{
-					$this->content->db->begin();
+					$connection->beginTransaction();
 					
 					$values = $this->form->getValues();
 					
@@ -34,7 +33,8 @@ class Controller extends Entity\Controller
 						$values["token"] = sha1(json_encode($values).uniqid().rand(1, 5000));
 					
 					$this->content->save($values);
-					$this->content->db->commit();
+					
+					$connection->commit();
 					
 					new Notification\Success("Successfully created the domain: ".$this->content->name);
 					
@@ -43,7 +43,7 @@ class Controller extends Entity\Controller
 				}
 				catch(Exception $exception)
 				{
-					$this->content->db->rollback();
+					$connection->rollback();
 					
 					new Notification\Error("This domain wasn't added due to an internal error.");
 				}
@@ -62,16 +62,21 @@ class Controller extends Entity\Controller
 				{
 					case "A":
 					case "AAAA":
-						if(!isset($list[$domain->name]))
-							$list[$domain->name] = array();
+						if(!isset($list[$domain->id]))
+						{
+							$list[$domain->id] = [
+								"domain" => $domain->name,
+								"records" => [],
+							];
+						}
 						
-						$list[$domain->name][] = $record->name;
+						$list[$domain->id]["records"][$record->id] = $record->name;
 					break;
 				}
 			}
 			
-			if(isset($list[$domain->name]))
-				$list[$domain->name] = array_unique($list[$domain->name]);
+			if(isset($list[$domain->id]))
+				$list[$domain->id]["records"] = array_unique($list[$domain->id]["records"]);
 		}
 		
 		$this->response->available_records = $list;
@@ -100,9 +105,11 @@ class Controller extends Entity\Controller
 		{
 			if($this->form->validate($this->request->post))
 			{
+				$connection = $this->db->getAdapter()->getDriver()->getConnection();
+				
 				try
 				{
-					$this->content->db->begin();
+					$connection->beginTransaction();
 					
 					$values = $this->form->getValues();
 					
@@ -110,13 +117,14 @@ class Controller extends Entity\Controller
 						$values["token"] = sha1(json_encode($values).uniqid().rand(1, 5000));
 					
 					$this->content->edit($values);
-					$this->content->db->commit();
+
+					$connection->commit();
 					
 					new Notification\Success("Successfully updated the domain: ".$this->content->name);
 				}
 				catch(Exception $exception)
 				{
-					$this->content->db->rollback();
+					$connection->rollback();
 					
 					new Notification\Error("This zone template wasn't edited due to an internal error.");
 				}
@@ -138,7 +146,7 @@ class Controller extends Entity\Controller
 		# and use this as the basis for our list
 		$list = [];
 		
-		foreach($this->content->user->domains as $domain)
+		foreach($this->response->user->domains as $domain)
 		{
 			foreach($domain->records as $record)
 			{
@@ -146,16 +154,21 @@ class Controller extends Entity\Controller
 				{
 					case "A":
 					case "AAAA":
-						if(!isset($list[$domain->name]))
-							$list[$domain->name] = array();
+						if(!isset($list[$domain->id]))
+						{
+							$list[$domain->id] = [
+								"domain" => $domain->name,
+								"records" => [],
+							];
+						}
 						
-						$list[$domain->name][] = $record->name;
+						$list[$domain->id]["records"][$record->id] = $record->name;
 					break;
 				}
 			}
 			
-			if(isset($list[$domain->name]))
-				$list[$domain->name] = array_unique($list[$domain->name]);
+			if(isset($list[$domain->id]))
+				$list[$domain->id]["records"] = array_unique($list[$domain->id]["records"]);
 		}
 		
 		$this->response->available_records = $list;
@@ -180,17 +193,21 @@ class Controller extends Entity\Controller
 			exit;
 		}
 		
+		$connection = $this->db->getAdapter()->getDriver()->getConnection();
+		
 		try
 		{
-			$this->content->db->begin();
+			$connection->beginTransaction();
+			
 			$this->content->remove();
-			$this->content->db->commit();
+			
+			$connection->commit();
 			
 			new Notification\Success("Successfully removed the domain: ".$this->content->name);
 		}
 		catch(Exception $exception)
 		{
-			$this->content->db->rollback();
+			$connection->rollback();
 			
 			new Notification\Error("This zone template wasn't removed due to an internal error.");
 		}
@@ -208,12 +225,12 @@ class Controller extends Entity\Controller
 		if(!$this->response->domains)
 		{
 			$request = Content::find();
-			$request->sort("id ASC");
+			$request->order("id ASC");
 			
 			if(!$this->response->godmode)
-				$request->where("owner = ?", $this->response->user->id);
+				$request->where([ "owner" => $this->response->user->id ]);
 			
-			$this->response->domains = $request->invoke("objects");
+			$this->response->domains = $request->get("objects");
 		}
 		
 		return $this->response->display("index.twig");
@@ -225,7 +242,7 @@ class Controller extends Entity\Controller
 	 */
 	public function updateDynamicAddresses($token)
 	{
-		$this->content = Content::find()->where("token = ?", $token)->invoke("first");
+		$this->content = Content::find()->where([ "token" => $token ])->get("first");
 		
 		if(!$this->content)
 		{
@@ -233,7 +250,8 @@ class Controller extends Entity\Controller
 			exit;
 		}
 		
-		$this->content->db->begin();
+		$connection = $this->db->getAdapter()->getDriver()->getConnection();
+		$connection->beginTransaction();
 		
 		# and then we need to go through all the records we have, change
 		# the value to what is required...
@@ -276,7 +294,7 @@ class Controller extends Entity\Controller
 			$domain->log("records", [ "records" => $domain->records ]);
 		}
 		
-		$this->content->db->commit();
+		$connection->commit();
 		exit;
 	}
 }

@@ -1,7 +1,4 @@
 <?php
-/**
- *	Record model for OUTRAGEdns
- */
 
 
 namespace OUTRAGEdns\Record;
@@ -17,7 +14,7 @@ class Content extends Entity\Content
 	 */
 	public function getter_parent()
 	{
-		return Domain\Content::find()->where("id = ?", $this->domain_id)->invoke("first");
+		return Domain\Content::find()->where([ "id" => $this->domain_id ])->get("first");
 	}
 	
 	

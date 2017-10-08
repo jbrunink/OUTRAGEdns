@@ -1,7 +1,4 @@
 <?php
-/**
- *	ZoneTemplate model for OUTRAGEdns
- */
 
 
 namespace OUTRAGEdns\ZoneTemplate;
@@ -21,9 +18,11 @@ class Controller extends Entity\Controller
 		{
 			if($this->form->validate($this->request->post))
 			{
+				$connection = $this->db->getAdapter()->getDriver()->getConnection();
+				
 				try
 				{
-					$this->content->db->begin();
+					$connection->beginTransaction();
 					
 					$values = $this->form->getValues();
 					
@@ -31,7 +30,8 @@ class Controller extends Entity\Controller
 						$values["owner"] = $this->response->user;
 					
 					$this->content->save($values);
-					$this->content->db->commit();
+					
+					$connection->commit();
 					
 					new Notification\Success("Successfully created the zone template: ".$this->content->name);
 					
@@ -40,7 +40,7 @@ class Controller extends Entity\Controller
 				}
 				catch(Exception $exception)
 				{
-					$this->content->db->rollback();
+					$connection->rollback();
 					
 					new Notification\Error("This zone template wasn't added due to an internal error.");
 				}
@@ -77,17 +77,21 @@ class Controller extends Entity\Controller
 		{
 			if($this->form->validate($this->request->post))
 			{
+				$connection = $this->db->getAdapter()->getDriver()->getConnection();
+				
 				try
 				{
-					$this->content->db->begin();
+					$connection->beginTransaction();
+					
 					$this->content->edit($this->form->getValues());
-					$this->content->db->commit();
+
+					$connection->commit();
 					
 					new Notification\Success("Successfully updated the zone template: ".$this->content->name);
 				}
 				catch(Exception $exception)
 				{
-					$this->content->db->rollback();
+					$connection->rollback();
 					
 					new Notification\Error("This zone template wasn't edited due to an internal error.");
 				}
@@ -147,17 +151,21 @@ class Controller extends Entity\Controller
 			exit;
 		}
 		
+		$connection = $this->db->getAdapter()->getDriver()->getConnection();		
+		
 		try
 		{
-			$this->content->db->begin();
+			$connection->beginTransaction();
+			
 			$this->content->remove();
-			$this->content->db->commit();
+			
+			$connection->commit();
 			
 			new Notification\Success("Successfully removed the zone template: ".$this->content->name);
 		}
 		catch(Exception $exception)
 		{
-			$this->content->db->rollback();
+			$connection->rollback();
 			
 			new Notification\Error("This zone template wasn't removed due to an internal error.");
 		}
@@ -175,12 +183,12 @@ class Controller extends Entity\Controller
 		if(!$this->response->templates)
 		{
 			$request = Content::find();
-			$request->sort("id ASC");
+			$request->order("id ASC");
 			
 			if(!$this->response->godmode)
-				$request->where("owner = ?", $this->response->user->id);
+				$request->where([ "owner" => $this->response->user->id ]);
 			
-			$this->response->templates = $request->invoke("objects");
+			$this->response->templates = $request->get("objects");
 		}
 		
 		return $this->response->display("index.twig");

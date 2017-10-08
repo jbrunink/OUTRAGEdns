@@ -1,7 +1,4 @@
 <?php
-/**
- *	Zone model for OUTRAGEdns
- */
 
 
 namespace OUTRAGEdns\Zone;
@@ -22,7 +19,7 @@ class Content extends Entity\Content
 		if(!$this->owner)
 			return null;
 		
-		return User\Content::find()->where("id = ?", $this->owner)->invoke("first");
+		return User\Content::find()->where([ "id" => $this->owner ])->get("first");
 	}
 	
 	
@@ -35,7 +32,7 @@ class Content extends Entity\Content
 		if(!$this->zone_templ_id)
 			return null;
 		
-		return ZoneTemplate\Content::find()->where("id = ?", $this->zone_templ_id)->invoke("first");
+		return ZoneTemplate\Content::find()->where([ "id" => $this->zone_templ_id ])->get("first");
 	}
 	
 	

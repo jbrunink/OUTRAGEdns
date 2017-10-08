@@ -1,7 +1,4 @@
 <?php
-/**
- *	Form for managing Record.
- */
 
 
 namespace OUTRAGEdns\Record;

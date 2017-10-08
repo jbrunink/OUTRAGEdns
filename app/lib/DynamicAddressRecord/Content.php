@@ -1,7 +1,4 @@
 <?php
-/**
- *	Record model for OUTRAGEdns
- */
 
 
 namespace OUTRAGEdns\DynamicAddressRecord;
@@ -18,7 +15,7 @@ class Content extends Entity\Content
 	 */
 	public function getter_parent()
 	{
-		return DynamicAddress\Content::find()->where("id = ?", $this->dynamic_address_id)->invoke("first");
+		return DynamicAddress\Content::find()->where([ "id" => $this->dynamic_address_id ])->get("first");
 	}
 	
 	
@@ -29,15 +26,15 @@ class Content extends Entity\Content
 	{
 		$find = Record\Content::find();
 		
-		$find->leftJoin("domains", "domains.id = records.domain_id");
-		$find->leftJoin("zones", "domains.id = zones.domain_id");
-		$find->leftJoin("dynamic_addresses", "dynamic_addresses.id = ".$this->db->quote($this->dynamic_address_id));
+		$find->join("domains", "domains.id = records.domain_id");
+		$find->join("zones", "domains.id = zones.domain_id");
+		$find->join("dynamic_addresses", "dynamic_addresses.id = dynamic_addresses_records.id");
 		
-		$find->where("records.name = ?", $this->name)
+		$find->where([ "records.name" => $this->name ])
 			 ->where("records.type IN ('A', 'AAAA')")
 			 ->where("zones.owner = dynamic_addresses.owner");
 		
-		return $find->invoke("objects");
+		return $find->get("objects");
 	}
 	
 	
@@ -48,14 +45,14 @@ class Content extends Entity\Content
 	{
 		$find = Record\Content::find();
 		
-		$find->leftJoin("domains", "domains.id = records.domain_id");
-		$find->leftJoin("zones", "domains.id = zones.domain_id");
-		$find->leftJoin("dynamic_addresses", "dynamic_addresses.id = ".$this->db->quote($this->dynamic_address_id));
+		$find->join("domains", "domains.id = records.domain_id");
+		$find->join("zones", "domains.id = zones.domain_id");
+		$find->join("dynamic_addresses", "dynamic_addresses.id = ".intval($this->dynamic_address_id));
 		
-		$find->where("records.name = ?", $this->name)
+		$find->where([ "records.name" => $this->name ])
 			 ->where("records.type IN ('A', 'AAAA')")
 			 ->where("zones.owner = dynamic_addresses.owner");
 		
-		return $find->invoke("count");
+		return $find->get("count");
 	}
 }

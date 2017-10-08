@@ -1,15 +1,12 @@
 <?php
-/**
- *	User model for OUTRAGEdns
- */
 
 
 namespace OUTRAGEdns\User;
 
-use OUTRAGEweb\Request;
-use OUTRAGEdns\Entity;
-use OUTRAGEdns\Domain;
-use OUTRAGEdns\ZoneTemplate;
+use \OUTRAGEweb\Request;
+use \OUTRAGEdns\Entity;
+use \OUTRAGEdns\Domain;
+use \OUTRAGEdns\ZoneTemplate;
 
 
 class Content extends Entity\Content
@@ -22,7 +19,7 @@ class Content extends Entity\Content
 		if(!$this->id)
 			return null;
 		
-		return ZoneTemplate\Content::find()->where("owner = ?", $this->id)->sort("id ASC")->invoke("objects");
+		return ZoneTemplate\Content::find()->where([ "owner" => $this->id ])->order("id ASC")->get("objects");
 	}
 	
 	
@@ -34,7 +31,7 @@ class Content extends Entity\Content
 		if(!$this->id)
 			return 0;
 		
-		return ZoneTemplate\Content::find()->where("owner = ?", $this->id)->invoke("count");
+		return ZoneTemplate\Content::find()->where([ "owner" => $this->id ])->get("count");
 	}
 	
 	
@@ -46,7 +43,7 @@ class Content extends Entity\Content
 		if(!$this->id)
 			return null;
 		
-		return Domain\Content::find()->leftJoin("zones", "zones.domain_id = domains.id")->where("zones.owner = ?", $this->id)->sort("id ASC")->invoke("objects");
+		return Domain\Content::find()->join("zones", "zones.domain_id = domains.id")->where([ "zones.owner" => $this->id ])->order("id ASC")->get("objects");
 	}
 	
 	
@@ -58,7 +55,7 @@ class Content extends Entity\Content
 		if(!$this->id)
 			return 0;
 		
-		return Domain\Content::find()->leftJoin("zones", "zones.domain_id = domains.id")->where("zones.owner = ?", $this->id)->invoke("count");
+		return Domain\Content::find()->join("zones", "zones.domain_id = domains.id")->where([ "zones.owner" => $this->id ])->get("count");
 	}
 	
 	
@@ -97,10 +94,10 @@ class Content extends Entity\Content
 			return false;
 		
 		$target = $this->find()
-		               ->where("username LIKE ?", $credentials["username"])
-		               ->where("password LIKE ?", sha1($credentials["password"]))
-		               ->where("active = 1")
-		               ->invoke("first");
+		               ->where([ "username" => $credentials["username"] ])
+		               ->where([ "password" => sha1($credentials["password"]) ])
+		               ->where([ "active" => 1 ])
+		               ->get("first");
 		
 		if(!$target)
 			return false;

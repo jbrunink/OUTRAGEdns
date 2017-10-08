@@ -3,8 +3,8 @@
 
 namespace OUTRAGEdns\Configuration;
 
+use \OUTRAGElib\Delegator\DelegatorTrait;
 use \OUTRAGElib\Structure\ObjectList;
-use \OUTRAGElib\Structure\ObjectListMagicMethodTrait;
 use \OUTRAGElib\Structure\ObjectListPopulationTrait;
 use \OUTRAGElib\Structure\ObjectListRetrievalTrait;
 use \Symfony\Component\Yaml\Yaml;
@@ -15,7 +15,7 @@ class Configuration extends ObjectList
 	/**
 	 *	Some traits to boost the functionality of ObjectList
 	 */
-	use ObjectListMagicMethodTrait;
+	use DelegatorTrait;
 	use ObjectListPopulationTrait;
 	use ObjectListRetrievalTrait;
 	
