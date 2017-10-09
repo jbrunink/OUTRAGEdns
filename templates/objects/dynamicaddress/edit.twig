@@ -55,7 +55,7 @@
 		
 		<tbody>
 			{% for record in selected_records %}
-				{% include "objects/dynamicaddressrecord/grid-item.twig" with { parent: content, record: record } %}
+				{% include "objects/dynamicaddressrecord/grid-item.twig" with { parent: content, selected_record_id: record } %}
 			{% endfor %}
 			
 			{% include "objects/dynamicaddressrecord/grid-item.twig" with { parent: content, content: null, class: "placeholder-row" } %}

@@ -51,3 +51,6 @@ CREATE TABLE `dynamic_addresses_records` (
 	PRIMARY KEY (`id`),
 	KEY `parent` (`dynamic_address_id`)
 ) ENGINE=InnoDB;
+
+ALTER TABLE `dynamic_addresses_records` 
+	ADD COLUMN `domain_id` INT(11) NOT NULL AFTER `dynamic_address_id` DEFAULT '0';

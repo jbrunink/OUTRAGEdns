@@ -121,6 +121,22 @@ class Find
 	
 	
 	/**
+	 *	Return the subquery of this query.
+	 */
+	protected function getStatement()
+	{
+		$objects = [];
+		
+		$this->select->reset($this->select::COLUMNS);
+		$this->select->reset($this->select::GROUP);
+		
+		$this->select->group($this->content->db_table.".id");
+		
+		return $this->content->db->prepareStatementForSqlObject($this->select);
+	}
+	
+	
+	/**
 	 *	Return the first object people find.
 	 */
 	protected function getFirst()

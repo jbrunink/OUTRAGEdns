@@ -3,6 +3,7 @@
 
 namespace OUTRAGEdns\DynamicAddress;
 
+use \Exception;
 use \OUTRAGEdns\Entity;
 use \OUTRAGEdns\Notification;
 
@@ -117,7 +118,7 @@ class Controller extends Entity\Controller
 						$values["token"] = sha1(json_encode($values).uniqid().rand(1, 5000));
 					
 					$this->content->edit($values);
-
+					
 					$connection->commit();
 					
 					new Notification\Success("Successfully updated the domain: ".$this->content->name);
@@ -137,7 +138,7 @@ class Controller extends Entity\Controller
 		foreach($this->content->records as $record)
 		{
 			if($record->targets)
-				$list[] = $record->targets[0]->name;
+				$list[] = $record->targets[0]->id;
 		}
 		
 		$this->response->selected_records = $list;
@@ -251,50 +252,59 @@ class Controller extends Entity\Controller
 		}
 		
 		$connection = $this->db->getAdapter()->getDriver()->getConnection();
-		$connection->beginTransaction();
 		
-		# and then we need to go through all the records we have, change
-		# the value to what is required...
-		$ip_addr = $_SERVER["REMOTE_ADDR"];
-		$ip_type = null;
-		
-		if(filter_var($ip_addr, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4))
-			$ip_type = "A";
-		if(filter_var($ip_addr, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6))
-			$ip_type = "AAAA";
-		
-		# and now hunt through all the records, being ruthless
-		# in their replacement
-		$domains = [];
-		
-		foreach($this->content->records as $record)
+		try
 		{
-			if(!$record->targets)
-				continue;
+			$connection->beginTransaction();
 			
-			foreach($record->targets as $target)
+			# and then we need to go through all the records we have, change
+			# the value to what is required...
+			$ip_addr = $_SERVER["REMOTE_ADDR"];
+			$ip_type = null;
+			
+			if(filter_var($ip_addr, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4))
+				$ip_type = "A";
+			if(filter_var($ip_addr, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6))
+				$ip_type = "AAAA";
+			
+			# and now hunt through all the records, being ruthless
+			# in their replacement
+			$domains = [];
+			
+			foreach($this->content->records as $record)
 			{
-				if($target->type == $ip_type && $target->content != $ip_addr)
+				if(!$record->targets)
+					continue;
+				
+				foreach($record->targets as $target)
 				{
-					if(!isset($domains[$target->parent->id]))
-						$domains[$target->parent->id] = $target->parent;
-					
-					$target->edit([ "content" => $ip_addr ]);
+					if($target->type == $ip_type && $target->content != $ip_addr)
+					{
+						if(!isset($domains[$target->parent->id]))
+							$domains[$target->parent->id] = $target->parent;
+						
+						$target->edit([ "content" => $ip_addr ]);
+					}
 				}
 			}
-		}
-		
-		# now we dive back to the domains - we need to update the serial and
-		# log the changes to version management.
-		foreach($domains as $domain)
-		{
-			unset($domain->records);
 			
-			$domain->updateSerial();
-			$domain->log("records", [ "records" => $domain->records ]);
+			# now we dive back to the domains - we need to update the serial and
+			# log the changes to version management.
+			foreach($domains as $domain)
+			{
+				unset($domain->records);
+				
+				$domain->updateSerial();
+				$domain->log("records", [ "records" => $domain->records ]);
+			}
+			
+			$connection->commit();
+		}
+		catch(Exception $exception)
+		{
+			$connection->rollback();
 		}
 		
-		$connection->commit();
 		exit;
 	}
 }

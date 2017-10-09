@@ -4,6 +4,7 @@
 namespace OUTRAGEdns\DynamicAddress;
 
 use \OUTRAGEdns\DynamicAddressRecord;
+use \OUTRAGEdns\Record;
 use \OUTRAGEdns\Entity;
 use \OUTRAGEdns\User;
 
@@ -67,15 +68,23 @@ class Content extends Entity\Content
 		{
 			foreach($post["records"] as $item)
 			{
-				$record = new DynamicAddressRecord\Content();
+				# what record are we targeting? IDs of records are now
+				# passed here instead
+				$target = new Record\Content();
 				
-				$data = array
-				(
-					"dynamic_address_id" => $this->id,
-					"name" => $item,
-				);
-				
-				$record->save($data);
+				if($target->load($item))
+				{
+					$record = new DynamicAddressRecord\Content();
+					
+					$data = array
+					(
+						"dynamic_address_id" => $this->id,
+						"domain_id" => $target->domain_id,
+						"name" => $target->name,
+					);
+					
+					$record->save($data);
+				}
 			}
 		}
 		
@@ -101,15 +110,23 @@ class Content extends Entity\Content
 			
 			foreach($post["records"] as $item)
 			{
-				$record = new DynamicAddressRecord\Content();
+				# what record are we targeting? IDs of records are now
+				# passed here instead
+				$target = new Record\Content();
 				
-				$data = array
-				(
-					"dynamic_address_id" => $this->id,
-					"name" => $item,
-				);
-				
-				$record->save($data);
+				if($target->load($item))
+				{
+					$record = new DynamicAddressRecord\Content();
+					
+					$data = array
+					(
+						"dynamic_address_id" => $this->id,
+						"domain_id" => $target->domain_id,
+						"name" => $target->name,
+					);
+					
+					$record->save($data);
+				}
 			}
 		}
 		
