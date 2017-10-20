@@ -12,22 +12,32 @@ if(!ini_get("date.timezone"))
 # what if Xerox wants to be secure?
 define("WWW_DIR", getenv("WWW_DIR") ?: $_SERVER["DOCUMENT_ROOT"]);
 define("APP_DIR", getenv("APP_DIR") ?: WWW_DIR."/app");
+define("TEMPLATE_DIR", getenv("TEMPLATE_DIR") ?: WWW_DIR."/templates");
 
 
 # let's now use composer because i'd potentially like to use my
 # framework in other places
 require WWW_DIR."/vendor/autoload.php";
 
-$whoops = new \Whoops\Run();
-$whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler());
-$whoops->register();
-
 
 # get some namespaces set up
-use \OUTRAGEdns\User as User;
-use \OUTRAGEweb\Request\Environment as Environment;
-use \OUTRAGEweb\Request\Router as Router;
 use \OUTRAGEdns\Configuration\Configuration;
+use \OUTRAGEdns\Request\Container as RequestContainer;
+use \OUTRAGEdns\User as User;
+use \OUTRAGElib\Structure\ObjectList;
+use \Silex\Application;
+use \Silex\Provider\TwigServiceProvider;
+use \Symfony\Component\HttpFoundation\Request;
+use \Symfony\Component\HttpFoundation\Response;
+use \Symfony\Component\HttpFoundation\Session\Session;
+use \Whoops\Handler\PrettyPageHandler;
+use \WhoopsSilex\WhoopsServiceProvider;
+
+
+# error handling?
+$whoops = new \Whoops\Run();
+$whoops->pushHandler(new PrettyPageHandler());
+$whoops->register();
 
 
 # boot strap the config
@@ -35,98 +45,49 @@ $configuration = Configuration::getInstance();
 
 
 # start the session
-session_start();
+$session = new Session();
+$session->start();
 
 
-# perhaps it's a good idea to init our request environment, we don't need to
-# do anything else here as default functionality is handled by the getters
-$environment = new Environment();
+# let's mess about with silex now
+$app = new Application();
 
+$app->register(new WhoopsServiceProvider());
+$app->register(new TwigServiceProvider(), [ "twig.path" => TEMPLATE_DIR ]);
 
-# and now, what we need to do is find out what path we need to go down.
-# should I make this cleaner or should I just stick to doing things the
-# new fashioned way?
-$user = new User\Controller();
-$router = new Router();
-
-if($environment->session->current_users_id)
+$app->before(function(Request $request, Application $app) use ($session)
 {
-	foreach($configuration->entities as $entity)
+	# set session
+	$request->setSession($session);
+	
+	# if the user is not accessing the login page, and they're not logged in,
+	# we'll just go ahead and re-direct them to the login page!
+	if(!$session->get("authenticated_users_id"))
 	{
-		if(!$entity->actions)
-			continue;
-		
-		$class = "\\".str_replace(".", "\\", $entity->namespace)."\\Controller";
-		
-		if(!class_exists($class))
-			continue;
-		
-		$controller = new $class();
-		$endpoint = $entity->route ?: $entity->type."s";
-		
-		foreach($entity->actions as $action => $settings)
+		if(!preg_match("@^/login/@", $request->server->get("REQUEST_URI")))
 		{
-			$route = $settings->global ? ("/".$action."/") : ("/".$endpoint."/".$action."/");
-			
-			if($settings->id)
-				$route .= ":id/";
-			
-			if(!class_exists($class))
-				continue;
-			
-			$router->register($route, [ $controller, $action ])->before([ $controller, "init" ]);
-			
-			if($settings->default)
-				$router->register("/".$endpoint."/", $route)->before([ $controller, "init" ]);
+			header("Location: /login/");
+			exit;
 		}
 	}
 	
-	$router->register("/logout/", [ $user, "logout" ])->before([ $user, "init" ]);
-	
-	$router->register("/admin/:mode/", function($mode) use ($environment)
-	{
-		$object = new User\Content();
-		$object->load($environment->session->current_users_id);
-		
-		switch($mode)
-		{
-			case "on":
-				if($object->admin)
-				{
-					$environment->session->_global_admin_mode = 1;
-					break;
-				}
-			
-			case "off":
-				$environment->session->_global_admin_mode = 0;
-			break;
-		}
-		
-		header("Location: ".(!empty($environment->headers->Referer) ? $environment->headers->Referer : "/domains/grid/"));
-		exit;
-	});
-	
-	$router->failure(function()
-	{
-		header("Location: /domains/grid/");
-		exit;
-	});
-}
-else
+	# twig doesn't have a nice and lovely way to store variables in a global
+	# context so we might as well use this as a sort of umbrella variable we
+	# can then pass to twig
+	$app["outragedns.context"] = new RequestContainer();
+}, Application::EARLY_EVENT);
+
+if(true)
 {
-	$router->register("/login/", [ $user, "login" ])->before([ $user, "init" ]);
-	
-	$router->failure(function()
+	$app->match("/login/", function(Request $request, Application $app)
 	{
-		header("Location: /login/");
-		exit;
+		$controller = new User\Controller();
+		
+		$controller->init($request, $app);
+		$controller->login();
+		
+		return $app["twig"]->render("index.twig", $app["outragedns.context"]->toArray());
 	});
 }
 
-# router is also required for the snazzy dynamic DNS feature
-$router->register("/dynamic-dns/:token/", [ new \OUTRAGEdns\DynamicAddress\Controller(), "updateDynamicAddresses" ]);
-
-
-# run our router!
-$router->invoke($environment);
-exit;
+$app->run();

@@ -1,7 +1,5 @@
 {
 	"require": {  
-		"twig/twig":"1.*",
-		"westie/outrageweb":"dev-master",
 		"outragelib/delegator":"dev-master",
 		"outragelib/validate": "dev-master",
 		"symfony/yaml": "^4.0@dev",
@@ -9,22 +7,10 @@
 		"silex/silex": "~2.0",
 		"symfony/cache": "^4.0@dev",
 		"outragelib/objectlist": "dev-master",
-		"zendframework/zend-db": "^2.8@dev"
+		"zendframework/zend-db": "^2.8@dev",
+		"texthtml/whoops-silex": "dev-master",
+		"symfony/twig-bridge": "^4.0@dev"
 	},
-	"repositories": [  
-		{
-			"type":"git",
-			"url":"https://git.typefish.co.uk/Westie/outrageweb.git"
-		},
-		{
-			"type":"git",
-			"url":"https://github.com/pear/Services_JSON.git"
-		},
-		{  
-			"type":"git",
-			"url":"https://github.com/pear/PEAR_Exception.git"
-		}
-	],
 	"autoload": {
 		"psr-4": {
 			"OUTRAGEdns\\":"app/lib"
