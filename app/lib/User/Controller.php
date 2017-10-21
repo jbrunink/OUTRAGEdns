@@ -47,7 +47,7 @@ class Controller extends Entity\Controller
 			}
 		}
 		
-		return $this->response->display("index.twig");
+		return $this->toHTML();
 	}
 	
 	
@@ -100,7 +100,7 @@ class Controller extends Entity\Controller
 			}
 		}
 		
-		return $this->response->display("index.twig");
+		return $this->toHTML();
 	}
 	
 	
@@ -163,7 +163,7 @@ class Controller extends Entity\Controller
 			$this->response->users = $request->get("objects");
 		}
 		
-		return $this->response->display("index.twig");
+		return $this->toHTML();
 	}
 	
 	
@@ -181,7 +181,7 @@ class Controller extends Entity\Controller
 	 */
 	public function dashboard()
 	{
-		return $this->response->display("index.twig");
+		return $this->toHTML();
 	}
 	
 	
@@ -192,18 +192,21 @@ class Controller extends Entity\Controller
 	{
 		$this->response->fullwidth = true;
 		
-		$form = new FormAuthenticate();
-		
-		if($form->validate($this->request->post))
+		if($this->request->getMethod() == "POST")
 		{
-			if($this->content->authenticate($this->request, $form->getValues()))
+			$form = new FormAuthenticate();
+			
+			if($form->validate($this->request->request))
 			{
-				header("Location: /");
-				exit;
+				if($this->content->authenticate($this->request, $form->getValues()))
+				{
+					header("Location: /");
+					exit;
+				}
 			}
 		}
 		
-		return $this->response->display("index.twig");
+		return $this->toHTML();
 	}
 	
 	

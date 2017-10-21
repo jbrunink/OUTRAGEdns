@@ -82,7 +82,7 @@ class Controller extends Entity\Controller
 		
 		$this->response->available_records = $list;
 		
-		return $this->response->display("index.twig");
+		return $this->toHTML();
 	}
 	
 	
@@ -174,7 +174,7 @@ class Controller extends Entity\Controller
 		
 		$this->response->available_records = $list;
 		
-		return $this->response->display("index.twig");
+		return $this->toHTML();
 	}
 	
 	
@@ -234,7 +234,7 @@ class Controller extends Entity\Controller
 			$this->response->domains = $request->get("objects");
 		}
 		
-		return $this->response->display("index.twig");
+		return $this->toHTML();
 	}
 	
 	

@@ -34,12 +34,6 @@ use \Whoops\Handler\PrettyPageHandler;
 use \WhoopsSilex\WhoopsServiceProvider;
 
 
-# error handling?
-$whoops = new \Whoops\Run();
-$whoops->pushHandler(new PrettyPageHandler());
-$whoops->register();
-
-
 # boot strap the config
 $configuration = Configuration::getInstance();
 
@@ -51,10 +45,18 @@ $session->start();
 
 # let's mess about with silex now
 $app = new Application();
-
-$app->register(new WhoopsServiceProvider());
 $app->register(new TwigServiceProvider(), [ "twig.path" => TEMPLATE_DIR ]);
 
+
+# error handling?
+$whoops = new \Whoops\Run();
+$whoops->pushHandler(new PrettyPageHandler());
+$whoops->register();
+
+$app->register(new WhoopsServiceProvider());
+
+
+# we might want to set some things up first
 $app->before(function(Request $request, Application $app) use ($session)
 {
 	# set session
@@ -79,15 +81,9 @@ $app->before(function(Request $request, Application $app) use ($session)
 
 if(true)
 {
-	$app->match("/login/", function(Request $request, Application $app)
-	{
-		$controller = new User\Controller();
-		
-		$controller->init($request, $app);
-		$controller->login();
-		
-		return $app["twig"]->render("index.twig", $app["outragedns.context"]->toArray());
-	});
+	$controller = new User\Controller();
+	
+	$app->match("/login/", [ $controller, "login" ])->before([ $controller, "init" ]);
 }
 
 $app->run();

@@ -53,7 +53,7 @@ class Controller extends Entity\Controller
 		if(!empty($this->config->records->soa->nameservers))
 			$this->response->nameservers = array_merge($this->response->nameservers, $this->config->records->soa->nameservers->toArray());
 		
-		return $this->response->display("index.twig");
+		return $this->toHTML();
 	}
 	
 	
@@ -131,7 +131,7 @@ class Controller extends Entity\Controller
 		
 		$this->response->nameservers = array_unique($this->response->nameservers);
 		
-		return $this->response->display("index.twig");
+		return $this->toHTML();
 	}
 	
 	
@@ -191,6 +191,6 @@ class Controller extends Entity\Controller
 			$this->response->templates = $request->get("objects");
 		}
 		
-		return $this->response->display("index.twig");
+		return $this->toHTML();
 	}
 }

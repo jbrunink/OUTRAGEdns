@@ -3,10 +3,10 @@
 
 namespace OUTRAGEdns\User;
 
-use \OUTRAGEweb\Request;
 use \OUTRAGEdns\Entity;
 use \OUTRAGEdns\Domain;
 use \OUTRAGEdns\ZoneTemplate;
+use \Symfony\Component\HttpFoundation\Request;
 
 
 class Content extends Entity\Content
@@ -88,7 +88,7 @@ class Content extends Entity\Content
 	/**
 	 *	Shall we authenticate this user?
 	 */
-	public function authenticate(Request\Environment $environment, $credentials)
+	public function authenticate(Request $request, $credentials)
 	{
 		if(!isset($credentials["username"]) || !isset($credentials["password"]))
 			return false;
@@ -102,8 +102,10 @@ class Content extends Entity\Content
 		if(!$target)
 			return false;
 		
-		$environment->session->reset();
-		$environment->session->current_users_id = $target->id;
+		$session = $request->getSession();
+		
+		$session->invalidate();
+		$session->set("authenticated_users_id", $target->id);
 		
 		return $this->load($target->id);
 	}
@@ -112,9 +114,9 @@ class Content extends Entity\Content
 	/**
 	 *	Let's log this user out.
 	 */
-	public function logout(Request\Environment $environment = null)
+	public function logout(Request $request)
 	{
-		if($environment)
-			$environment->session->reset();
+		$request->getSession()->invalidate();
+		return true;
 	}
 }

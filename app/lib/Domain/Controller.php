@@ -51,7 +51,7 @@ class Controller extends Entity\Controller
 		if(!$this->response->templates)
 			$this->response->templates = ZoneTemplate\Content::find()->where([ "owner" => $this->response->user->id ])->order("name ASC")->get("objects");
 		
-		return $this->response->display("index.twig");
+		return $this->toHTML();
 	}
 	
 	
@@ -183,7 +183,7 @@ class Controller extends Entity\Controller
 		
 		$this->response->nameservers = array_unique($this->response->nameservers);
 		
-		return $this->response->display("index.twig");
+		return $this->toHTML();
 	}
 	
 	
@@ -311,7 +311,7 @@ class Controller extends Entity\Controller
 		
 		$this->response->revisions = iterator_to_array($result);
 		
-		return $this->response->display("index.twig");
+		return $this->toHTML();
 	}
 	
 	
@@ -332,6 +332,6 @@ class Controller extends Entity\Controller
 			$this->response->domains = $request->get("objects");
 		}
 		
-		return $this->response->display("index.twig");
+		return $this->toHTML();
 	}
 }
