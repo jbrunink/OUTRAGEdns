@@ -15,7 +15,7 @@ trait EntityDelegatorTrait
 	 */
 	public function getter_class()
 	{
-		return (new ReflectionObject($this))->name;
+		return $this->class = (new ReflectionObject($this))->name;
 	}
 	
 	
@@ -24,7 +24,7 @@ trait EntityDelegatorTrait
 	 */
 	public function getter_namespace()
 	{
-		return (new ReflectionObject($this))->getNamespaceName();
+		return $this->namespace = (new ReflectionObject($this))->getNamespaceName();
 	}
 	
 	

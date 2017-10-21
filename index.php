@@ -49,11 +49,14 @@ $app->register(new TwigServiceProvider(), [ "twig.path" => TEMPLATE_DIR ]);
 
 
 # error handling?
-$whoops = new \Whoops\Run();
-$whoops->pushHandler(new PrettyPageHandler());
-$whoops->register();
+if(true)
+{
+	$whoops = new \Whoops\Run();
+	$whoops->pushHandler(new PrettyPageHandler());
+	$whoops->register();
 
-$app->register(new WhoopsServiceProvider());
+	$app->register(new WhoopsServiceProvider());
+}
 
 
 # we might want to set some things up first
@@ -79,7 +82,36 @@ $app->before(function(Request $request, Application $app) use ($session)
 	$app["outragedns.context"] = new RequestContainer();
 }, Application::EARLY_EVENT);
 
-if(true)
+if($session->get("authenticated_users_id"))
+{
+	foreach($configuration->entities as $entity)
+	{
+		if(!$entity->actions)
+			continue;
+		
+		$class = "\\".str_replace(".", "\\", $entity->namespace)."\\Controller";
+		
+		if(!class_exists($class))
+			continue;
+		
+		$controller = new $class();
+		$endpoint = $entity->route ?: $entity->type."s";
+		
+		foreach($entity->actions as $action => $settings)
+		{	
+			if($settings->default && !$settings->id)
+				$app->match("/".$endpoint."/", [ $controller, $action ])->before([ $controller, "init" ]);
+			
+			$route = $settings->global ? ("/".$action."/") : ("/".$endpoint."/".$action."/");
+			
+			if($settings->id)
+				$route .= "{id}/";
+			
+			$app->match($route, [ $controller, $action ])->before([ $controller, "init" ]);
+		}
+	}
+}
+else
 {
 	$controller = new User\Controller();
 	

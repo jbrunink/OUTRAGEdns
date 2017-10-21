@@ -16,7 +16,7 @@ trait ControllerDelegatorTrait
 		if(!class_exists($class))
 			throw new \Exception("Unable to find content/model");
 		
-		return new $class();
+		return $this->content = new $class();
 	}
 	
 	
@@ -35,6 +35,6 @@ trait ControllerDelegatorTrait
 		if($this->content)
 			$form->content = $this->content;
 		
-		return $form;
+		return $this->form = $form;
 	}
 }

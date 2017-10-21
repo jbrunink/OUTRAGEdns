@@ -59,11 +59,7 @@ class Controller
 		
 		# at the moment there's no way within symfony to do this sort of thing
 		# sadly - hurrah for custom functionality
-		$this->request->url = explode("/", parse_url($request->server->get("REQUEST_URI"), PHP_URL_PATH));
-		$this->request->url[0] = $this->request->getScheme()."://".$this->request->getHttpHost();
-		
-		if(strlen(end($this->request->url)) == 0)
-			array_pop($this->request->url);
+		$this->request->url = $this->getRequestURL($this->request);
 		
 		# response is our umbrella variable
 		$this->response = $app["outragedns.context"];
@@ -114,5 +110,21 @@ class Controller
 		$output = $this->application["twig"]->render($template, $context->toArray());
 		
 		return $output;
+	}
+	
+	
+	/**
+	 *	Creates an array of paths that we can use in our templates and controllers
+	 *	to figure out what route we're wanting to take
+	 */
+	protected function getRequestURL(Request $request)
+	{
+		$list = explode("/", parse_url($request->server->get("REQUEST_URI"), PHP_URL_PATH));
+		$list[0] = $request->getScheme()."://".$request->getHttpHost();
+		
+		if(strlen(end($list)) == 0)
+			array_pop($list);
+		
+		return $list;
 	}
 }

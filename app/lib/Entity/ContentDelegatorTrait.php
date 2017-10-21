@@ -23,7 +23,7 @@ trait ContentDelegatorTrait
 		foreach($this->config->entities as $entity)
 		{
 			if($entity->namespace == $namespace)
-				return $entity;
+				return $this->settings = $entity;
 		}
 		
 		return null;
@@ -57,7 +57,7 @@ trait ContentDelegatorTrait
 		foreach($metadata->getTable($this->db_table)->getColumns() as $column)
 			$list[] = $column->getName();
 		
-		return $list;
+		return $this->db_fields = $list;
 	}
 	
 	
