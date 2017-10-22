@@ -9,7 +9,9 @@
 			{% for list in available_records %}
 				<optgroup label="{{ list.domain|e }}">
 					{% for record_id, name in list.records %}
-						<option value="{{ record_id|e }}"{% if selected_record_id == record_id %} selected="selected"{% endif %}>{{ name|e }}</option>
+						<option value="{{ record_id|e }}"{% if selected_record_id == record_id %} selected="selected"{% endif %}>
+							{% if name|length %}{{ name|e }}.{% endif %}{{ list.domain|e }}
+						</option>
 					{% endfor %}
 				</optgroup>
 			{% endfor %}

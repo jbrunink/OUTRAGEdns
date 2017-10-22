@@ -22,8 +22,10 @@ require WWW_DIR."/vendor/autoload.php";
 
 # get some namespaces set up
 use \OUTRAGEdns\Configuration\Configuration;
+use \OUTRAGEdns\DynamicAddress\Controller as DynamicAddressController;
 use \OUTRAGEdns\Request\Container as RequestContainer;
-use \OUTRAGEdns\User as User;
+use \OUTRAGEdns\User\Content as UserContent;
+use \OUTRAGEdns\User\Controller as UserController;
 use \OUTRAGElib\Structure\ObjectList;
 use \Silex\Application;
 use \Silex\Provider\TwigServiceProvider;
@@ -51,7 +53,7 @@ $app->register(new TwigServiceProvider(), [ "twig.path" => TEMPLATE_DIR ]);
 
 
 # error handling?
-if(true)
+if(!empty($app["debug"]))
 {
 	$whoops = new \Whoops\Run();
 	$whoops->pushHandler(new PrettyPageHandler());
@@ -117,7 +119,7 @@ if($session->get("authenticated_users_id"))
 	{
 		$session = $request->getSession();
 		
-		$user = new User\Content();
+		$user = new UserContent();
 		$user->load($session->get("authenticated_users_id"));
 		
 		if($user->admin)
@@ -151,13 +153,15 @@ else
 }
 
 # authentication
-$controller = new User\Controller();
+$controller = new UserController();
 
 if($session->get("authenticated_users_id"))
 	$app->match("/logout/", [ $controller, "logout" ])->before([ $controller, "init" ]);
 else
 	$app->match("/login/", [ $controller, "login" ])->before([ $controller, "init" ]);
 
+# router is also required for the snazzy dynamic DNS feature
+$app->match("/dynamic-dns/{token}/", [ new DynamicAddressController(), "updateDynamicAddresses" ]);
 
 # run, run!!
 $app->run();
