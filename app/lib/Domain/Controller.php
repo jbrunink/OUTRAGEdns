@@ -4,8 +4,9 @@
 namespace OUTRAGEdns\Domain;
 
 use \OUTRAGEdns\Entity;
-use \OUTRAGEdns\ZoneTemplate;
 use \OUTRAGEdns\Notification;
+use \OUTRAGEdns\ZoneTemplate;
+use \Symfony\Component\HttpFoundation\Response;
 
 
 class Controller extends Entity\Controller
@@ -31,7 +32,7 @@ class Controller extends Entity\Controller
 						$values["owner"] = $this->response->user->id;
 					
 					$this->content->save($values);
-
+					
 					$connection->commit();
 					
 					new Notification\Success("Successfully created the domain: ".$this->content->name);
@@ -113,13 +114,13 @@ class Controller extends Entity\Controller
 			"list" => [],
 		);
 		
-		if(!empty($this->request->get->revision))
+		if($this->request->query->has("revision"))
 		{
 			$select = $this->db->select();
 			
 			$select->from("logs")
 				   ->columns([ "the_date", "state" ])
-				   ->where([ "id" => $this->request->get->revision ])
+				   ->where([ "id" => $this->request->query->get("revision") ])
 				   ->where([ "content_type" => get_class($this->content) ])
 				   ->where([ "content_id" => $this->content->id ])
 				   ->where([ "action" => "records" ])
@@ -151,6 +152,8 @@ class Controller extends Entity\Controller
 						
 						case "NS":
 							$this->response->nameservers[] = $record->content;
+							$this->response->records["list"][] = $record;
+						break;
 						
 						default:
 							$this->response->records["list"][] = $record;
@@ -173,6 +176,8 @@ class Controller extends Entity\Controller
 					
 					case "NS":
 						$this->response->nameservers[] = $record->content;
+						$this->response->records["list"][] = $record;
+					break;
 					
 					default:
 						$this->response->records["list"][] = $record;
@@ -243,22 +248,22 @@ class Controller extends Entity\Controller
 			exit;
 		}
 		
-		$format = !empty($this->request->get->format) ? strtolower($this->request->get->format) : "json";
-		$use_prefix = !empty($this->request->get->prefix);
+		$format = $this->request->query->get("format") ?: "json";
+		$use_prefix = $this->request->query->get("prefix");
 		
 		switch($format)
 		{
 			case "json":
 				header("Content-Type: application/json");
 				
-				if(empty($this->request->get->preview))
+				if($this->request->query->get("preview"))
 					header('Content-Disposition: attachment; filename="'.$this->content->name.'.json"');
 			break;
 			
 			case "xml":
 				header("Content-Type: application/xml");
 				
-				if(empty($this->request->get->preview))
+				if($this->request->query->get("preview"))
 					header('Content-Disposition: attachment; filename="'.$this->content->name.'.xml"');
 			break;
 			
@@ -266,17 +271,17 @@ class Controller extends Entity\Controller
 			default:
 				header("Content-Type: text/plain");
 				
-				if(empty($this->request->get->preview))
+				if($this->request->query->get("preview"))
 					header('Content-Disposition: attachment; filename="'.$this->content->name.'.txt"');
 			break;
 		}
 		
 		$revision_id = null;
 		
-		if(!empty($this->request->get->revision))
-			$revision_id = $this->request->get->revision;
+		if($this->request->query->has("revision"))
+			$revision_id = $this->request->query->get("revision");
 		
-		echo $this->content->export($format, $use_prefix, $revision_id);		
+		echo $this->content->export($format, $use_prefix, $revision_id);
 		exit;
 	}
 	

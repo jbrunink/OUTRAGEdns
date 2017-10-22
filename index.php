@@ -49,8 +49,6 @@ $app->register(new TwigServiceProvider(), [ "twig.path" => TEMPLATE_DIR ]);
 
 #$app["debug"] = true;
 
-$app["twig"]->addExtension(new \Twig_Extension_Debug());
-
 
 # error handling?
 if(true)
@@ -134,6 +132,20 @@ if($session->get("authenticated_users_id"))
 		$request->getSession()->remove("_global_admin_mode");
 		
 		header("Location: /domains/grid/");
+		exit;
+	});
+	
+	$app->match("/", function()
+	{
+		header("Location: /domains/grid/");
+		exit;
+	});
+}
+else
+{
+	$app->match("/", function()
+	{
+		header("Location: /login/");
 		exit;
 	});
 }

@@ -7,6 +7,7 @@ use \OUTRAGEdns\Configuration\Configuration;
 use \OUTRAGEdns\Record\Form as RecordForm; 
 use \OUTRAGEdns\Validate\Element;
 use \OUTRAGEdns\Validate\ElementList;
+use \OUTRAGEdns\Validate\Constraint\FullyQualifiedDomainName;
 
 
 class Form extends ElementList
@@ -21,6 +22,7 @@ class Form extends ElementList
 		# name
 		$name = new Element("name");
 		$name->required(true);
+		$name->addConstraint(new FullyQualifiedDomainName());
 		$name->appendTo($this);
 		
 		# type

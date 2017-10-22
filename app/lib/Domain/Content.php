@@ -367,7 +367,10 @@ class Content extends Entity\Content
 				
 				foreach($records as $record)
 				{
-					$name = $use_prefix ? $record->prefix : $record->name;
+					if($use_prefix)
+						$name = $record->prefix;
+					else
+						$name = ($record->name ? $record->name."." : "").$this->name.".";
 					
 					$max_name_len = max($max_name_len, strlen($name ?: "@"));
 					$max_ttl_len = max($max_ttl_len, strlen((string) $record->ttl));
@@ -379,7 +382,10 @@ class Content extends Entity\Content
 				
 				foreach($records as $record)
 				{
-					$name = $use_prefix ? $record->prefix : $record->name.".";
+					if($use_prefix)
+						$name = $record->prefix;
+					else
+						$name = ($record->name ? $record->name."." : "").$this->name.".";
 					
 					switch($record->type)
 					{
