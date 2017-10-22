@@ -1,20 +1,20 @@
 {% set parts = content.content|split(' ') %}
 
-<tr{% if class %} class="{{ class|e }}"{% endif %}>
+<tr{% if class is defined %} class="{{ class|e }}"{% endif %}>
 	<td class="with-suffix">
-		<input type="text" name="records[{% if index is not empty %}{{ index|e }}{% endif %}][name]" value="{{ content.prefix|e }}" />
+		<input type="text" name="records[{% if index is defined %}{{ index|e }}{% endif %}][name]" value="{{ content.prefix|e }}" />
 		<div class="suffix">.{{ suffix|default(content.parent.name)|e }}</div>
 		
-		<input type="hidden" name="records[{% if index is not empty %}{{ index|e }}{% endif %}][type]" value="SOA" />
+		<input type="hidden" name="records[{% if index is defined %}{{ index|e }}{% endif %}][type]" value="SOA" />
 	</td>
 	
 	<td>
-		<select name="records[{% if index is not empty %}{{ index|e }}{% endif %}][mname]" class="editable-dropdown">
+		<select name="records[{% if index is defined %}{{ index|e }}{% endif %}][mname]" class="editable-dropdown">
 			{% if not parts[0] %}
 				<option value="">?</option>
 			{% endif %}
 			
-			{% if parts[0] is not empty and parts[0] not in nameservers %}
+			{% if parts[0] is defined and parts[0] not in nameservers %}
 				<option value="{{ parts[0]|e }}" selected="selected">{{ parts[0]|e }}</option>
 			{% endif %}
 			
@@ -25,21 +25,21 @@
 	</td>
 	
 	<td>
-		<input type="text" name="records[{% if index is not empty %}{{ index|e }}{% endif %}][rname]" value="{{ parts[1]|e }}" />
+		<input type="text" name="records[{% if index is defined %}{{ index|e }}{% endif %}][rname]" value="{{ parts[1]|e }}" />
 	</td>
 	
 	<td>
-		<input type="text" name="records[{% if index is not empty %}{{ index|e }}{% endif %}][serial]" value="{{ parts[2]|default(parent.serial)|e }}" readonly="readonly" />
+		<input type="text" name="records[{% if index is defined %}{{ index|e }}{% endif %}][serial]" value="{{ parts[2]|default(parent.serial)|e }}" readonly="readonly" />
 	</td>
 	
 	<td>
 		{% if config.records.ttl is iterable %}
-			<select name="records[{% if index is not empty %}{{ index|e }}{% endif %}][refresh]" class="editable-dropdown">
+			<select name="records[{% if index is defined %}{{ index|e }}{% endif %}][refresh]" class="editable-dropdown">
 				{% if not parts[3] %}
 					<option value="">?</option>
 				{% endif %}
 				
-				{% if parts[3] is not empty and parts[3] not in config.records.ttl|keys %}
+				{% if parts[3] is defined and parts[3] not in config.records.ttl|keys %}
 					<option value="{{ parts[3]|e }}" selected="selected">{{ parts[3]|e }} sec</option>
 				{% endif %}
 				
@@ -48,18 +48,18 @@
 				{% endfor %}
 			</select>
 		{% else %}
-			<input type="text" name="records[{% if index is not empty %}{{ index|e }}{% endif %}][refresh]" value="{{ parts[3]|e }}" />
+			<input type="text" name="records[{% if index is defined %}{{ index|e }}{% endif %}][refresh]" value="{{ parts[3]|e }}" />
 		{% endif %}
 	</td>
 	
 	<td>
 		{% if config.records.ttl is iterable %}
-			<select name="records[{% if index is not empty %}{{ index|e }}{% endif %}][retry]" class="editable-dropdown">
+			<select name="records[{% if index is defined %}{{ index|e }}{% endif %}][retry]" class="editable-dropdown">
 				{% if not parts[4] %}
 					<option value="">?</option>
 				{% endif %}
 				
-				{% if parts[4] is not empty and parts[4] not in config.records.ttl|keys %}
+				{% if parts[4] is defined and parts[4] not in config.records.ttl|keys %}
 					<option value="{{ parts[4]|e }}" selected="selected">{{ parts[4]|e }} sec</option>
 				{% endif %}
 				
@@ -68,18 +68,18 @@
 				{% endfor %}
 			</select>
 		{% else %}
-			<input type="text" name="records[{% if index is not empty %}{{ index|e }}{% endif %}][retry]" value="{{ parts[4]|e }}" />
+			<input type="text" name="records[{% if index is defined %}{{ index|e }}{% endif %}][retry]" value="{{ parts[4]|e }}" />
 		{% endif %}
 	</td>
 	
 	<td>
 		{% if config.records.ttl is iterable %}
-			<select name="records[{% if index is not empty %}{{ index|e }}{% endif %}][expire]" class="editable-dropdown">
+			<select name="records[{% if index is defined %}{{ index|e }}{% endif %}][expire]" class="editable-dropdown">
 				{% if not parts[5] %}
 					<option value="">?</option>
 				{% endif %}
 				
-				{% if parts[5] is not empty and parts[5] not in config.records.ttl|keys %}
+				{% if parts[5] is defined and parts[5] not in config.records.ttl|keys %}
 					<option value="{{ parts[5]|e }}" selected="selected">{{ parts[5]|e }} sec</option>
 				{% endif %}
 				
@@ -88,18 +88,18 @@
 				{% endfor %}
 			</select>
 		{% else %}
-			<input type="text" name="records[{% if index is not empty %}{{ index|e }}{% endif %}][expire]" value="{{ parts[5]|e }}" />
+			<input type="text" name="records[{% if index is defined %}{{ index|e }}{% endif %}][expire]" value="{{ parts[5]|e }}" />
 		{% endif %}
 	</td>
 	
 	<td>
 		{% if config.records.ttl is iterable %}
-			<select name="records[{% if index is not empty %}{{ index|e }}{% endif %}][minimum]" class="editable-dropdown">
+			<select name="records[{% if index is defined %}{{ index|e }}{% endif %}][minimum]" class="editable-dropdown">
 				{% if not parts[6] %}
 					<option value="">?</option>
 				{% endif %}
 				
-				{% if parts[6] is not empty and parts[6] not in config.records.ttl|keys %}
+				{% if parts[6] is defined and parts[6] not in config.records.ttl|keys %}
 					<option value="{{ parts[6]|e }}" selected="selected">{{ parts[6]|e }} sec</option>
 				{% endif %}
 				
@@ -108,18 +108,18 @@
 				{% endfor %}
 			</select>
 		{% else %}
-			<input type="text" name="records[{% if index is not empty %}{{ index|e }}{% endif %}][minimum]" value="{{ parts[6]|e }}" />
+			<input type="text" name="records[{% if index is defined %}{{ index|e }}{% endif %}][minimum]" value="{{ parts[6]|e }}" />
 		{% endif %}
 	</td>
 	
 	<td>
 		{% if config.records.ttl is iterable %}
-			<select name="records[{% if index is not empty %}{{ index|e }}{% endif %}][ttl]" class="editable-dropdown">
+			<select name="records[{% if index is defined %}{{ index|e }}{% endif %}][ttl]" class="editable-dropdown">
 				{% if not content.ttl %}
 					<option value="">?</option>
 				{% endif %}
 				
-				{% if content.ttl is not empty and content.ttl not in config.records.ttl|keys %}
+				{% if content.ttl is defined and content.ttl not in config.records.ttl|keys %}
 					<option value="{{ content.ttl|e }}" selected="selected">{{ content.ttl|e }} sec</option>
 				{% endif %}
 				
@@ -128,7 +128,7 @@
 				{% endfor %}
 			</select>
 		{% else %}
-			<input type="text" name="records[{% if index is not empty %}{{ index|e }}{% endif %}][ttl]" value="{{ content.ttl|e }}" />
+			<input type="text" name="records[{% if index is defined %}{{ index|e }}{% endif %}][ttl]" value="{{ content.ttl|e }}" />
 		{% endif %}
 	</td>
 </tr>

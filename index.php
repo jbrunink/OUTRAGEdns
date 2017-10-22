@@ -47,6 +47,10 @@ $session->start();
 $app = new Application();
 $app->register(new TwigServiceProvider(), [ "twig.path" => TEMPLATE_DIR ]);
 
+#$app["debug"] = true;
+
+$app["twig"]->addExtension(new \Twig_Extension_Debug());
+
 
 # error handling?
 if(true)
@@ -98,7 +102,7 @@ if($session->get("authenticated_users_id"))
 		$endpoint = $entity->route ?: $entity->type."s";
 		
 		foreach($entity->actions as $action => $settings)
-		{	
+		{
 			if($settings->default && !$settings->id)
 				$app->match("/".$endpoint."/", [ $controller, $action ])->before([ $controller, "init" ]);
 			
@@ -110,12 +114,38 @@ if($session->get("authenticated_users_id"))
 			$app->match($route, [ $controller, $action ])->before([ $controller, "init" ]);
 		}
 	}
-}
-else
-{
-	$controller = new User\Controller();
 	
-	$app->match("/login/", [ $controller, "login" ])->before([ $controller, "init" ]);
+	$app->match("/admin/on/", function(Request $request)
+	{
+		$session = $request->getSession();
+		
+		$user = new User\Content();
+		$user->load($session->get("authenticated_users_id"));
+		
+		if($user->admin)
+			$session->set("_global_admin_mode", 1);
+		
+		header("Location: /domains/grid/");
+		exit;
+	});
+	
+	$app->match("/admin/off/", function(Request $request)
+	{
+		$request->getSession()->remove("_global_admin_mode");
+		
+		header("Location: /domains/grid/");
+		exit;
+	});
 }
 
+# authentication
+$controller = new User\Controller();
+
+if($session->get("authenticated_users_id"))
+	$app->match("/logout/", [ $controller, "logout" ])->before([ $controller, "init" ]);
+else
+	$app->match("/login/", [ $controller, "login" ])->before([ $controller, "init" ]);
+
+
+# run, run!!
 $app->run();

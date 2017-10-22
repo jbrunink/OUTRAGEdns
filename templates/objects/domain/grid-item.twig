@@ -1,4 +1,4 @@
-<tr{% if class %} class="{{ class|e }}"{% endif %}>
+<tr{% if class is defined %} class="{{ class|e }}"{% endif %}>
 	<td class="check">
 		<input type="checkbox" name="selected[]" value="{{ content.id }}" />
 	</td>

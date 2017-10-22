@@ -19,9 +19,9 @@ class Controller extends Entity\Controller
 		if($this->response->godmode)
 			$this->form->rulesAdmin();
 		
-		if(!empty($this->request->post->commit))
+		if($this->request->getMethod() == "POST" && $this->request->request->has("commit"))
 		{
-			if($this->form->validate($this->request->post))
+			if($this->form->validate($this->request->request))
 			{
 				$connection = $this->db->getAdapter()->getDriver()->getConnection();
 				
@@ -72,9 +72,9 @@ class Controller extends Entity\Controller
 			exit;
 		}
 		
-		if(!empty($this->request->post->commit))
+		if($this->request->getMethod() == "POST" && $this->request->request->has("commit"))
 		{
-			if($this->form->validate($this->request->post))
+			if($this->form->validate($this->request->request))
 			{
 				$connection = $this->db->getAdapter()->getDriver()->getConnection();
 				
@@ -192,7 +192,7 @@ class Controller extends Entity\Controller
 	{
 		$this->response->fullwidth = true;
 		
-		if($this->request->getMethod() == "POST")
+		if($this->request->getMethod() == "POST" && $this->request->request->has("commit"))
 		{
 			$form = new FormAuthenticate();
 			

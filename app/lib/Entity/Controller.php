@@ -63,6 +63,8 @@ class Controller
 		
 		# response is our umbrella variable
 		$this->response = $app["outragedns.context"];
+		
+		$this->response->fullwidth = false;
 		$this->response->request = $this->request;
 		
 		if($this->content)

@@ -45,9 +45,9 @@
 		{% endif %}
 		
 		<section class="app-container{% if not fullwidth %} with-sidebar{% endif %}">
-			{% if request.session._notification_messages|length %}
+			{% if global.session.get("_notification_messages")|length %}
 				<div class="notification-header">
-					{% for notification in request.session._notification_messages %}
+					{% for notification in global.session.get("_notification_messages") %}
 						<div class="notification-item{% if notification.colour %} {{ notification.colour }}{% endif %}">
 							<i class="fa fa-exclamation-circle"></i> {{ notification.message }}
 						</div>
