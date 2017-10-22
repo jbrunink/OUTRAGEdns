@@ -12,7 +12,7 @@ if(!ini_get("date.timezone"))
 # what if Xerox wants to be secure?
 define("WWW_DIR", getenv("WWW_DIR") ?: $_SERVER["DOCUMENT_ROOT"]);
 define("APP_DIR", getenv("APP_DIR") ?: WWW_DIR."/app");
-define("TEMPLATE_DIR", getenv("TEMPLATE_DIR") ?: WWW_DIR."/templates");
+define("TEMPLATE_DIR", getenv("TEMPLATE_DIR") ?: APP_DIR."/templates");
 
 
 # let's now use composer because i'd potentially like to use my
