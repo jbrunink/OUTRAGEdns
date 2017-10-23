@@ -29,7 +29,7 @@ class Controller extends Entity\Controller
 					$values = $this->form->getValues();
 					
 					if(empty($values["owner"]))
-						$values["owner"] = $this->response->user->id;
+						$values["owner"] = $this->user->id;
 					
 					$this->content->save($values);
 					
@@ -50,7 +50,7 @@ class Controller extends Entity\Controller
 		}
 		
 		if(!$this->response->templates)
-			$this->response->templates = ZoneTemplate\Content::find()->where([ "owner" => $this->response->user->id ])->order("name ASC")->get("objects");
+			$this->response->templates = ZoneTemplate\Content::find()->where([ "owner" => $this->user->id ])->order("name ASC")->get("objects");
 		
 		return $this->toHTML();
 	}
@@ -64,7 +64,7 @@ class Controller extends Entity\Controller
 		if(!$this->content->id)
 			$this->content->load($id);
 		
-		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->response->user->id))
+		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->user->id))
 		{
 			new Notification\Error("You don't have access to this domain.");
 			
@@ -98,7 +98,7 @@ class Controller extends Entity\Controller
 		}
 		
 		if(!$this->response->templates)
-			$this->response->templates = ZoneTemplate\Content::find()->where([ "owner" => $this->response->user->id ])->order("name ASC")->get("objects");
+			$this->response->templates = ZoneTemplate\Content::find()->where([ "owner" => $this->user->id ])->order("name ASC")->get("objects");
 		
 		# list all the nameservers that are currently defined
 		$this->response->nameservers = [];
@@ -200,7 +200,7 @@ class Controller extends Entity\Controller
 		if(!$this->content->id)
 			$this->content->load($id);
 		
-		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->response->user->id))
+		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->user->id))
 		{
 			new Notification\Error("You don't have access to this domain.");
 			
@@ -240,7 +240,7 @@ class Controller extends Entity\Controller
 		if(!$this->content->id)
 			$this->content->load($id);
 		
-		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->response->user->id))
+		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->user->id))
 		{
 			new Notification\Error("You don't have access to this domain.");
 			
@@ -294,7 +294,7 @@ class Controller extends Entity\Controller
 		if(!$this->content->id)
 			$this->content->load($id);
 		
-		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->response->user->id))
+		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->user->id))
 		{
 			new Notification\Error("You don't have access to this domain.");
 			
@@ -332,7 +332,7 @@ class Controller extends Entity\Controller
 			$request->order("id ASC");
 			
 			if(!$this->response->godmode)
-				$request->where([ "zones.owner" => $this->response->user->id ]);
+				$request->where([ "zones.owner" => $this->user->id ]);
 			
 			$this->response->domains = $request->get("objects");
 		}

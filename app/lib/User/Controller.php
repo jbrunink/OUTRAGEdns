@@ -64,7 +64,7 @@ class Controller extends Entity\Controller
 		if(!$this->content->id)
 			$this->content->load($id);
 		
-		if(!$this->content->id || (!$this->response->godmode && $this->content->id !== $this->response->user->id))
+		if(!$this->content->id || (!$this->response->godmode && $this->content->id !== $this->user->id))
 		{
 			new Notification\Error("You don't have access to this user.");
 			
@@ -112,7 +112,7 @@ class Controller extends Entity\Controller
 		if(!$this->content->id)
 			$this->content->load($id);
 		
-		if(!$this->content->id || (!$this->response->godmode && $this->content->id !== $this->response->user->id))
+		if(!$this->content->id || (!$this->response->godmode && $this->content->id !== $this->user->id))
 		{
 			new Notification\Error("You don't have access to this user.");
 			
@@ -155,12 +155,12 @@ class Controller extends Entity\Controller
 			exit;
 		}
 		
-		if(!$this->response->users)
+		if(!$this->users)
 		{
 			$request = Content::find();
 			$request->order("id ASC");
 			
-			$this->response->users = $request->get("objects");
+			$this->users = $request->get("objects");
 		}
 		
 		return $this->toHTML();
@@ -172,7 +172,7 @@ class Controller extends Entity\Controller
 	 */
 	public function account()
 	{
-		return $this->edit($this->response->user->id);
+		return $this->edit($this->user->id);
 	}
 	
 	
@@ -215,8 +215,8 @@ class Controller extends Entity\Controller
 	 */
 	public function logout()
 	{
-		if($this->response->user)
-			$this->response->user->logout($this->request);
+		if($this->user)
+			$this->user->logout($this->request);
 		
 		header("Location: /");
 		exit;

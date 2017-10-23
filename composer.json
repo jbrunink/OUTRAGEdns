@@ -9,7 +9,8 @@
 		"outragelib/objectlist": "dev-master",
 		"zendframework/zend-db": "^2.8@dev",
 		"texthtml/whoops-silex": "dev-master",
-		"symfony/twig-bridge": "^4.0@dev"
+		"symfony/twig-bridge": "^4.0@dev",
+		"pear/net_dns2": "dev-master"
 	},
 	"autoload": {
 		"psr-4": {

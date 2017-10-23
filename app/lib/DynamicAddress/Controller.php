@@ -28,7 +28,7 @@ class Controller extends Entity\Controller
 					$values = $this->form->getValues();
 					
 					if(empty($values["owner"]))
-						$values["owner"] = $this->response->user->id;
+						$values["owner"] = $this->user->id;
 					
 					if(empty($values["token"]))
 						$values["token"] = sha1(json_encode($values).uniqid().rand(1, 5000));
@@ -55,7 +55,7 @@ class Controller extends Entity\Controller
 		# and use this as the basis for our list
 		$list = [];
 		
-		foreach($this->response->user->domains as $domain)
+		foreach($this->user->domains as $domain)
 		{
 			foreach($domain->records as $record)
 			{
@@ -94,7 +94,7 @@ class Controller extends Entity\Controller
 		if(!$this->content->id)
 			$this->content->load($id);
 		
-		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->response->user->id))
+		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->user->id))
 		{
 			new Notification\Error("You don't have access to this domain.");
 			
@@ -147,7 +147,7 @@ class Controller extends Entity\Controller
 		# and use this as the basis for our list
 		$list = [];
 		
-		foreach($this->response->user->domains as $domain)
+		foreach($this->user->domains as $domain)
 		{
 			foreach($domain->records as $record)
 			{
@@ -186,7 +186,7 @@ class Controller extends Entity\Controller
 		if(!$this->content->id)
 			$this->content->load($id);
 		
-		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->response->user->id))
+		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->user->id))
 		{
 			new Notification\Error("You don't have access to this domain.");
 			
@@ -229,7 +229,7 @@ class Controller extends Entity\Controller
 			$request->order("id ASC");
 			
 			if(!$this->response->godmode)
-				$request->where([ "owner" => $this->response->user->id ]);
+				$request->where([ "owner" => $this->user->id ]);
 			
 			$this->response->domains = $request->get("objects");
 		}

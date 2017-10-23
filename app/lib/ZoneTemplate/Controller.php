@@ -26,8 +26,8 @@ class Controller extends Entity\Controller
 					
 					$values = $this->form->getValues();
 					
-					if($this->response->user)
-						$values["owner"] = $this->response->user;
+					if($this->user)
+						$values["owner"] = $this->user;
 					
 					$this->content->save($values);
 					
@@ -65,7 +65,7 @@ class Controller extends Entity\Controller
 		if(!$this->content->id)
 			$this->content->load($id);
 		
-		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->response->user->id))
+		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->user->id))
 		{
 			new Notification\Error("You don't have access to this zone template.");
 			
@@ -143,7 +143,7 @@ class Controller extends Entity\Controller
 		if(!$this->content->id)
 			$this->content->load($id);
 		
-		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->response->user->id))
+		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->user->id))
 		{
 			new Notification\Error("You don't have access to this zone template.");
 			
@@ -186,7 +186,7 @@ class Controller extends Entity\Controller
 			$request->order("id ASC");
 			
 			if(!$this->response->godmode)
-				$request->where([ "owner" => $this->response->user->id ]);
+				$request->where([ "owner" => $this->user->id ]);
 			
 			$this->response->templates = $request->get("objects");
 		}
