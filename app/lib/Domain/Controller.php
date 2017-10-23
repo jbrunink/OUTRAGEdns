@@ -251,28 +251,31 @@ class Controller extends Entity\Controller
 		$format = $this->request->query->get("format") ?: "json";
 		$use_prefix = $this->request->query->get("prefix");
 		
+		$response = new Response();
+		$response->setStatusCode(Response::HTTP_OK);
+		
 		switch($format)
 		{
 			case "json":
-				header("Content-Type: application/json");
+				$response->headers->set("Content-Type", "application/json");
 				
 				if($this->request->query->get("preview"))
-					header('Content-Disposition: attachment; filename="'.$this->content->name.'.json"');
+					$response->headers->set("Content-Disposition", 'attachment; filename="'.$this->content->name.'.json"');
 			break;
 			
 			case "xml":
-				header("Content-Type: application/xml");
+				$response->headers->set("Content-Type", "application/xml");
 				
 				if($this->request->query->get("preview"))
-					header('Content-Disposition: attachment; filename="'.$this->content->name.'.xml"');
+					$response->headers->set("Content-Disposition", 'attachment; filename="'.$this->content->name.'.xml"');
 			break;
 			
 			case "bind":
 			default:
-				header("Content-Type: text/plain");
+				$response->headers->set("Content-Type", "text/plain");
 				
 				if($this->request->query->get("preview"))
-					header('Content-Disposition: attachment; filename="'.$this->content->name.'.txt"');
+					$response->headers->set("Content-Disposition", 'attachment; filename="'.$this->content->name.'.txt"');
 			break;
 		}
 		
@@ -281,8 +284,9 @@ class Controller extends Entity\Controller
 		if($this->request->query->has("revision"))
 			$revision_id = $this->request->query->get("revision");
 		
-		echo $this->content->export($format, $use_prefix, $revision_id);
-		exit;
+		$response->setContent($this->content->export($format, $use_prefix, $revision_id));
+		
+		return $response;
 	}
 	
 	
