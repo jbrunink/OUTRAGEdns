@@ -1,0 +1,39 @@
+{% import "/includes/macros/form.twig" as forms %}
+
+{% if content.id %}
+	<h1>Edit '{{ content.name }}' domain</h1>
+{% else %}
+	<h1>Add a new domain</h1>
+{% endif %}
+
+<form class="form-horizontal" method="POST" enctype="multipart/form-data">
+	<article class="content-wrapper">
+		<fieldset>
+			<legend>Import zone file</legend>
+			
+			{{ forms.upload({
+				title: "Import",
+				field: "upload"
+			}) }}
+			
+			<p>
+				This upload supports either XML/JSON representations of data exported from other OUTRAGEdns installations
+				or supports parsing BIND/DNS zone files.
+			</p>
+		</fieldset>
+	</article>
+	
+	<br />
+	
+	<div class="pull-right">
+		<button class="btn btn-primary" type="submit" name="commit" value="now">
+			{% if content.id %}
+				Update
+			{% else %}
+				Add
+			{% endif %}
+			
+			domain
+		</button>
+	</div>
+</form>

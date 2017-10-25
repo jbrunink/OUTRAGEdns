@@ -3,8 +3,12 @@
 
 namespace OUTRAGEdns\Domain;
 
+use \Net_DNS2_Exception as DnsException;
+use \Net_DNS2_Packet_Response as DnsPacketResponse;
+use \Net_DNS2_Resolver as DnsResolver;
 use \OUTRAGEdns\Entity;
 use \OUTRAGEdns\Notification;
+use \OUTRAGEdns\Record;
 use \OUTRAGEdns\ZoneTemplate;
 use \Symfony\Component\HttpFoundation\Response;
 
@@ -193,6 +197,48 @@ class Controller extends Entity\Controller
 	
 	
 	/**
+	 *	Called when we want to import a set of records into this
+	 *	panel. Supports either XML/JSON exports from OUTRAGEdns or
+	 *	DNS zone files
+	 */
+	public function import($id)
+	{
+		$form = new FormImport();
+		
+		if(!$this->content->id)
+			$this->content->load($id);
+		
+		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->user->id))
+		{
+			new Notification\Error("You don't have access to this domain.");
+			
+			header("Location: ".$this->content->actions->grid);
+			exit;
+		}
+		
+		if($this->request->getMethod() == "POST" && $this->request->request->has("commit"))
+		{
+			if($form->validate($this->request->request))
+			{
+				$values = $form->getValues();
+				
+				$helper = new ImportParser();
+				$helper->parse($values["upload"]);
+				
+				var_dump($helper);
+				exit;
+			}
+			else
+			{
+				new Notification\Error("No correct import was provided.");
+			}
+		}
+		
+		return $this->toHTML();
+	}
+	
+	
+	/**
 	 *	Called when we want to remove a domain.
 	 */
 	public function remove($id)
@@ -321,6 +367,101 @@ class Controller extends Entity\Controller
 		$this->response->revisions = iterator_to_array($result);
 		
 		return $this->toHTML();
+	}
+	
+	
+	/**
+	 *	Called when we want to test the records
+	 */
+	public function test($id)
+	{
+		if(!$this->content->id)
+			$this->content->load($id);
+		
+		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->user->id))
+		{
+			new Notification\Error("You don't have access to this domain.");
+			
+			header("Location: ".$this->content->actions->grid);
+			exit;
+		}
+		
+		# might we have support for revisions? meh, probably not
+		$records = $this->content->records;
+		
+		# it's probably a good idea to test both the server we're currently on
+		# as well as some publically accessable servers
+		$nameservers = [
+			"Google" => [
+				"8.8.8.8",
+				"8.8.4.4",
+			],
+		];
+		
+		$results = [];
+		
+		$record_compare = function($name, Record\Content $record, DnsPacketResponse $result)
+		{
+			switch($record->type)
+			{
+				case "SOA":
+					return true;
+				break;
+				
+				default:
+					$answer_compare = function($record, $answer) use ($name)
+					{
+						if($answer->name != $name)
+							return false;
+						
+						if(isset($answer->address))
+						{
+							if($answer->address == $record->content)
+								return true;
+						}
+						
+						return false;
+					};
+					
+					foreach($result->answer as $answer)
+					{
+						if($answer_compare($record, $answer))
+							return true;
+					}
+				break;
+			}
+			
+			return false;
+		};
+		
+		foreach($nameservers as $key => $list)
+		{
+			$resolver = new DnsResolver([
+				"nameservers" => $list,
+				"use_tcp" => true,
+			]);
+			
+			foreach($records as $record)
+			{
+				if(!isset($results[$record->id]))
+					$results[$record->id] = [];
+				
+				try
+				{
+					$name = ($record->name ? $record->name."." : "").$this->content->name;
+					$result = $resolver->query($name, $record->type);
+					
+					$results[$record->id][$key] = $record_compare($name, $record, $result);
+				}
+				catch(DnsException $exception)
+				{
+					$results[$record->id][$key] = false;
+				}
+			}
+		}
+		
+		var_dump($results);
+		exit;
 	}
 	
 	

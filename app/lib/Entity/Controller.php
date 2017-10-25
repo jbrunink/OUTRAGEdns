@@ -94,7 +94,9 @@ class Controller
 		# output to HTML via twig!
 		$context = $this->application["outragedns.context"];
 		
-		$context->fullwidth = false;
+		if(!isset($context->fullwidth))
+			$context->fullwidth = false;
+		
 		$context->request = $this->request;
 		
 		if($this->content)

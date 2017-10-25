@@ -53,7 +53,7 @@ $app->register(new TwigServiceProvider(), [ "twig.path" => TEMPLATE_DIR ]);
 
 
 # error handling?
-if(!empty($app["debug"]))
+if(true || !empty($app["debug"]))
 {
 	$whoops = new \Whoops\Run();
 	$whoops->pushHandler(new PrettyPageHandler());
