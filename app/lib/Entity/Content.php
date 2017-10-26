@@ -80,11 +80,11 @@ class Content extends ObjectList
 				throw new \Exception("Unable to perform action - ".__FUNCTION__);
 		}
 		
-		$db_fields = array_flip($this->db_fields);
+		$values = array_intersect_key($post, array_flip($this->db_fields));
 		
 		$insert = $this->db->insert();
 		$insert->into($this->db_table);
-		$insert->values(array_intersect_key($post, $db_fields));
+		$insert->values($values);
 		
 		$statement = $this->db->prepareStatementForSqlObject($insert);
 		
@@ -113,15 +113,18 @@ class Content extends ObjectList
 				throw new \Exception("Unable to perform action - ".__FUNCTION__);
 		}
 		
-		$db_fields = array_flip($this->db_fields);
+		$values = array_intersect_key($post, array_flip($this->db_fields));
 		
-		$update = $this->db->update();
-		$update->table($this->db_table);
-		$update->set(array_intersect_key($post, $db_fields));
-		$update->where([ "id" => $this->id ]);
-		
-		$statement = $this->db->prepareStatementForSqlObject($update);
-		$statement->execute();
+		if(count($values) > 0)
+		{
+			$update = $this->db->update();
+			$update->table($this->db_table);
+			$update->set($values);
+			$update->where([ "id" => $this->id ]);
+			
+			$statement = $this->db->prepareStatementForSqlObject($update);
+			$statement->execute();
+		}
 		
 		return $this->load($this->id);
 	}

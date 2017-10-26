@@ -11,7 +11,7 @@
 		"texthtml/whoops-silex": "dev-master",
 		"symfony/twig-bridge": "^4.0@dev",
 		"pear/net_dns2": "dev-master",
-		"ltd-beget/dns-zone-configurator": "dev-master"
+		"ltd-beget/dns-zone-tokenizer": "dev-master"
 	},
 	"autoload": {
 		"psr-4": {

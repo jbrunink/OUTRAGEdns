@@ -225,12 +225,28 @@ class Controller extends Entity\Controller
 				$helper = new ImportParser();
 				$helper->parse($values["upload"]);
 				
-				var_dump($helper);
-				exit;
+				if(count($helper->records) > 0)
+				{
+					$data = [
+						"records" => $helper->records,
+					];
+					
+					if($this->content->edit($data) !== false)
+					{
+						new Notification\Success("Successfully imported records into this domain.");
+						
+						header("Location: ".$this->content->actions->edit);
+						exit;
+					}
+				}
+				else
+				{
+					new Notification\Error("No valid records were detected.");
+				}
 			}
 			else
 			{
-				new Notification\Error("No correct import was provided.");
+				new Notification\Error("No import feed was provided.");
 			}
 		}
 		
