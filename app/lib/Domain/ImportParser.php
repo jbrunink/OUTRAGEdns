@@ -3,7 +3,7 @@
 
 namespace OUTRAGEdns\Domain;
 
-use \LTDBeget\dns\configurator\Zone;
+use \LTDBeget\dns\Tokenizer as ZoneTokeniser;
 use \OUTRAGEdns\Record\Form as RecordForm;
 use \OUTRAGElib\FileStream\File;
 use \OUTRAGElib\FileStream\Stream;
@@ -98,7 +98,58 @@ class ImportParser
 	 */
 	protected function parseZoneFile(File $file)
 	{
-		var_dump($file);
-		exit;
+		$feed = $file->getStream()->getContents();
+		$valid = [];
+		
+		# something to bear in mind folks, this library does not really like having
+		# Windows line endings, so, this will need to be replaced in order to use it!
+		# @todo: contemplate writing own DNS parser via https://doc.nette.org/en/2.4/tokenizer
+		$feed = str_replace("\r\n", "\n", $feed);
+		
+		$records = ZoneTokeniser::tokenize($feed, [ "relativeToOrigin" => true ]);
+		
+		if(count($records) > 0)
+		{
+			foreach($records as $record)
+			{
+				$row = [];
+				
+				if(!empty($record["NAME"]))
+				{
+					if($record["NAME"] == "@")
+						$row["name"] = "";
+					else
+						$row["name"] = $record["NAME"];
+				}
+				
+				if(isset($record["TYPE"]))
+					$row["type"] = $record["TYPE"];
+				
+				if(isset($record["TTL"]))
+					$row["ttl"] = $record["TTL"];
+				
+				if(isset($record["RDATA"]) && isset($record["RDATA"]["PREFERENCE"]))
+				{
+					$row["prio"] = $record["RDATA"]["PREFERENCE"];
+					
+					unset($record["RDATA"]["PREFERENCE"]);
+				}
+				
+				if(isset($record["RDATA"]))
+				{
+					if($row["type"] == "TXT")
+						$row["content"] = "\"".implode(" ", $record["RDATA"])."\"";
+					else
+						$row["content"] = implode(" ", $record["RDATA"]);
+				}
+				
+				$form = new RecordForm();
+				
+				if($form->validate($row))
+					$valid[] = $form->getValues();
+			}
+		}
+		
+		return $valid;
 	}
 }

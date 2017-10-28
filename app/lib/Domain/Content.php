@@ -420,7 +420,7 @@ class Content extends Entity\Content
 				
 				$response[] = '';
 				
-				return implode("\r\n", $response);
+				return implode("\n", $response);
 			break;
 		}
 		
