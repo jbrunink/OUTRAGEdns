@@ -16,7 +16,7 @@ class Content extends Entity\Content
 	/**
 	 *	What zone does this domain belong to?
 	 */
-	public function getter_zone()
+	protected function getter_zone()
 	{
 		if(!$this->id)
 			return null;
@@ -28,7 +28,7 @@ class Content extends Entity\Content
 	/**
 	 *	What account owns this domain?
 	 */
-	public function getter_user()
+	protected function getter_user()
 	{
 		if(!$this->zone)
 			return null;
@@ -40,7 +40,7 @@ class Content extends Entity\Content
 	/**
 	 *	What record template, if any, is currently in use on this domain?
 	 */
-	public function getter_template()
+	protected function getter_template()
 	{
 		if(!$this->zone)
 			return null;
@@ -53,7 +53,7 @@ class Content extends Entity\Content
 	 *	Now, for the fun bit of retrieving all the records that belong to this
 	 *	domain.
 	 */
-	public function getter_records()
+	protected function getter_records()
 	{
 		if(!$this->id)
 			return null;
@@ -70,7 +70,7 @@ class Content extends Entity\Content
 	/**
 	 *	How many records does this domain possess?
 	 */
-	public function getter_records_no()
+	protected function getter_records_no()
 	{
 		if(!$this->id)
 			return 0;
@@ -82,7 +82,7 @@ class Content extends Entity\Content
 	/**
 	 *	Get the latest serial of this domain.
 	 */
-	public function getter_serial()
+	protected function getter_serial()
 	{
 		$invalid = "0";
 		

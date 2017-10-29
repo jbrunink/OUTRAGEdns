@@ -12,7 +12,7 @@ class Content extends Entity\Content
 	/**
 	 *	What domain does this record template belong to?
 	 */
-	public function getter_parent()
+	protected function getter_parent()
 	{
 		return Domain\Content::find()->where([ "id" => $this->domain_id ])->get("first");
 	}
@@ -21,7 +21,7 @@ class Content extends Entity\Content
 	/**
 	 *	Returns the record name without the name of the parent record.
 	 */
-	public function getter_prefix()
+	protected function getter_prefix()
 	{
 		return preg_replace("/\\.?".preg_quote($this->parent->name)."$/", "", $this->name);
 	}
@@ -35,6 +35,7 @@ class Content extends Entity\Content
 		if(!isset($post["change_date"]))
 			$post["change_date"] = time();
 		
+		/*
 		if(array_key_exists("type", $post))
 		{
 	    	if($post["type"] === "SOA" && !isset($post["content"]))
@@ -47,6 +48,7 @@ class Content extends Entity\Content
 			unset($post["expire"]);
 			unset($post["minimum"]);
 		}
+		*/
 		
 		return parent::save($post);
 	}
@@ -60,6 +62,7 @@ class Content extends Entity\Content
 		if(!isset($post["change_date"]))
 			$post["change_date"] = time();
 		
+		/*
 		if(array_key_exists("type", $post))
 		{
     		if($post["type"] === "SOA" && !isset($post["content"]))
@@ -74,6 +77,7 @@ class Content extends Entity\Content
     			unset($post["minimum"]);
     		}
 		}
+		*/
 		
 		return parent::edit($post);
 	}

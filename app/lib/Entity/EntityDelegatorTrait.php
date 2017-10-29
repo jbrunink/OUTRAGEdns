@@ -13,7 +13,7 @@ trait EntityDelegatorTrait
 	/**
 	 *	Returns this object's class name.
 	 */
-	public function getter_class()
+	protected function getter_class()
 	{
 		return $this->class = (new ReflectionObject($this))->name;
 	}
@@ -22,7 +22,7 @@ trait EntityDelegatorTrait
 	/**
 	 *	Returns this object's class namespace.
 	 */
-	public function getter_namespace()
+	protected function getter_namespace()
 	{
 		return $this->namespace = (new ReflectionObject($this))->getNamespaceName();
 	}
@@ -31,7 +31,7 @@ trait EntityDelegatorTrait
 	/**
 	 *	Return the config object.
 	 */
-	public function getter_config()
+	protected function getter_config()
 	{
 		return Configuration::getInstance();
 	}
@@ -40,7 +40,7 @@ trait EntityDelegatorTrait
 	/**
 	 *	Accessing the database...
 	 */
-	public function getter_db()
+	protected function getter_db()
 	{
 		return Connection::getInstance();
 	}

@@ -9,7 +9,7 @@ trait ControllerDelegatorTrait
 	/**
 	 *	What object are we modifying in this request? This one!
 	 */
-	public function getter_content()
+	protected function getter_content()
 	{
 		$class = $this->namespace."\\Content";
 		
@@ -23,7 +23,7 @@ trait ControllerDelegatorTrait
 	/**
 	 *	What forms can we use!
 	 */
-	public function getter_form()
+	protected function getter_form()
 	{
 		$class = $this->namespace."\\Form";
 		

@@ -13,7 +13,7 @@ class Content extends Entity\Content
 	/**
 	 *	Retrieves the parent record.
 	 */
-	public function getter_parent()
+	protected function getter_parent()
 	{
 		return DynamicAddress\Content::find()->where([ "id" => $this->dynamic_address_id ])->get("first");
 	}
@@ -22,7 +22,7 @@ class Content extends Entity\Content
 	/**
 	 *	What domain records does this object target?
 	 */
-	public function getter_targets()
+	protected function getter_targets()
 	{
 		$find = Record\Content::find();
 		
@@ -43,7 +43,7 @@ class Content extends Entity\Content
 	/**
 	 *	How many domain records does this object target?
 	 */
-	public function getter_targets_no()
+	protected function getter_targets_no()
 	{
 		$find = Record\Content::find();
 		

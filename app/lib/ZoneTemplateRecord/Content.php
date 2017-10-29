@@ -24,7 +24,7 @@ class Content extends Entity\Content
 	/**
 	 *	What template does this record template belong to?
 	 */
-	public function getter_parent()
+	protected function getter_parent()
 	{
 		if(!$this->zone_templ_id)
 			return null;
@@ -37,7 +37,7 @@ class Content extends Entity\Content
 	 *	Returns the record name without the name of the parent record - in this
 	 *	case, the [ZONE] marker.
 	 */
-	public function getter_prefix()
+	protected function getter_prefix()
 	{
 		return preg_replace("/\\.?".preg_quote("[".self::MARKER_ZONE."]")."$/", "", $this->name);
 	}

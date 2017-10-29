@@ -14,7 +14,7 @@ class Content extends Entity\Content
 	/**
 	 *	Returns the user that owns this ZoneTemplate object.
 	 */
-	public function getter_user()
+	protected function getter_user()
 	{
 		if(!$this->owner)
 			return null;
@@ -26,7 +26,7 @@ class Content extends Entity\Content
 	/**
 	 *	Retrieve a list of all records owned by this zone template.
 	 */
-	public function getter_records()
+	protected function getter_records()
 	{
 		if(!$this->id)
 			return null;
@@ -38,7 +38,7 @@ class Content extends Entity\Content
 	/**
 	 *	How many records does this zone template have?
 	 */
-	public function getter_records_no()
+	protected function getter_records_no()
 	{
 		if(!$this->id)
 			return 0;

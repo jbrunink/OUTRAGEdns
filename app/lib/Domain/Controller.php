@@ -430,6 +430,8 @@ class Controller extends Entity\Controller
 						if($answer->name != $name)
 							return false;
 						
+						var_dump($answer, $record);
+						
 						if(isset($answer->address))
 						{
 							if($answer->address == $record->content)

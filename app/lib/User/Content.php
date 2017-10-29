@@ -14,7 +14,7 @@ class Content extends Entity\Content
 	/**
 	 *	What zone templates does this user own?
 	 */
-	public function getter_templates()
+	protected function getter_templates()
 	{
 		if(!$this->id)
 			return null;
@@ -26,7 +26,7 @@ class Content extends Entity\Content
 	/**
 	 *	How many zone templates does this user own?
 	 */
-	public function getter_templates_no()
+	protected function getter_templates_no()
 	{
 		if(!$this->id)
 			return 0;
@@ -38,7 +38,7 @@ class Content extends Entity\Content
 	/**
 	 *	What domains does this user own?
 	 */
-	public function getter_domains()
+	protected function getter_domains()
 	{
 		if(!$this->id)
 			return null;
@@ -50,7 +50,7 @@ class Content extends Entity\Content
 	/**
 	 *	How many domains does this user own?
 	 */
-	public function getter_domains_no()
+	protected function getter_domains_no()
 	{
 		if(!$this->id)
 			return 0;

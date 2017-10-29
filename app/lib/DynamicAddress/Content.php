@@ -14,7 +14,7 @@ class Content extends Entity\Content
 	/**
 	 *	Returns the user that owns this object.
 	 */
-	public function getter_user()
+	protected function getter_user()
 	{
 		if(!$this->owner)
 			return null;
@@ -27,7 +27,7 @@ class Content extends Entity\Content
 	 *	Now, for the fun bit of retrieving all the records that belong to this
 	 *	domain.
 	 */
-	public function getter_records()
+	protected function getter_records()
 	{
 		if(!$this->id)
 			return null;
@@ -44,7 +44,7 @@ class Content extends Entity\Content
 	/**
 	 *	How many records does this domain possess?
 	 */
-	public function getter_records_no()
+	protected function getter_records_no()
 	{
 		if(!$this->id)
 			return 0;

@@ -13,7 +13,7 @@ trait ContentDelegatorTrait
 	/**
 	 *	Retrieve the config for this element.
 	 */
-	public function getter_settings()
+	protected function getter_settings()
 	{
 		$reflection = new ReflectionObject($this);
 		
@@ -33,7 +33,7 @@ trait ContentDelegatorTrait
 	/**
 	 *	Return the database name associated with this object.
 	 */
-	public function getter_db_table()
+	protected function getter_db_table()
 	{
 		if(!$this->settings)
 			return false;
@@ -45,7 +45,7 @@ trait ContentDelegatorTrait
 	/**
 	 *	Return the fields that this object has available in its table.
 	 */
-	public function getter_db_fields()
+	protected function getter_db_fields()
 	{
 		if(!$this->db_table)
 			return array();
@@ -64,7 +64,7 @@ trait ContentDelegatorTrait
 	/**
 	 *	Let's define some actions.
 	 */
-	public function getter_actions()
+	protected function getter_actions()
 	{
 		$actions = new Action();
 		$endpoint = $this->settings->route ?: $this->settings->type."s";
