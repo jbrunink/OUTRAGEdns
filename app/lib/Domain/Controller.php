@@ -482,6 +482,7 @@ class Controller extends Entity\Controller
 			}
 		}
 		
+		$this->response->records = $records;
 		$this->response->nameservers = $nameservers;
 		$this->response->results = $results;
 		

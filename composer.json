@@ -11,7 +11,8 @@
 		"texthtml/whoops-silex": "dev-master",
 		"symfony/twig-bridge": "^4.0@dev",
 		"pear/net_dns2": "dev-master",
-		"ltd-beget/dns-zone-tokenizer": "dev-master"
+		"ltd-beget/dns-zone-tokenizer": "dev-master",
+		"twig/extensions": "^1.5@dev"
 	},
 	"repositories": [
 		{

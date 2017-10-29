@@ -49,6 +49,8 @@ $session->start();
 $app = new Application();
 $app->register(new TwigServiceProvider(), [ "twig.path" => TEMPLATE_DIR ]);
 
+$app["twig"]->addExtension(new Twig_Extensions_Extension_Text());
+
 #$app["debug"] = true;
 
 
