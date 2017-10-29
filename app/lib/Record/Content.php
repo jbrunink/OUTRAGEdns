@@ -32,7 +32,7 @@ class Content extends Entity\Content
 	 */
 	protected function getter_rdata()
 	{
-		$this->rdata = false;
+		$this->rdata = [];
 		
 		if($keys = RDATA::get($this->type))
 		{
@@ -64,7 +64,15 @@ class Content extends Entity\Content
 			}
 			
 			if(count($keys) == count($tokens))
+			{
 				$this->rdata = array_combine($keys, $tokens);
+				
+				if($this->type == "TXT")
+				{
+					if(substr($this->rdata["TXT-DATA"], 0, 1) == '"' && substr($this->rdata["TXT-DATA"], -1, 1) == '"')
+						$this->rdata["TXT-DATA"] = substr($this->rdata["TXT-DATA"], 1, -1);
+				}
+			}
 		}
 		
 		return $this->rdata;

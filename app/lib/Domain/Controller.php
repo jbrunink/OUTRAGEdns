@@ -11,6 +11,7 @@ use \OUTRAGEdns\Notification;
 use \OUTRAGEdns\Record;
 use \OUTRAGEdns\ZoneTemplate;
 use \Symfony\Component\HttpFoundation\Response;
+use \Symfony\Component\Yaml\Yaml;
 
 
 class Controller extends Entity\Controller
@@ -407,46 +408,49 @@ class Controller extends Entity\Controller
 		
 		# it's probably a good idea to test both the server we're currently on
 		# as well as some publically accessable servers
-		$nameservers = [
-			"Google" => [
-				"8.8.8.8",
-				"8.8.4.4",
-			],
-		];
+		$nameservers = [];
 		
+		if(file_exists(APP_DIR."/etc/config/external-nameservers.yaml"))
+			$nameservers = Yaml::parse(file_get_contents(APP_DIR."/etc/config/external-nameservers.yaml"));
+		
+		# and now to see if things match!!
 		$results = [];
 		
-		$record_compare = function($name, Record\Content $record, DnsPacketResponse $result)
+		$record_compare = function(Record\Content $record, DnsPacketResponse $result)
 		{
-			switch($record->type)
+			$name = ($record->name ? $record->name."." : "").$record->parent->name;
+			
+			foreach($result->answer as $answer)
 			{
-				case "SOA":
-					return true;
-				break;
+				$list = [
+					$answer->name == $name,
+				];
 				
-				default:
-					$answer_compare = function($record, $answer) use ($name)
+				foreach($record->rdata as $rkey => $rvalue)
+				{
+					switch($record->type)
 					{
-						if($answer->name != $name)
-							return false;
+						case "TXT":
+							foreach($answer->text as $text)
+								$list[] = strcmp($rvalue, $text) === 0;
+						break;
 						
-						var_dump($answer, $record);
-						
-						if(isset($answer->address))
-						{
-							if($answer->address == $record->content)
-								return true;
-						}
-						
-						return false;
-					};
-					
-					foreach($result->answer as $answer)
-					{
-						if($answer_compare($record, $answer))
-							return true;
+						default:
+							$akey = strtolower($rkey);
+							
+							if(isset($answer->{$akey}))
+								$list[] = rtrim($answer->{$akey}, ".") == rtrim($rvalue, ".");
+						break;
 					}
-				break;
+				}
+				
+				if(count($list) > 0)
+				{
+					$list = array_unique($list);
+					
+					if(count(array_filter($list)) === count($list))
+						return true;
+				}
 			}
 			
 			return false;
@@ -469,17 +473,19 @@ class Controller extends Entity\Controller
 					$name = ($record->name ? $record->name."." : "").$this->content->name;
 					$result = $resolver->query($name, $record->type);
 					
-					$results[$record->id][$key] = $record_compare($name, $record, $result);
+					$results[$record->id][$key] = $record_compare($record, $result);
 				}
 				catch(DnsException $exception)
 				{
-					$results[$record->id][$key] = false;
+					$results[$record->id][$key] = null;
 				}
 			}
 		}
 		
-		var_dump($results);
-		exit;
+		$this->response->nameservers = $nameservers;
+		$this->response->results = $results;
+		
+		return $this->toHTML();
 	}
 	
 	

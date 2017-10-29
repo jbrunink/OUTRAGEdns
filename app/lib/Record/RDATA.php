@@ -64,7 +64,7 @@ class RDATA
 	public static function getExclusions($type)
 	{
 		if(isset(self::$exclusions[$type]))
-			return self::$exclusions;
+			return self::$exclusions[$type];
 		
 		return [];
 	}
