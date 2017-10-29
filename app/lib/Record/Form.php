@@ -72,50 +72,38 @@ class Form extends ElementList
 		if($suffix = $this->getSuffix($input))
 			$this->getElement("name")->addConstraint(new StringModifier($suffix, StringModifier::SUFFIX));
 		
+		# if we're not providing the 'content' property (IE, it's null)
+		# then we need to mark that is no longer being required, and then use
+		# the RDATA attributes in its place.
+		if(!isset($input["content"]))
+		{
+			$this->getElement("content")->required(false);
+			
+			$rdata = RDATA::get($input["type"]);
+			$exclusions = RDATA::getExclusions($input["type"]);
+			
+			if(count($rdata) > 0)
+			{
+				foreach($rdata as $key)
+				{
+					# anything in exclusions is covered by another field somewhere
+					if(!isset($exclusions[$key]))
+					{
+						$key = strtolower($key);
+						
+						$element = new Element($key);
+						$element->required(true);
+						$element->appendTo($this);
+					}
+				}
+			}
+		}
+		
 		# now choose what things we need to validate against
 		$input["type"] = strtoupper($input["type"]);
 		
 		switch($input["type"])
 		{
-			case "SOA":
-				$mname = new Element("mname");
-				$mname->setLabel("Primary NS");
-				$mname->required(true);
-				$mname->appendTo($this);
-				
-				$rname = new Element("rname");
-				$rname->setLabel("Contact");
-				$rname->required(true);
-				$rname->appendTo($this);
-				
-				$refresh = new Element("refresh");
-				$refresh->setLabel("Refresh");
-				$refresh->required(true);
-				$refresh->appendTo($this);
-				
-				$refresh = new Element("serial");
-				$refresh->setLabel("Serial");
-				$refresh->required(true);
-				$refresh->appendTo($this);
-				
-				$retry = new Element("retry");
-				$retry->setLabel("Retry");
-				$retry->required(true);
-				$retry->appendTo($this);
-				
-				$expire = new Element("expire");
-				$expire->setLabel("Expire");
-				$expire->required(true);
-				$expire->appendTo($this);
-				
-				$minimum = new Element("minimum");
-				$minimum->setLabel("Minimum");
-				$minimum->required(true);
-				$minimum->appendTo($this);
-				
-				$this->getElement("content")->required(false);
-			break;
-			
 			case "A":
 				$this->getElement("content")->addConstraint(new IPv4());
 			break;
