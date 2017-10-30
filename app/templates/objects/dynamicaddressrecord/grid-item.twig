@@ -1,0 +1,36 @@
+<tr{% if class %} class="{{ class|e }}"{% endif %}>
+	<td class="move-bar">
+	</td>
+	
+	<td class="with-suffix">
+		<select name="records[]">
+			<option value=""></option>
+			
+			{% for list in available_records %}
+				<optgroup label="{{ list.domain|e }}">
+					{% for record_id, name in list.records %}
+						<option value="{{ record_id|e }}"{% if selected_record_id == record_id %} selected="selected"{% endif %}>
+							{% if name|length %}{{ name|e }}.{% endif %}{{ list.domain|e }}
+						</option>
+					{% endfor %}
+				</optgroup>
+			{% endfor %}
+		</select>
+	</td>
+	
+	<td class="actions">
+		<ul>
+			<li class="clone">
+				<a href="#" class="tooltip" title="Clone">
+					<i class="fa fa-plus"></i>
+				</a>
+			</li>
+			
+			<li class="remove">
+				<a href="#" class="tooltip" title="Remove">
+					<i class="fa fa-trash-o"></i>
+				</a>
+			</li>
+		</ul>
+	</td>
+</tr>

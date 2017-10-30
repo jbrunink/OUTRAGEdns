@@ -1,7 +1,0 @@
-{% include "layout/header.twig" %}
-
-{% if content %}
-	{% include [ "objects/" ~ content.settings.type ~ "/" ~ request.url[2] ~ ".twig", "objects/" ~ content.settings.type ~ "/" ~ request.url[1] ~ ".twig", "objects/" ~ content.settings.type ~ "/index.twig" ] %}
-{% endif %}
-
-{% include "layout/footer.twig" %}

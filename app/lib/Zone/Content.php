@@ -1,7 +1,4 @@
 <?php
-/**
- *	Zone model for OUTRAGEdns
- */
 
 
 namespace OUTRAGEdns\Zone;
@@ -17,12 +14,12 @@ class Content extends Entity\Content
 	/**
 	 *	Returns the user that owns this object.
 	 */
-	public function getter_user()
+	protected function getter_user()
 	{
 		if(!$this->owner)
 			return null;
 		
-		return User\Content::find()->where("id = ?", $this->owner)->invoke("first");
+		return User\Content::find()->where([ "id" => $this->owner ])->get("first");
 	}
 	
 	
@@ -30,12 +27,12 @@ class Content extends Entity\Content
 	 *	Chances are, there is a template associated with this zone.
 	 *	We need this!
 	 */
-	public function getter_template()
+	protected function getter_template()
 	{
 		if(!$this->zone_templ_id)
 			return null;
 		
-		return ZoneTemplate\Content::find()->where("id = ?", $this->zone_templ_id)->invoke("first");
+		return ZoneTemplate\Content::find()->where([ "id" => $this->zone_templ_id ])->get("first");
 	}
 	
 	

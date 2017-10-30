@@ -1,11 +1,9 @@
 <?php
-/**
- *	Dynamic address model for OUTRAGEdns
- */
 
 
 namespace OUTRAGEdns\DynamicAddress;
 
+use \Exception;
 use \OUTRAGEdns\Entity;
 use \OUTRAGEdns\Notification;
 
@@ -17,24 +15,27 @@ class Controller extends Entity\Controller
 	 */
 	public function add()
 	{
-		if(!empty($this->request->post->commit))
+		if($this->request->getMethod() == "POST" && $this->request->request->has("commit"))
 		{
-			if($this->form->validate($this->request->post->toArray()))
+			if($this->form->validate($this->request->request))
 			{
+				$connection = $this->db->getAdapter()->getDriver()->getConnection();
+				
 				try
 				{
-					$this->content->db->begin();
+					$connection->beginTransaction();
 					
-					$values = $this->form->values();
+					$values = $this->form->getValues();
 					
 					if(empty($values["owner"]))
-						$values["owner"] = $this->response->user->id;
+						$values["owner"] = $this->user->id;
 					
 					if(empty($values["token"]))
 						$values["token"] = sha1(json_encode($values).uniqid().rand(1, 5000));
 					
 					$this->content->save($values);
-					$this->content->db->commit();
+					
+					$connection->commit();
 					
 					new Notification\Success("Successfully created the domain: ".$this->content->name);
 					
@@ -43,7 +44,7 @@ class Controller extends Entity\Controller
 				}
 				catch(Exception $exception)
 				{
-					$this->content->db->rollback();
+					$connection->rollback();
 					
 					new Notification\Error("This domain wasn't added due to an internal error.");
 				}
@@ -54,7 +55,7 @@ class Controller extends Entity\Controller
 		# and use this as the basis for our list
 		$list = [];
 		
-		foreach($this->response->user->domains as $domain)
+		foreach($this->user->domains as $domain)
 		{
 			foreach($domain->records as $record)
 			{
@@ -62,21 +63,26 @@ class Controller extends Entity\Controller
 				{
 					case "A":
 					case "AAAA":
-						if(!isset($list[$domain->name]))
-							$list[$domain->name] = array();
+						if(!isset($list[$domain->id]))
+						{
+							$list[$domain->id] = [
+								"domain" => $domain->name,
+								"records" => [],
+							];
+						}
 						
-						$list[$domain->name][] = $record->name;
+						$list[$domain->id]["records"][$record->id] = $record->name;
 					break;
 				}
 			}
 			
-			if(isset($list[$domain->name]))
-				$list[$domain->name] = array_unique($list[$domain->name]);
+			if(isset($list[$domain->id]))
+				$list[$domain->id]["records"] = array_unique($list[$domain->id]["records"]);
 		}
 		
 		$this->response->available_records = $list;
 		
-		return $this->response->display("index.twig");
+		return $this->toHTML();
 	}
 	
 	
@@ -88,7 +94,7 @@ class Controller extends Entity\Controller
 		if(!$this->content->id)
 			$this->content->load($id);
 		
-		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->response->user->id))
+		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->user->id))
 		{
 			new Notification\Error("You don't have access to this domain.");
 			
@@ -96,27 +102,30 @@ class Controller extends Entity\Controller
 			exit;
 		}
 		
-		if(!empty($this->request->post->commit))
+		if($this->request->getMethod() == "POST" && $this->request->request->has("commit"))
 		{
-			if($this->form->validate($this->request->post->toArray()))
+			if($this->form->validate($this->request->request))
 			{
+				$connection = $this->db->getAdapter()->getDriver()->getConnection();
+				
 				try
 				{
-					$this->content->db->begin();
+					$connection->beginTransaction();
 					
-					$values = $this->form->values();
+					$values = $this->form->getValues();
 					
 					if(empty($values["token"]))
 						$values["token"] = sha1(json_encode($values).uniqid().rand(1, 5000));
 					
 					$this->content->edit($values);
-					$this->content->db->commit();
+					
+					$connection->commit();
 					
 					new Notification\Success("Successfully updated the domain: ".$this->content->name);
 				}
 				catch(Exception $exception)
 				{
-					$this->content->db->rollback();
+					$connection->rollback();
 					
 					new Notification\Error("This zone template wasn't edited due to an internal error.");
 				}
@@ -129,7 +138,7 @@ class Controller extends Entity\Controller
 		foreach($this->content->records as $record)
 		{
 			if($record->targets)
-				$list[] = $record->targets[0]->name;
+				$list[] = $record->targets[0]->id;
 		}
 		
 		$this->response->selected_records = $list;
@@ -138,7 +147,7 @@ class Controller extends Entity\Controller
 		# and use this as the basis for our list
 		$list = [];
 		
-		foreach($this->content->user->domains as $domain)
+		foreach($this->user->domains as $domain)
 		{
 			foreach($domain->records as $record)
 			{
@@ -146,21 +155,26 @@ class Controller extends Entity\Controller
 				{
 					case "A":
 					case "AAAA":
-						if(!isset($list[$domain->name]))
-							$list[$domain->name] = array();
+						if(!isset($list[$domain->id]))
+						{
+							$list[$domain->id] = [
+								"domain" => $domain->name,
+								"records" => [],
+							];
+						}
 						
-						$list[$domain->name][] = $record->name;
+						$list[$domain->id]["records"][$record->id] = $record->name;
 					break;
 				}
 			}
 			
-			if(isset($list[$domain->name]))
-				$list[$domain->name] = array_unique($list[$domain->name]);
+			if(isset($list[$domain->id]))
+				$list[$domain->id]["records"] = array_unique($list[$domain->id]["records"]);
 		}
 		
 		$this->response->available_records = $list;
 		
-		return $this->response->display("index.twig");
+		return $this->toHTML();
 	}
 	
 	
@@ -172,7 +186,7 @@ class Controller extends Entity\Controller
 		if(!$this->content->id)
 			$this->content->load($id);
 		
-		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->response->user->id))
+		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->user->id))
 		{
 			new Notification\Error("You don't have access to this domain.");
 			
@@ -180,17 +194,21 @@ class Controller extends Entity\Controller
 			exit;
 		}
 		
+		$connection = $this->db->getAdapter()->getDriver()->getConnection();
+		
 		try
 		{
-			$this->content->db->begin();
+			$connection->beginTransaction();
+			
 			$this->content->remove();
-			$this->content->db->commit();
+			
+			$connection->commit();
 			
 			new Notification\Success("Successfully removed the domain: ".$this->content->name);
 		}
 		catch(Exception $exception)
 		{
-			$this->content->db->rollback();
+			$connection->rollback();
 			
 			new Notification\Error("This zone template wasn't removed due to an internal error.");
 		}
@@ -208,15 +226,15 @@ class Controller extends Entity\Controller
 		if(!$this->response->domains)
 		{
 			$request = Content::find();
-			$request->sort("id ASC");
+			$request->order("id ASC");
 			
 			if(!$this->response->godmode)
-				$request->where("owner = ?", $this->response->user->id);
+				$request->where([ "owner" => $this->user->id ]);
 			
-			$this->response->domains = $request->invoke("objects");
+			$this->response->domains = $request->get("objects");
 		}
 		
-		return $this->response->display("index.twig");
+		return $this->toHTML();
 	}
 	
 	
@@ -225,7 +243,7 @@ class Controller extends Entity\Controller
 	 */
 	public function updateDynamicAddresses($token)
 	{
-		$this->content = Content::find()->where("token = ?", $token)->invoke("first");
+		$this->content = Content::find()->where([ "token" => $token ])->get("first");
 		
 		if(!$this->content)
 		{
@@ -233,50 +251,60 @@ class Controller extends Entity\Controller
 			exit;
 		}
 		
-		$this->content->db->begin();
+		$connection = $this->db->getAdapter()->getDriver()->getConnection();
 		
-		# and then we need to go through all the records we have, change
-		# the value to what is required...
-		$ip_addr = $_SERVER["REMOTE_ADDR"];
-		$ip_type = null;
-		
-		if(filter_var($ip_addr, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4))
-			$ip_type = "A";
-		if(filter_var($ip_addr, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6))
-			$ip_type = "AAAA";
-		
-		# and now hunt through all the records, being ruthless
-		# in their replacement
-		$domains = [];
-		
-		foreach($this->content->records as $record)
+		try
 		{
-			if(!$record->targets)
-				continue;
+			$connection->beginTransaction();
 			
-			foreach($record->targets as $target)
+			# and then we need to go through all the records we have, change
+			# the value to what is required...
+			$ip_addr = $_SERVER["REMOTE_ADDR"];
+			$ip_type = null;
+			
+			if(filter_var($ip_addr, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4))
+				$ip_type = "A";
+			if(filter_var($ip_addr, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6))
+				$ip_type = "AAAA";
+			
+			# and now hunt through all the records, being ruthless
+			# in their replacement
+			$domains = [];
+			
+			foreach($this->content->records as $record)
 			{
-				if($target->type == $ip_type && $target->content != $ip_addr)
+				if(!$record->targets)
+					continue;
+				
+				foreach($record->targets as $target)
 				{
-					if(!isset($domains[$target->parent->id]))
-						$domains[$target->parent->id] = $target->parent;
-					
-					$target->edit([ "content" => $ip_addr ]);
+					if($target->type == $ip_type && $target->content != $ip_addr)
+					{
+						if(!isset($domains[$target->parent->id]))
+							$domains[$target->parent->id] = $target->parent;
+						
+						$target->edit([ "content" => $ip_addr ]);
+					}
 				}
 			}
-		}
-		
-		# now we dive back to the domains - we need to update the serial and
-		# log the changes to version management.
-		foreach($domains as $domain)
-		{
-			unset($domain->records);
 			
-			$domain->updateSerial();
-			$domain->log("records", [ "records" => $domain->records ]);
+			# now we dive back to the domains - we need to update the serial and
+			# log the changes to version management.
+			foreach($domains as $domain)
+			{
+				unset($domain->records);
+				
+				$domain->updateSerial();
+				$domain->log("records", [ "records" => $domain->records ]);
+			}
+			
+			$connection->commit();
+		}
+		catch(Exception $exception)
+		{
+			$connection->rollback();
 		}
 		
-		$this->content->db->commit();
 		exit;
 	}
 }

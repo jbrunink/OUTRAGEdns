@@ -1,7 +1,4 @@
 <?php
-/**
- *	Domain model for OUTRAGEdns
- */
 
 
 namespace OUTRAGEdns\Domain;
@@ -19,19 +16,19 @@ class Content extends Entity\Content
 	/**
 	 *	What zone does this domain belong to?
 	 */
-	public function getter_zone()
+	protected function getter_zone()
 	{
 		if(!$this->id)
 			return null;
 		
-		return Zone\Content::find()->where("domain_id = ?", $this->id)->invoke("first");
+		return Zone\Content::find()->where([ "domain_id" => $this->id ])->get("first");
 	}
 	
 	
 	/**
 	 *	What account owns this domain?
 	 */
-	public function getter_user()
+	protected function getter_user()
 	{
 		if(!$this->zone)
 			return null;
@@ -43,7 +40,7 @@ class Content extends Entity\Content
 	/**
 	 *	What record template, if any, is currently in use on this domain?
 	 */
-	public function getter_template()
+	protected function getter_template()
 	{
 		if(!$this->zone)
 			return null;
@@ -56,12 +53,12 @@ class Content extends Entity\Content
 	 *	Now, for the fun bit of retrieving all the records that belong to this
 	 *	domain.
 	 */
-	public function getter_records()
+	protected function getter_records()
 	{
 		if(!$this->id)
 			return null;
 		
-		$records = Record\Content::find()->where("domain_id = ?", $this->id)->sort("id ASC")->invoke("objects");
+		$records = Record\Content::find()->where([ "domain_id" => $this->id ])->order("id ASC")->get("objects");
 		
 		foreach($records as $record)
 			$record->parent = $this;
@@ -73,21 +70,21 @@ class Content extends Entity\Content
 	/**
 	 *	How many records does this domain possess?
 	 */
-	public function getter_records_no()
+	protected function getter_records_no()
 	{
 		if(!$this->id)
 			return 0;
 		
-		return Record\Content::find()->where("domain_id = ?", $this->id)->invoke("count");
+		return Record\Content::find()->where([ "domain_id" => $this->id ])->get("count");
 	}
 	
 	
 	/**
 	 *	Get the latest serial of this domain.
 	 */
-	public function getter_serial()
+	protected function getter_serial()
 	{
-		$invalid = '0';
+		$invalid = "0";
 		
 		foreach($this->records as $record)
 		{
@@ -188,8 +185,8 @@ class Content extends Entity\Content
 		{
 			$changed = true;
 			
-			$record = new Record\Content();
-			$record->db->delete($record->db_table, "domain_id = ".$this->db->quote($this->id));
+			foreach($this->records as $record)
+				$record->remove();
 			
 			foreach($post["records"] as $item)
 			{
@@ -267,16 +264,21 @@ class Content extends Entity\Content
 		
 		if(isset($revision_id))
 		{
-			$stmt = $this->db->select()
-			             ->from("logs")
-			             ->select([ "the_date", "state" ])
-			             ->where("id = ?", $revision_id)
-			             ->where("content_type = ?", get_class($this))
-			             ->where("content_id = ?", $this->id)
-			             ->where("action = ?", "records")
-			             ->order("the_date DESC");
+			$select = $this->db->select();
 			
-			$response = $stmt->invoke();
+			$select->from("logs")
+				   ->columns([ "the_date", "state" ])
+				   ->where([ "id" => $revision_id ])
+				   ->where([ "content_type" => get_class($this) ])
+				   ->where([ "content_id" => $this->id ])
+				   ->where([ "action" => "records" ])
+				   ->limit(1)
+				   ->order("the_date DESC");
+			
+			$statement = $this->db->prepareStatementForSqlObject($select);
+			$result = $statement->execute();
+			
+			$response = iterator_to_array($result);
 			
 			if(count($response))
 			{
@@ -365,7 +367,10 @@ class Content extends Entity\Content
 				
 				foreach($records as $record)
 				{
-					$name = $use_prefix ? $record->prefix : $record->name;
+					if($use_prefix)
+						$name = $record->prefix;
+					else
+						$name = ($record->name ? $record->name."." : "").$this->name.".";
 					
 					$max_name_len = max($max_name_len, strlen($name ?: "@"));
 					$max_ttl_len = max($max_ttl_len, strlen((string) $record->ttl));
@@ -377,7 +382,10 @@ class Content extends Entity\Content
 				
 				foreach($records as $record)
 				{
-					$name = $use_prefix ? $record->prefix : $record->name.".";
+					if($use_prefix)
+						$name = $record->prefix;
+					else
+						$name = ($record->name ? $record->name."." : "").$this->name.".";
 					
 					switch($record->type)
 					{
@@ -412,7 +420,7 @@ class Content extends Entity\Content
 				
 				$response[] = '';
 				
-				return implode("\r\n", $response);
+				return implode("\n", $response);
 			break;
 		}
 		

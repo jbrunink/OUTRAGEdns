@@ -1,0 +1,3 @@
+[submodule "app/etc/RDATA"]
+	path = app/etc/RDATA
+	url = https://github.com/OUTRAGElib/RDATA.git

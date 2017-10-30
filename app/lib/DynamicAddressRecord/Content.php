@@ -1,7 +1,4 @@
 <?php
-/**
- *	Record model for OUTRAGEdns
- */
 
 
 namespace OUTRAGEdns\DynamicAddressRecord;
@@ -16,46 +13,50 @@ class Content extends Entity\Content
 	/**
 	 *	Retrieves the parent record.
 	 */
-	public function getter_parent()
+	protected function getter_parent()
 	{
-		return DynamicAddress\Content::find()->where("id = ?", $this->dynamic_address_id)->invoke("first");
+		return DynamicAddress\Content::find()->where([ "id" => $this->dynamic_address_id ])->get("first");
 	}
 	
 	
 	/**
 	 *	What domain records does this object target?
 	 */
-	public function getter_targets()
+	protected function getter_targets()
 	{
 		$find = Record\Content::find();
 		
-		$find->leftJoin("domains", "domains.id = records.domain_id");
-		$find->leftJoin("zones", "domains.id = zones.domain_id");
-		$find->leftJoin("dynamic_addresses", "dynamic_addresses.id = ".$this->db->quote($this->dynamic_address_id));
+		$find->join("domains", "domains.id = records.domain_id");
+		$find->join("zones", "domains.id = zones.domain_id");
+		$find->join("dynamic_addresses_records", "dynamic_addresses_records.domain_id = records.domain_id");
+		$find->join("dynamic_addresses", "dynamic_addresses.id = dynamic_addresses_records.dynamic_address_id");
 		
-		$find->where("records.name = ?", $this->name)
+		$find->where([ "dynamic_addresses_records.id" => $this->id ])
+			 ->where([ "records.name" => $this->name ])
 			 ->where("records.type IN ('A', 'AAAA')")
 			 ->where("zones.owner = dynamic_addresses.owner");
 		
-		return $find->invoke("objects");
+		return $find->get("objects");
 	}
 	
 	
 	/**
 	 *	How many domain records does this object target?
 	 */
-	public function getter_targets_no()
+	protected function getter_targets_no()
 	{
 		$find = Record\Content::find();
 		
-		$find->leftJoin("domains", "domains.id = records.domain_id");
-		$find->leftJoin("zones", "domains.id = zones.domain_id");
-		$find->leftJoin("dynamic_addresses", "dynamic_addresses.id = ".$this->db->quote($this->dynamic_address_id));
+		$find->join("domains", "domains.id = records.domain_id");
+		$find->join("zones", "domains.id = zones.domain_id");
+		$find->join("dynamic_addresses_records", "dynamic_addresses_records.domain_id = records.domain_id");
+		$find->join("dynamic_addresses", "dynamic_addresses.id = dynamic_addresses_records.dynamic_address_id");
 		
-		$find->where("records.name = ?", $this->name)
+		$find->where([ "dynamic_addresses_records.id" => $this->id ])
+			 ->where([ "records.name" => $this->name ])
 			 ->where("records.type IN ('A', 'AAAA')")
 			 ->where("zones.owner = dynamic_addresses.owner");
 		
-		return $find->invoke("count");
+		return $find->get("count");
 	}
 }

@@ -1,15 +1,12 @@
 <?php
-/**
- *	Form for managing ZoneTemplateRecords.
- */
 
 
 namespace OUTRAGEdns\ZoneTemplateRecord;
 
-use OUTRAGEweb\Validate;
-use OUTRAGEdns\Record;
+use \OUTRAGEdns\Record\Form as RecordForm;
 
-class Form extends Record\Form
+
+class Form extends RecordForm
 {
 	/**
 	 *	What's the domain suffix?

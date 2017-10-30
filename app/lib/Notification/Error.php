@@ -1,7 +1,4 @@
 <?php
-/**
- *	Success notification.
- */
 
 
 namespace OUTRAGEdns\Notification;

@@ -1,7 +1,4 @@
 <?php
-/**
- *	Supermaster model for OUTRAGEdns
- */
 
 
 namespace OUTRAGEdns\Supermaster;

@@ -1,7 +1,4 @@
 <?php
-/**
- *	ZoneTemplate model for OUTRAGEdns
- */
 
 
 namespace OUTRAGEdns\ZoneTemplate;
@@ -17,36 +14,36 @@ class Content extends Entity\Content
 	/**
 	 *	Returns the user that owns this ZoneTemplate object.
 	 */
-	public function getter_user()
+	protected function getter_user()
 	{
 		if(!$this->owner)
 			return null;
 		
-		return User\Content::find()->where("id = ?", $this->owner)->invoke("first");
+		return User\Content::find()->where([ "id" => $this->owner ])->get("first");
 	}
 	
 	
 	/**
 	 *	Retrieve a list of all records owned by this zone template.
 	 */
-	public function getter_records()
+	protected function getter_records()
 	{
 		if(!$this->id)
 			return null;
 		
-		return ZoneTemplateRecord\Content::find()->where("zone_templ_id = ?", $this->id)->sort("id ASC")->invoke("objects");
+		return ZoneTemplateRecord\Content::find()->where([ "zone_templ_id" => $this->id ])->order("id ASC")->get("objects");
 	}
 	
 	
 	/**
 	 *	How many records does this zone template have?
 	 */
-	public function getter_records_no()
+	protected function getter_records_no()
 	{
 		if(!$this->id)
 			return 0;
 		
-		return ZoneTemplateRecord\Content::find()->where("zone_templ_id = ?", $this->id)->invoke("count");
+		return ZoneTemplateRecord\Content::find()->where([ "zone_templ_id" => $this->id ])->get("count");
 	}
 	
 	
@@ -104,8 +101,8 @@ class Content extends Entity\Content
 		{
 			$changed = true;
 			
-			$record = new ZoneTemplateRecord\Content();
-			$record->db->delete($record->db_table, "zone_templ_id = ".$this->db->quote($this->id));
+			foreach($this->records as $record)
+				$record->remove();
 			
 			foreach($post["records"] as $item)
 			{

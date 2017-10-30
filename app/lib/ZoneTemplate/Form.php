@@ -1,41 +1,33 @@
 <?php
-/**
- *	Form for managing ZoneTemplates.
- */
 
 
 namespace OUTRAGEdns\ZoneTemplate;
 
-use OUTRAGEweb\Configuration;
-use OUTRAGEweb\FormElement;
-use OUTRAGEweb\Validate;
-use OUTRAGEdns\ZoneTemplateRecord;
+use \OUTRAGEdns\Validate\Element;
+use \OUTRAGEdns\Validate\ElementList;
+use \OUTRAGEdns\ZoneTemplateRecord\Form as ZoneTemplateRecordForm; 
 
 
-class Form extends Validate\Template
+class Form extends ElementList
 {
 	/**
 	 *	Define what fields we want this form to have.
 	 */
 	public function rules()
 	{
-		parent::rules();
-		
-		$config = Configuration\Wallet::getInstance();
-		
 		# name
-		$name = new FormElement\Text("name");
+		$name = new Element("name");
 		$name->required(true);
 		$name->appendTo($this);
 		
 		# comments
-		$comment = new FormElement\Textarea("comment");
+		$comment = new Element("comment");
 		$comment->required(false);
 		$comment->appendTo($this);
 		
 		# records
-		$records = new ZoneTemplateRecord\Form("records");
-		$records->isArray(true);
+		$records = new ZoneTemplateRecordForm("records");
+		$records->setIsArray(true);
 		$records->appendTo($this);
 	}
 }

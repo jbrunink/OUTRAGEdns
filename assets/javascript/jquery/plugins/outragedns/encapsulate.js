@@ -2,10 +2,13 @@
 {
 	var handler = function(params, response)
 	{
-		var self = $(this);
+		var self = this;
 		
 		var container = $("<iframe></iframe>").css("display", "none").appendTo("body");
-		var packet = $("<form></form>").attr("method", params.method || "POST").attr("enctype", "multipart/form-data").attr("action", params.action || window.location);
+		var packet = $("<form></form>").attr("method", params.method || "POST").attr("action", params.action || window.location);
+		
+		if(this.find("input[type = 'file']").length > 0)
+			packet.attr("enctype", "multipart/form-data");
 		
 		if(params.fields)
 		{

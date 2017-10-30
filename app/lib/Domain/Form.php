@@ -1,52 +1,49 @@
 <?php
-/**
- *	Form for managing ZoneTemplates.
- */
 
 
 namespace OUTRAGEdns\Domain;
 
-use OUTRAGEweb\Configuration;
-use OUTRAGEweb\FormElement;
-use OUTRAGEweb\Validate;
-use OUTRAGEdns\Record;
+use \OUTRAGEdns\Configuration\Configuration;
+use \OUTRAGEdns\Record\Form as RecordForm; 
+use \OUTRAGEdns\Validate\Element;
+use \OUTRAGEdns\Validate\ElementList;
+use \OUTRAGEdns\Validate\Constraint\FullyQualifiedDomainName;
 
 
-class Form extends Validate\Template
+class Form extends ElementList
 {
 	/**
 	 *	Define what fields we want this form to have.
 	 */
 	public function rules()
 	{
-		parent::rules();
-		
-		$config = Configuration\Wallet::getInstance();
+		$configuration = Configuration::getInstance();
 		
 		# name
-		$name = new FormElement\Text("name");
+		$name = new Element("name");
 		$name->required(true);
+		$name->addConstraint(new FullyQualifiedDomainName());
 		$name->appendTo($this);
 		
 		# type
-		$type = new FormElement\Select("type");
+		$type = new Element("type");
 		$type->required(true);
-		$type->contains($config->records->synctypes->toArrayKeys());
+		$type->contains(array_keys($configuration->records->synctypes->toArray()));
 		$type->appendTo($this);
 		
 		# zone template
-		$zone_templ_id = new FormElement\Select("zone_templ_id");
+		$zone_templ_id = new Element("zone_templ_id");
 		$zone_templ_id->required(false);
 		$zone_templ_id->appendTo($this);
 		
 		# comments
-		$comment = new FormElement\Textarea("comment");
+		$comment = new Element("comment");
 		$comment->required(false);
 		$comment->appendTo($this);
 		
 		# records
-		$records = new Record\Form("records");
-		$records->isArray(true);
+		$records = new RecordForm("records");
+		$records->setIsArray(true);
 		$records->appendTo($this);
 	}
 }

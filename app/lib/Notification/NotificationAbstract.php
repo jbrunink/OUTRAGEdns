@@ -1,7 +1,4 @@
 <?php
-/**
- *	Notification abstract.
- */
 
 
 namespace OUTRAGEdns\Notification;
@@ -26,11 +23,15 @@ abstract class NotificationAbstract
 	 */
 	public function __construct($message = "")
 	{
+		global $session;
+		
 		$this->message = $message;
 		
-		if(!isset($_SESSION["_notification_messages"]))
-			$_SESSION["_notification_messages"] = [];
+		$key = "_notification_messages";
+		$list = $session->get($key) ?: [];
 		
-		$_SESSION["_notification_messages"][] = $this;
+		$list[] = $this;
+		
+		$session->set($key, $list);
 	}
 }

@@ -1,44 +1,180 @@
 <?php
-/**
- *	OUTRAGEdns specific stuff for content and models, etc.
- */
 
 
 namespace OUTRAGEdns\Entity;
 
-use \OUTRAGEweb\Entity;
-use \OUTRAGEweb\Construct;
+use \Exception;
+use \OUTRAGElib\Delegator\DelegatorTrait;
+use \OUTRAGElib\Structure\ObjectList;
+use \OUTRAGElib\Structure\ObjectListPopulationTrait;
+use \OUTRAGElib\Structure\ObjectListRetrievalTrait;
 
 
-class Content extends Entity\Content
+class Content extends ObjectList
 {
 	/**
-	 *	Let's define some actions.
+	 *	We need to be able to use our special delegators somehow
 	 */
-	public function getter_actions()
+	use DelegatorTrait;
+	
+	
+	/**
+	 *	Allow the ability to populate this object with a method
+	 */
+	use ObjectListPopulationTrait;
+	
+	
+	/**
+	 *	Allow the ability retrieve stuff from this object
+	 */
+	use ObjectListRetrievalTrait;
+	
+	
+	/**
+	 *	Define relationships between namespaces and classes
+	 */
+	use EntityDelegatorTrait;
+	
+	
+	/**
+	 *	Store our delegators for this class in here
+	 */
+	use ContentDelegatorTrait;
+	
+	
+	/**
+	 *	Called to load an object into memory.
+	 */
+	public function load($identifier = null)
 	{
-		$actions = new Construct\ObjectContainer();
-		$endpoint = $this->settings->route ?: $this->settings->type."s";
+		if(is_null($identifier))
+			return false;
 		
-		foreach($this->settings->actions as $action => $info)
-		{
-			if(!empty($info->id) && empty($this->id))
-				continue;
-			
-			$path = "/".$endpoint."/".$action."/";
-			
-			if(!empty($info->id))
-				$path .= $this->id."/";
-			
-			$actions[$action] = $path;
-		}
+		$select = $this->db->select();
 		
-		return $actions;
+		$select->from($this->db_table)
+			   ->where([ "id" => $identifier ])
+			   ->limit(1);
+		
+		$statement = $this->db->prepareStatementForSqlObject($select);
+		
+		foreach($statement->execute() as $result)
+			$this->populateObjectList($result);
+		
+		return $this->id;
 	}
 	
 	
 	/**
-	 *	It would be good to log certain things.
+	 *	Called to save an object to the database, based on an object/array
+	 *	passed to this method.
+	 */
+	public function save($post = array())
+	{
+		if($this->id)
+			return false;
+		
+		if(method_exists($this, "validate"))
+		{
+			if(!$this->validate($this, __FUNCTION__, [ $post ]))
+				throw new \Exception("Unable to perform action - ".__FUNCTION__);
+		}
+		
+		$values = array_intersect_key($post, array_flip($this->db_fields));
+		
+		$insert = $this->db->insert();
+		$insert->into($this->db_table);
+		$insert->values($values);
+		
+		$statement = $this->db->prepareStatementForSqlObject($insert);
+		
+		if($result = $statement->execute())
+		{
+			if($id = $result->getGeneratedValue())
+				return $this->load($id);
+		}
+		
+		return false;
+	}
+	
+	
+	/**
+	 *	Called to update an object to the database, based on an object/array
+	 *	passed to this method.
+	 */
+	public function edit($post = array())
+	{
+		if(!$this->id)
+			return false;
+		
+		if(method_exists($this, "validate"))
+		{
+			if(!$this->validate($this, __FUNCTION__, [ $post ]))
+				throw new \Exception("Unable to perform action - ".__FUNCTION__);
+		}
+		
+		$values = array_intersect_key($post, array_flip($this->db_fields));
+		
+		if(count($values) > 0)
+		{
+			$update = $this->db->update();
+			$update->table($this->db_table);
+			$update->set($values);
+			$update->where([ "id" => $this->id ]);
+			
+			$statement = $this->db->prepareStatementForSqlObject($update);
+			$statement->execute();
+		}
+		
+		return $this->load($this->id);
+	}
+	
+	
+	/**
+	 *	Called to remove an object.
+	 */
+	public function remove()
+	{
+		if(method_exists($this, "validate"))
+		{
+			if(!$this->validate($this, __FUNCTION__, []))
+				throw new \Exception("Unable to perform action - ".__FUNCTION__);
+		}
+		
+		$delete = $this->db->delete();
+		$delete->from($this->db_table);
+		$delete->where([ "id" => $this->id ]);
+		
+		$statement = $this->db->prepareStatementForSqlObject($delete);
+		$statement->execute();
+		
+		return true;
+	}
+	
+	
+	/**
+	 *	We can use this to find objects that match what we want to find.
+	 *	Now can be called statically!
+	 */
+	public static function find()
+	{
+		$class = "\\".get_called_class();
+		$content = new $class();
+		
+		if($content->namespace)
+		{
+			$target = "\\".$content->namespace."\\Find";
+			
+			if(class_exists($target))
+				return new $target($content);
+		}
+		
+		return new Find($content);
+	}
+	
+	
+	/**
+	 *	It would be good to log certain things (perhaps)
 	 */
 	public function log($action, $state = null)
 	{
@@ -54,6 +190,13 @@ class Content extends Entity\Content
 			"the_date" => time(),
 		);
 		
-		return $this->db->insert("logs", $post);
+		$insert = $this->db->insert();
+		$insert->into("logs");
+		$insert->values($post);
+		
+		$statement = $this->db->prepareStatementForSqlObject($insert);
+		$statement->execute();
+		
+		return true;
 	}
 }

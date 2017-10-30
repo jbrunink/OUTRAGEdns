@@ -1,33 +1,22 @@
 <?php
-/**
- *	Form for managing ZoneTemplates.
- */
 
 
 namespace OUTRAGEdns\User;
 
-use OUTRAGEweb\FormElement;
-use OUTRAGEweb\Validate;
+use \OUTRAGEdns\Validate\ElementList;
+use \OUTRAGElib\Validate\Constraint\Required;
 
 
-class FormAuthenticate extends Validate\Template
+class FormAuthenticate extends ElementList
 {
 	/**
 	 *	Define what fields we want this form to have.
 	 */
 	public function rules()
 	{
-		parent::rules();
-		
-		# username
-		$username = new FormElement\Text("username");
-		$username->required(true);
-		$username->appendTo($this);
-		
-		# password
-		$password = new FormElement\Text("password");
-		$password->password(true);
-		$password->required(true);
-		$password->appendTo($this);
+		$this->build([
+			"username" => [ new Required(true) ],
+			"password" => [ new Required(true) ],
+		]);
 	}
 }

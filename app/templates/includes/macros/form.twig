@@ -1,0 +1,111 @@
+{% macro text(options) %}
+	<div class="control-group">
+		<label class="control-label">{{ options.title }}</label>
+		
+		<div class="controls">
+			<div class="control-wrap">
+				<input{% if options.class is defined %} class="{{ options.class|e }}"{% endif %} type="text"{% if options.field is not null %} name="{{ options.field|e }}"{% else %} readonly="readonly"{% endif %} value="{{ options.value|e }}"{% if options.placeholder is defined %} placeholder="{{ options.placeholder|e }}"{% endif %} />
+			</div>
+		</div>
+	</div>
+{% endmacro %}
+
+{% macro textarea(options) %}
+	<div class="control-group">
+		<label class="control-label">{{ options.title }}</label>
+		
+		<div class="controls">
+			<div class="control-wrap">
+				<textarea{% if options.class is defined %} class="{{ options.class|e }}"{% endif %}{% if options.field is not null %} name="{{ options.field|e }}"{% else %} readonly="readonly"{% endif %}{% if options.placeholder is defined %} placeholder="{{ options.placeholder|e }}"{% endif %}>{{ options.value|e }}</textarea>
+			</div>
+		</div>
+	</div>
+{% endmacro %}
+
+{% macro password(options) %}
+	<div class="control-group">
+		<label class="control-label">{{ options.title }}</label>
+		
+		<div class="controls">
+			<div class="control-wrap">
+				<input{% if options.class is defined %} class="{{ options.class|e }}"{% endif %} type="password"{% if options.field is not null %} name="{{ options.field|e }}"{% else %} readonly="readonly"{% endif %} value="{{ options.value|e }}"{% if options.placeholder is defined %} placeholder="{{ options.placeholder|e }}"{% endif %} />
+			</div>
+		</div>
+	</div>
+{% endmacro %}
+
+{% macro upload(options) %}
+	<div class="control-group">
+		<label class="control-label">{{ options.title }}</label>
+		
+		<div class="controls">
+			<div class="control-wrap">
+				<input{% if options.class is defined %} class="{{ options.class|e }}"{% endif %} type="file" {% if options.field is not null %} name="{{ options.field|e }}"{% else %} readonly="readonly"{% endif %}{% if options.placeholder is defined %} placeholder="{{ options.placeholder|e }}"{% endif %} />
+			</div>
+		</div>
+	</div>
+{% endmacro %}
+
+{% macro select(options) %}
+	<div class="control-group">
+		<label class="control-label">{{ options.title }}</label>
+		
+		<div class="controls">
+			<div class="control-wrap">
+				<select{% if options.class is defined %} class="{{ options.class|e }}"{% endif %} {% if options.field is not null %} name="{{ options.field|e }}"{% else %} readonly="readonly"{% endif %}{% if options.placeholder is defined %} placeholder="{{ options.placeholder|e }}"{% endif %}>
+					{% if options.placeholder is defined %}
+						<option value="">{{ options.placeholder }}</option>
+					{% endif %}
+					
+					{% if options.tuple is defined %}
+						{% for key, item in options.tuple %}
+							{% if item is iterable %}
+								<option value="{{ item.id|e }}"{% if options.value == item.id %} selected="selected"{% endif %}{% if options.additionalproperty is defined %} data-{{ options.additionalproperty }}="{{ item[options.additionalproperty]|e }}"{% endif %}>{% if options.key is defined %}{{ item[options.key]|raw }}{% else %}{{ item.name|raw }}{% endif %}</option>
+							{% else %}
+								<option value="{{ key|e }}"{% if options.value == key %} selected="selected"{% endif %}>{{ item|raw }}</option>
+							{% endif %}
+						{% endfor %}
+					{% endif %}
+				</select>
+			</div>
+		</div>
+	</div>
+{% endmacro %}
+
+{% macro checkbox(options) %}
+	<div class="control-group">
+		<label class="control-label">{{ options.title }}</label>
+		
+		<div class="controls">
+			<div class="control-wrap">
+				<input{% if options.class is defined %} class="{{ options.class|e }}"{% endif %} type="checkbox" {% if options.field is not null %} name="{{ options.field|e }}"{% else %} readonly="readonly"{% endif %}{% if options.checked is defined and options.checked != 0 %} checked="checked"{% endif %}{% if options.placeholder is defined %} placeholder="{{ options.placeholder|e }}"{% endif %} value="1" />
+			</div>
+		</div>
+	</div>
+{% endmacro %}
+
+{% macro hidden(options) %}
+	<div class="control-group hide">
+		<input{% if options.class is defined %} class="{{ options.class|e }}"{% endif %} type="hidden" name="{{ options.field|e }}" value="{{ options.value|e }}" />
+	</div>
+{% endmacro %}
+
+{% macro date(options) %}
+	{% if options.value is empty or options.value == 0 %}
+		{% set date = "" %}
+	{% elseif options.value == "now" %}
+		{% set date = "now"|date("d/m/Y") %}
+	{% else %}
+		{% set date = options.value|date("d/m/Y") %}
+	{% endif %}
+	
+	<div class="control-group">
+		<label class="control-label">{{ options.title }}</label>
+		
+		<div class="controls">
+			<div class="control-wrap">
+				<input class="inherit-datepicker{% if options.class is defined %} {{ options.class|e }}{% endif %}" type="text" {% if options.field is not null %} name="{{ options.field|e }}"{% else %} readonly="readonly"{% endif %} value="{{ date }}"{% if options.placeholder is defined %} placeholder="{{ options.placeholder|e }}"{% endif %} />
+			</div>
+		</div>
+	</div>
+{% endmacro %}

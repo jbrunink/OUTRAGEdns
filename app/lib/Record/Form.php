@@ -1,59 +1,57 @@
 <?php
-/**
- *	Form for managing Record.
- */
 
 
 namespace OUTRAGEdns\Record;
 
-use OUTRAGEweb\Configuration;
-use OUTRAGEweb\FormElement;
-use OUTRAGEweb\Validate;
-use OUTRAGEweb\Validate\Conditions;
-use OUTRAGEdns\Validate\Conditions as Constraint;
-use OUTRAGEdns\ZoneTemplate;
+use \OUTRAGEdns\Configuration\Configuration;
+use \OUTRAGEdns\Validate\Constraint;
+use \OUTRAGEdns\Validate\Constraint\FullyQualifiedDomainName;
+use \OUTRAGEdns\Validate\Constraint\IPv4;
+use \OUTRAGEdns\Validate\Constraint\IPv6;
+use \OUTRAGEdns\Validate\Element;
+use \OUTRAGEdns\Validate\ElementList;
+use \OUTRAGEdns\ZoneTemplate\Form as ZoneTemplateForm;
+use \OUTRAGElib\Validate\Transformer\StringModifier;
 
 
-class Form extends Validate\Template
+class Form extends ElementList
 {
 	/**
 	 *	Define what fields we want this form to have.
 	 */
 	public function rules()
 	{
-		parent::rules();
-		
-		$config = Configuration\Wallet::getInstance();
+		$configuration = Configuration::getInstance();
 		
 		# name
-		$name = new FormElement\Text("name");
-		$name->label("Record");
+		$name = new Element("name");
+		$name->setLabel("Record");
 		$name->required(false);
 		$name->appendTo($this);
 		
 		# type
-		$type = new FormElement\Text("type");
-		$type->label("Type");
-		$type->contains($config->records->types->toArray());
+		$type = new Element("type");
+		$type->setLabel("Type");
+		$type->contains($configuration->records->types->toArray());
 		$type->required(true);
 		$type->appendTo($this);
 		
 		# content
-		$content = new FormElement\Text("content");
-		$content->label("Content");
+		$content = new Element("content");
+		$content->setLabel("Content");
 		$content->required(true);
 		$content->appendTo($this);
 		
 		# content
-		$ttl = new FormElement\Text("ttl");
-		$ttl->label("TTL");
+		$ttl = new Element("ttl");
+		$ttl->setLabel("TTL");
 		$ttl->required(true);
 		$ttl->appendTo($this);
 		
 		# content
-		$prio = new FormElement\Text("prio");
-		$prio->label("Priority");
-		$prio->default("0");
+		$prio = new Element("prio");
+		$prio->setLabel("Priority");
+		$prio->setDefault("0");
 		$prio->required(false);
 		$prio->appendTo($this);
 	}
@@ -72,63 +70,51 @@ class Form extends Validate\Template
 		# to type in their full domain name to make an entry, let's add a
 		# suffix transformer, to make PowerDNS and woot happy.
 		if($suffix = $this->getSuffix($input))
-			$this->getElement("name")->addCondition(new Conditions\StringModifier($suffix, Conditions\StringModifier::SUFFIX));
+			$this->getElement("name")->addConstraint(new StringModifier($suffix, StringModifier::SUFFIX));
+		
+		# if we're not providing the 'content' property (IE, it's null)
+		# then we need to mark that is no longer being required, and then use
+		# the RDATA attributes in its place.
+		if(!isset($input["content"]))
+		{
+			$this->getElement("content")->required(false);
+			
+			$rdata = RDATA::get($input["type"]);
+			$exclusions = RDATA::getExclusions($input["type"]);
+			
+			if(count($rdata) > 0)
+			{
+				foreach($rdata as $key)
+				{
+					# anything in exclusions is covered by another field somewhere
+					if(!isset($exclusions[$key]))
+					{
+						$key = strtolower($key);
+						
+						$element = new Element($key);
+						$element->required(true);
+						$element->appendTo($this);
+					}
+				}
+			}
+		}
 		
 		# now choose what things we need to validate against
 		$input["type"] = strtoupper($input["type"]);
 		
 		switch($input["type"])
 		{
-			case "SOA":
-				$mname = new FormElement\Text("mname");
-				$mname->label("Primary NS");
-				$mname->required(true);
-				$mname->appendTo($this);
-				
-				$rname = new FormElement\Text("rname");
-				$rname->label("Contact");
-				$rname->required(true);
-				$rname->appendTo($this);
-				
-				$refresh = new FormElement\Text("refresh");
-				$refresh->label("Refresh");
-				$refresh->required(true);
-				$refresh->appendTo($this);
-				
-				$refresh = new FormElement\Text("serial");
-				$refresh->label("Serial");
-				$refresh->required(true);
-				$refresh->appendTo($this);
-				
-				$retry = new FormElement\Text("retry");
-				$retry->label("Retry");
-				$retry->required(true);
-				$retry->appendTo($this);
-				
-				$expire = new FormElement\Text("expire");
-				$expire->label("Expire");
-				$expire->required(true);
-				$expire->appendTo($this);
-				
-				$minimum = new FormElement\Text("minimum");
-				$minimum->label("Minimum");
-				$minimum->required(true);
-				$minimum->appendTo($this);
-				
-				$this->getElement("content")->required(false);
-			break;
-			
 			case "A":
-				$this->getElement("content")->addCondition(new Constraint\IPv4());
+				$this->getElement("content")->addConstraint(new IPv4());
 			break;
 			
 			case "AAAA":
-				$this->getElement("content")->addCondition(new Constraint\IPv6());
+				$this->getElement("content")->addConstraint(new IPv6());
 			break;
 			
 			case "CNAME":
-				if($this instanceof ZoneTemplate\Form == false)
-					$this->getElement("content")->addCondition(new Constraint\FullyQualifiedDomainName());
+				if($this instanceof ZoneTemplateForm == false)
+					$this->getElement("content")->addConstraint(new FullyQualifiedDomainName());
 			break;
 		}
 		

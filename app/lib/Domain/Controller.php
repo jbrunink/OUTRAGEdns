@@ -1,14 +1,17 @@
 <?php
-/**
- *	Domain model for OUTRAGEdns
- */
 
 
 namespace OUTRAGEdns\Domain;
 
+use \Net_DNS2_Exception as DnsException;
+use \Net_DNS2_Packet_Response as DnsPacketResponse;
+use \Net_DNS2_Resolver as DnsResolver;
 use \OUTRAGEdns\Entity;
-use \OUTRAGEdns\ZoneTemplate;
 use \OUTRAGEdns\Notification;
+use \OUTRAGEdns\Record;
+use \OUTRAGEdns\ZoneTemplate;
+use \Symfony\Component\HttpFoundation\Response;
+use \Symfony\Component\Yaml\Yaml;
 
 
 class Controller extends Entity\Controller
@@ -18,21 +21,24 @@ class Controller extends Entity\Controller
 	 */
 	public function add()
 	{
-		if(!empty($this->request->post->commit))
-		{
-			if($this->form->validate($this->request->post->toArray()))
+		if($this->request->getMethod() == "POST" && $this->request->request->has("commit"))
+		{	
+			if($this->form->validate($this->request->request))
 			{
+				$connection = $this->db->getAdapter()->getDriver()->getConnection();
+				
 				try
 				{
-					$this->content->db->begin();
+					$connection->beginTransaction();
 					
-					$values = $this->form->values();
+					$values = $this->form->getValues();
 					
 					if(empty($values["owner"]))
-						$values["owner"] = $this->response->user->id;
+						$values["owner"] = $this->user->id;
 					
 					$this->content->save($values);
-					$this->content->db->commit();
+					
+					$connection->commit();
 					
 					new Notification\Success("Successfully created the domain: ".$this->content->name);
 					
@@ -41,7 +47,7 @@ class Controller extends Entity\Controller
 				}
 				catch(Exception $exception)
 				{
-					$this->content->db->rollback();
+					$connection->rollback();
 					
 					new Notification\Error("This domain wasn't added due to an internal error.");
 				}
@@ -49,9 +55,9 @@ class Controller extends Entity\Controller
 		}
 		
 		if(!$this->response->templates)
-			$this->response->templates = ZoneTemplate\Content::find()->where("owner = ?", $this->response->user->id)->order("name ASC")->invoke("objects");
+			$this->response->templates = ZoneTemplate\Content::find()->where([ "owner" => $this->user->id ])->order("name ASC")->get("objects");
 		
-		return $this->response->display("index.twig");
+		return $this->toHTML();
 	}
 	
 	
@@ -63,7 +69,7 @@ class Controller extends Entity\Controller
 		if(!$this->content->id)
 			$this->content->load($id);
 		
-		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->response->user->id))
+		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->user->id))
 		{
 			new Notification\Error("You don't have access to this domain.");
 			
@@ -71,21 +77,25 @@ class Controller extends Entity\Controller
 			exit;
 		}
 		
-		if(!empty($this->request->post->commit))
+		if($this->request->getMethod() == "POST" && $this->request->request->has("commit"))
 		{
-			if($this->form->validate($this->request->post->toArray()))
+			if($this->form->validate($this->request->request))
 			{
+				$connection = $this->db->getAdapter()->getDriver()->getConnection();
+				
 				try
 				{
-					$this->content->db->begin();
-					$this->content->edit($this->form->values());
-					$this->content->db->commit();
+					$connection->beginTransaction();
+					
+					$this->content->edit($this->form->getValues());
+					
+					$connection->commit();
 					
 					new Notification\Success("Successfully updated the domain: ".$this->content->name);
 				}
 				catch(Exception $exception)
 				{
-					$this->content->db->rollback();
+					$connection->rollback();
 					
 					new Notification\Error("This zone template wasn't edited due to an internal error.");
 				}
@@ -93,7 +103,7 @@ class Controller extends Entity\Controller
 		}
 		
 		if(!$this->response->templates)
-			$this->response->templates = ZoneTemplate\Content::find()->where("owner = ?", $this->response->user->id)->order("name ASC")->invoke("objects");
+			$this->response->templates = ZoneTemplate\Content::find()->where([ "owner" => $this->user->id ])->order("name ASC")->get("objects");
 		
 		# list all the nameservers that are currently defined
 		$this->response->nameservers = [];
@@ -109,18 +119,23 @@ class Controller extends Entity\Controller
 			"list" => [],
 		);
 		
-		if(!empty($this->request->get->revision))
+		if($this->request->query->has("revision"))
 		{
-			$stmt = $this->content->db->select()
-			             ->from("logs")
-			             ->select([ "the_date", "state" ])
-			             ->where("id = ?", $this->request->get->revision)
-			             ->where("content_type = ?", get_class($this->content))
-			             ->where("content_id = ?", $this->content->id)
-			             ->where("action = ?", "records")
-			             ->order("the_date DESC");
+			$select = $this->db->select();
 			
-			$response = $stmt->invoke();
+			$select->from("logs")
+				   ->columns([ "the_date", "state" ])
+				   ->where([ "id" => $this->request->query->get("revision") ])
+				   ->where([ "content_type" => get_class($this->content) ])
+				   ->where([ "content_id" => $this->content->id ])
+				   ->where([ "action" => "records" ])
+				   ->limit(1)
+				   ->order("the_date DESC");
+			
+			$statement = $this->db->prepareStatementForSqlObject($select);
+			$result = $statement->execute();
+			
+			$response = iterator_to_array($result);
 			
 			if(!count($response))
 			{
@@ -142,6 +157,8 @@ class Controller extends Entity\Controller
 						
 						case "NS":
 							$this->response->nameservers[] = $record->content;
+							$this->response->records["list"][] = $record;
+						break;
 						
 						default:
 							$this->response->records["list"][] = $record;
@@ -164,6 +181,8 @@ class Controller extends Entity\Controller
 					
 					case "NS":
 						$this->response->nameservers[] = $record->content;
+						$this->response->records["list"][] = $record;
+					break;
 					
 					default:
 						$this->response->records["list"][] = $record;
@@ -174,7 +193,65 @@ class Controller extends Entity\Controller
 		
 		$this->response->nameservers = array_unique($this->response->nameservers);
 		
-		return $this->response->display("index.twig");
+		return $this->toHTML();
+	}
+	
+	
+	/**
+	 *	Called when we want to import a set of records into this
+	 *	panel. Supports either XML/JSON exports from OUTRAGEdns or
+	 *	DNS zone files
+	 */
+	public function import($id)
+	{
+		$form = new FormImport();
+		
+		if(!$this->content->id)
+			$this->content->load($id);
+		
+		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->user->id))
+		{
+			new Notification\Error("You don't have access to this domain.");
+			
+			header("Location: ".$this->content->actions->grid);
+			exit;
+		}
+		
+		if($this->request->getMethod() == "POST" && $this->request->request->has("commit"))
+		{
+			if($form->validate($this->request->request))
+			{
+				$values = $form->getValues();
+				
+				$helper = new ImportParser();
+				$helper->parse($values["upload"]);
+				
+				if(count($helper->records) > 0)
+				{
+					$data = [
+						"records" => $helper->records,
+					];
+					
+					if($this->content->edit($data) !== false)
+					{
+						new Notification\Success("Successfully imported records into this domain.");
+						
+						header("Location: ".$this->content->actions->edit);
+						exit;
+					}
+				}
+				else
+				{
+					new Notification\Error("No valid records were detected.");
+				}
+			}
+			else
+			{
+				new Notification\Error("No import feed was provided.");
+			}
+		}
+		
+		return $this->toHTML();
 	}
 	
 	
@@ -186,7 +263,7 @@ class Controller extends Entity\Controller
 		if(!$this->content->id)
 			$this->content->load($id);
 		
-		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->response->user->id))
+		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->user->id))
 		{
 			new Notification\Error("You don't have access to this domain.");
 			
@@ -194,17 +271,21 @@ class Controller extends Entity\Controller
 			exit;
 		}
 		
+		$connection = $this->db->getAdapter()->getDriver()->getConnection();
+		
 		try
 		{
-			$this->content->db->begin();
+			$connection->beginTransaction();
+			
 			$this->content->remove();
-			$this->content->db->commit();
+			
+			$connection->commit();
 			
 			new Notification\Success("Successfully removed the domain: ".$this->content->name);
 		}
 		catch(Exception $exception)
 		{
-			$this->content->db->rollback();
+			$connection->rollback();
 			
 			new Notification\Error("This zone template wasn't removed due to an internal error.");
 		}
@@ -222,7 +303,7 @@ class Controller extends Entity\Controller
 		if(!$this->content->id)
 			$this->content->load($id);
 		
-		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->response->user->id))
+		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->user->id))
 		{
 			new Notification\Error("You don't have access to this domain.");
 			
@@ -230,41 +311,45 @@ class Controller extends Entity\Controller
 			exit;
 		}
 		
-		$format = !empty($this->request->get->format) ? strtolower($this->request->get->format) : "json";
-		$use_prefix = !empty($this->request->get->prefix);
+		$format = $this->request->query->get("format") ?: "json";
+		$use_prefix = $this->request->query->get("prefix");
+		
+		$response = new Response();
+		$response->setStatusCode(Response::HTTP_OK);
 		
 		switch($format)
 		{
 			case "json":
-				header("Content-Type: application/json");
+				$response->headers->set("Content-Type", "application/json");
 				
-				if(empty($this->request->get->preview))
-					header('Content-Disposition: attachment; filename="'.$this->content->name.'.json"');
+				if($this->request->query->get("preview"))
+					$response->headers->set("Content-Disposition", 'attachment; filename="'.$this->content->name.'.json"');
 			break;
 			
 			case "xml":
-				header("Content-Type: application/xml");
+				$response->headers->set("Content-Type", "application/xml");
 				
-				if(empty($this->request->get->preview))
-					header('Content-Disposition: attachment; filename="'.$this->content->name.'.xml"');
+				if($this->request->query->get("preview"))
+					$response->headers->set("Content-Disposition", 'attachment; filename="'.$this->content->name.'.xml"');
 			break;
 			
 			case "bind":
 			default:
-				header("Content-Type: text/plain");
+				$response->headers->set("Content-Type", "text/plain");
 				
-				if(empty($this->request->get->preview))
-					header('Content-Disposition: attachment; filename="'.$this->content->name.'.txt"');
+				if($this->request->query->get("preview"))
+					$response->headers->set("Content-Disposition", 'attachment; filename="'.$this->content->name.'.txt"');
 			break;
 		}
 		
 		$revision_id = null;
 		
-		if(!empty($this->request->get->revision))
-			$revision_id = $this->request->get->revision;
+		if($this->request->query->has("revision"))
+			$revision_id = $this->request->query->get("revision");
 		
-		echo $this->content->export($format, $use_prefix, $revision_id);		
-		exit;
+		$response->setContent($this->content->export($format, $use_prefix, $revision_id));
+		
+		return $response;
 	}
 	
 	
@@ -276,7 +361,7 @@ class Controller extends Entity\Controller
 		if(!$this->content->id)
 			$this->content->load($id);
 		
-		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->response->user->id))
+		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->user->id))
 		{
 			new Notification\Error("You don't have access to this domain.");
 			
@@ -284,17 +369,124 @@ class Controller extends Entity\Controller
 			exit;
 		}
 		
-		$stmt = $this->content->db->select()
-		             ->from("logs")
-		             ->select([ "id", "the_date" ])
-		             ->where("content_type = ?", get_class($this->content))
-		             ->where("content_id = ?", $this->content->id)
-		             ->where("action = ?", "records")
-		             ->order("the_date DESC");
+		$select = $this->db->select();
 		
-		$this->response->revisions = $stmt->invoke()->toArray();
+		$select->from("logs")
+			   ->columns([ "id", "the_date" ])
+			   ->where([ "content_type" => get_class($this->content) ])
+			   ->where([ "content_id" => $this->content->id ])
+			   ->where([ "action" => "records" ])
+			   ->order("the_date DESC");
 		
-		return $this->response->display("index.twig");
+		$statement = $this->db->prepareStatementForSqlObject($select);
+		$result = $statement->execute();
+		
+		$this->response->revisions = iterator_to_array($result);
+		
+		return $this->toHTML();
+	}
+	
+	
+	/**
+	 *	Called when we want to test the records
+	 */
+	public function test($id)
+	{
+		if(!$this->content->id)
+			$this->content->load($id);
+		
+		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->user->id))
+		{
+			new Notification\Error("You don't have access to this domain.");
+			
+			header("Location: ".$this->content->actions->grid);
+			exit;
+		}
+		
+		# might we have support for revisions? meh, probably not
+		$records = $this->content->records;
+		
+		# it's probably a good idea to test both the server we're currently on
+		# as well as some publically accessable servers
+		$nameservers = [];
+		
+		if(file_exists(APP_DIR."/etc/config/external-nameservers.yaml"))
+			$nameservers = Yaml::parse(file_get_contents(APP_DIR."/etc/config/external-nameservers.yaml"));
+		
+		# and now to see if things match!!
+		$results = [];
+		
+		$record_compare = function(Record\Content $record, DnsPacketResponse $result)
+		{
+			$name = ($record->name ? $record->name."." : "").$record->parent->name;
+			
+			foreach($result->answer as $answer)
+			{
+				$list = [
+					$answer->name == $name,
+				];
+				
+				foreach($record->rdata as $rkey => $rvalue)
+				{
+					switch($record->type)
+					{
+						case "TXT":
+							foreach($answer->text as $text)
+								$list[] = strcmp($rvalue, $text) === 0;
+						break;
+						
+						default:
+							$akey = strtolower($rkey);
+							
+							if(isset($answer->{$akey}))
+								$list[] = rtrim($answer->{$akey}, ".") == rtrim($rvalue, ".");
+						break;
+					}
+				}
+				
+				if(count($list) > 0)
+				{
+					$list = array_unique($list);
+					
+					if(count(array_filter($list)) === count($list))
+						return true;
+				}
+			}
+			
+			return false;
+		};
+		
+		foreach($nameservers as $key => $list)
+		{
+			$resolver = new DnsResolver([
+				"nameservers" => $list,
+				"use_tcp" => true,
+			]);
+			
+			foreach($records as $record)
+			{
+				if(!isset($results[$record->id]))
+					$results[$record->id] = [];
+				
+				try
+				{
+					$name = ($record->name ? $record->name."." : "").$this->content->name;
+					$result = $resolver->query($name, $record->type);
+					
+					$results[$record->id][$key] = $record_compare($record, $result);
+				}
+				catch(DnsException $exception)
+				{
+					$results[$record->id][$key] = null;
+				}
+			}
+		}
+		
+		$this->response->records = $records;
+		$this->response->nameservers = $nameservers;
+		$this->response->results = $results;
+		
+		return $this->toHTML();
 	}
 	
 	
@@ -306,15 +498,15 @@ class Controller extends Entity\Controller
 		if(!$this->response->domains)
 		{
 			$request = Content::find();
-			$request->leftJoin("zones", "zones.domain_id = ".$this->content->db_table.".id");
-			$request->sort("id ASC");
+			$request->join("zones", "zones.domain_id = domains.id");
+			$request->order("id ASC");
 			
 			if(!$this->response->godmode)
-				$request->where("zones.owner = ?", $this->response->user->id);
+				$request->where([ "zones.owner" => $this->user->id ]);
 			
-			$this->response->domains = $request->invoke("objects");
+			$this->response->domains = $request->get("objects");
 		}
 		
-		return $this->response->display("index.twig");
+		return $this->toHTML();
 	}
 }

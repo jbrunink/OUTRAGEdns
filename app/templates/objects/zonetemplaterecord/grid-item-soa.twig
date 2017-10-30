@@ -1,0 +1,134 @@
+{% set rdata = content.rdata %}
+
+<tr{% if class is defined %} class="{{ class|e }}"{% endif %}>
+	<td class="with-suffix">
+		<input type="text" name="records[{% if index is defined %}{{ index|e }}{% endif %}][name]" value="{{ content.prefix|e }}" />
+		<div class="suffix">.{{ suffix|default("[ZONE]")|e }}</div>
+		
+		<input type="hidden" name="records[{% if index is defined %}{{ index|e }}{% endif %}][type]" value="SOA" />
+	</td>
+	
+	<td>
+		<select name="records[{% if index is defined %}{{ index|e }}{% endif %}][mname]" class="editable-dropdown">
+			{% if not rdata.MNAME %}
+				<option value="">?</option>
+			{% endif %}
+			
+			{% if rdata.MNAME is defined and rdata.MNAME not in nameservers %}
+				<option value="{{ rdata.MNAME|e }}" selected="selected">{{ rdata.MNAME|e }}</option>
+			{% endif %}
+			
+			{% for nameserver in nameservers %}
+				<option value="{{ nameserver|e }}"{% if rdata.MNAME == nameserver %} selected="selected"{% endif %}>{{ nameserver|e }}</option>
+			{% endfor %}
+		</select>
+	</td>
+	
+	<td>
+		<input type="text" name="records[{% if index is defined %}{{ index|e }}{% endif %}][rname]" value="{{ rdata.RNAME|e }}" />
+	</td>
+	
+	<td>
+		<input type="text" name="records[{% if index is defined %}{{ index|e }}{% endif %}][serial]" value="{{ rdata.SERIAL|default("[SERIAL]")|e }}" readonly="readonly" />
+	</td>
+	
+	<td>
+		{% if config.records.ttl is iterable %}
+			<select name="records[{% if index is defined %}{{ index|e }}{% endif %}][refresh]" class="editable-dropdown">
+				{% if not rdata.REFRESH %}
+					<option value="">?</option>
+				{% endif %}
+				
+				{% if rdata.REFRESH is defined and rdata.REFRESH not in config.records.ttl|keys %}
+					<option value="{{ rdata.REFRESH|e }}" selected="selected">{{ rdata.REFRESH|e }} sec</option>
+				{% endif %}
+				
+				{% for ttl, title in config.records.ttl %}
+					<option value="{{ ttl|e }}"{% if rdata.REFRESH == ttl %} selected="selected"{% endif %}>{{ title|e }}</option>
+				{% endfor %}
+			</select>
+		{% else %}
+			<input type="text" name="records[{% if index is defined %}{{ index|e }}{% endif %}][refresh]" value="{{ rdata.REFRESH|e }}" />
+		{% endif %}
+	</td>
+	
+	<td>
+		{% if config.records.ttl is iterable %}
+			<select name="records[{% if index is defined %}{{ index|e }}{% endif %}][retry]" class="editable-dropdown">
+				{% if not rdata.RETRY %}
+					<option value="">?</option>
+				{% endif %}
+				
+				{% if rdata.RETRY is defined and rdata.RETRY not in config.records.ttl|keys %}
+					<option value="{{ rdata.RETRY|e }}" selected="selected">{{ rdata.RETRY|e }} sec</option>
+				{% endif %}
+				
+				{% for ttl, title in config.records.ttl %}
+					<option value="{{ ttl|e }}"{% if rdata.RETRY == ttl %} selected="selected"{% endif %}>{{ title|e }}</option>
+				{% endfor %}
+			</select>
+		{% else %}
+			<input type="text" name="records[{% if index is defined %}{{ index|e }}{% endif %}][retry]" value="{{ rdata.RETRY|e }}" />
+		{% endif %}
+	</td>
+	
+	<td>
+		{% if config.records.ttl is iterable %}
+			<select name="records[{% if index is defined %}{{ index|e }}{% endif %}][expire]" class="editable-dropdown">
+				{% if not rdata.EXPIRE %}
+					<option value="">?</option>
+				{% endif %}
+				
+				{% if rdata.EXPIRE is defined and rdata.EXPIRE not in config.records.ttl|keys %}
+					<option value="{{ rdata.EXPIRE|e }}" selected="selected">{{ rdata.EXPIRE|e }} sec</option>
+				{% endif %}
+				
+				{% for ttl, title in config.records.ttl %}
+					<option value="{{ ttl|e }}"{% if rdata.EXPIRE == ttl %} selected="selected"{% endif %}>{{ title|e }}</option>
+				{% endfor %}
+			</select>
+		{% else %}
+			<input type="text" name="records[{% if index is defined %}{{ index|e }}{% endif %}][expire]" value="{{ rdata.EXPIRE|e }}" />
+		{% endif %}
+	</td>
+	
+	<td>
+		{% if config.records.ttl is iterable %}
+			<select name="records[{% if index is defined %}{{ index|e }}{% endif %}][minimum]" class="editable-dropdown">
+				{% if not rdata.MINIMUM %}
+					<option value="">?</option>
+				{% endif %}
+				
+				{% if rdata.MINIMUM is defined and rdata.MINIMUM not in config.records.ttl|keys %}
+					<option value="{{ rdata.MINIMUM|e }}" selected="selected">{{ rdata.MINIMUM|e }} sec</option>
+				{% endif %}
+				
+				{% for ttl, title in config.records.ttl %}
+					<option value="{{ ttl|e }}"{% if rdata.MINIMUM == ttl %} selected="selected"{% endif %}>{{ title|e }}</option>
+				{% endfor %}
+			</select>
+		{% else %}
+			<input type="text" name="records[{% if index is defined %}{{ index|e }}{% endif %}][minimum]" value="{{ rdata.MINIMUM|e }}" />
+		{% endif %}
+	</td>
+	
+	<td>
+		{% if config.records.ttl is iterable %}
+			<select name="records[{% if index is defined %}{{ index|e }}{% endif %}][ttl]" class="editable-dropdown">
+				{% if not content.ttl %}
+					<option value="">?</option>
+				{% endif %}
+				
+				{% if content.ttl is defined and content.ttl not in config.records.ttl|keys %}
+					<option value="{{ content.ttl|e }}" selected="selected">{{ content.ttl|e }} sec</option>
+				{% endif %}
+				
+				{% for ttl, title in config.records.ttl %}
+					<option value="{{ ttl|e }}"{% if content.ttl == ttl %} selected="selected"{% endif %}>{{ title|e }}</option>
+				{% endfor %}
+			</select>
+		{% else %}
+			<input type="text" name="records[{% if index is defined %}{{ index|e }}{% endif %}][ttl]" value="{{ content.ttl|e }}" />
+		{% endif %}
+	</td>
+</tr>

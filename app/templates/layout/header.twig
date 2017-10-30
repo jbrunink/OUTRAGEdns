@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>OUTRAGEdns</title>
+		
+		<link rel="shortcut icon" href="/favicon.ico">
+		<link rel="stylesheet" type="text/css" href="/assets/stylesheet/outragedns.css" />
+		
+		<script type="text/javascript" src="/assets/javascript/jquery/jquery.min.js?v=1.01"></script>
+		<script type="text/javascript" src="/assets/javascript/jquery/jquery-ui.min.js?v=1.01"></script>
+		<script type="text/javascript" src="/assets/javascript/jquery/plugins/outragedns/module.js?v=1.01"></script>
+		<script type="text/javascript" src="/assets/javascript/jquery/plugins/outragedns/encapsulate.js?v=1.01"></script>
+		<script type="text/javascript" src="/assets/javascript/jquery/plugins/tipsy/jquery.tipsy.js?v=1.01"></script>
+		<script type="text/javascript" src="/assets/javascript/outragedns/editable-dropdown.js?v=1.01"></script>
+		<script type="text/javascript" src="/assets/javascript/outragedns/grid-table.js?v=1.01"></script>
+		<script type="text/javascript" src="/assets/javascript/outragedns/validate-form.js?v=1.01"></script>
+		<script type="text/javascript" src="/assets/javascript/outragedns/tooltip.js?v=1.01"></script>
+		
+		<script type="text/javascript">
+			$(function()
+			{
+				$("html").inherit();
+			});
+		</script>
+	</head>
+	
+	<body>
+		{% if not fullwidth %}
+			<section class="app-navigation">
+				<div class="branding">
+					OUTRAGEdns
+				</div>
+				
+				{% if user %}
+					<div class="hello">
+						Hi there, {{ user.username }}.
+					</div>
+				{% endif %}
+				
+				<nav class="sections">
+					{% include "layout/main-navigation.twig" %}
+				</nav>
+			</section>
+		{% endif %}
+		
+		<section class="app-container{% if not fullwidth %} with-sidebar{% endif %}">
+			{% if global.session.get("_notification_messages")|length %}
+				<div class="notification-header">
+					{% for notification in global.session.get("_notification_messages") %}
+						<div class="notification-item{% if notification.colour %} {{ notification.colour }}{% endif %}">
+							<i class="fa fa-exclamation-circle"></i> {{ notification.message }}
+						</div>
+					{% endfor %}
+				</div>
+			{% endif %}

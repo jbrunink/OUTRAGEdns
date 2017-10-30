@@ -1,7 +1,4 @@
 <?php
-/**
- *	User model for OUTRAGEdns
- */
 
 
 namespace OUTRAGEdns\User;
@@ -22,15 +19,19 @@ class Controller extends Entity\Controller
 		if($this->response->godmode)
 			$this->form->rulesAdmin();
 		
-		if(!empty($this->request->post->commit))
+		if($this->request->getMethod() == "POST" && $this->request->request->has("commit"))
 		{
-			if($this->form->validate($this->request->post->toArray()))
+			if($this->form->validate($this->request->request))
 			{
+				$connection = $this->db->getAdapter()->getDriver()->getConnection();
+				
 				try
 				{
-					$this->content->db->begin();
-					$this->content->save($this->form->values());
-					$this->content->db->commit();
+					$connection->beginTransaction();
+					
+					$this->content->save($this->form->getValues());
+					
+					$connection->commit();
 					
 					new Notification\Success("Successfully added this user.");
 					
@@ -39,14 +40,14 @@ class Controller extends Entity\Controller
 				}
 				catch(Exception $exception)
 				{
-					$this->content->db->rollback();
+					$connection->rollback();
 					
 					new Notification\Error("This user wasn't added due to an internal.");
 				}
 			}
 		}
 		
-		return $this->response->display("index.twig");
+		return $this->toHTML();
 	}
 	
 	
@@ -63,7 +64,7 @@ class Controller extends Entity\Controller
 		if(!$this->content->id)
 			$this->content->load($id);
 		
-		if(!$this->content->id || (!$this->response->godmode && $this->content->id !== $this->response->user->id))
+		if(!$this->content->id || (!$this->response->godmode && $this->content->id !== $this->user->id))
 		{
 			new Notification\Error("You don't have access to this user.");
 			
@@ -71,15 +72,19 @@ class Controller extends Entity\Controller
 			exit;
 		}
 		
-		if(!empty($this->request->post->commit))
+		if($this->request->getMethod() == "POST" && $this->request->request->has("commit"))
 		{
-			if($this->form->validate($this->request->post->toArray()))
+			if($this->form->validate($this->request->request))
 			{
+				$connection = $this->db->getAdapter()->getDriver()->getConnection();
+				
 				try
 				{
-					$this->content->db->begin();
-					$this->content->edit($this->form->values());
-					$this->content->db->commit();
+					$connection->beginTransaction();
+					
+					$this->content->edit($this->form->getValues());
+
+					$connection->commit();
 					
 					if($this->request->session->current_users_id == $this->content->id)
 						new Notification\Success("Successfully updated your profile.");
@@ -88,14 +93,14 @@ class Controller extends Entity\Controller
 				}
 				catch(Exception $exception)
 				{
-					$this->content->db->rollback();
+					$connection->rollback();
 					
 					new Notification\Error("This user wasn't edited due to an internal.");
 				}
 			}
 		}
 		
-		return $this->response->display("index.twig");
+		return $this->toHTML();
 	}
 	
 	
@@ -107,7 +112,7 @@ class Controller extends Entity\Controller
 		if(!$this->content->id)
 			$this->content->load($id);
 		
-		if(!$this->content->id || (!$this->response->godmode && $this->content->id !== $this->response->user->id))
+		if(!$this->content->id || (!$this->response->godmode && $this->content->id !== $this->user->id))
 		{
 			new Notification\Error("You don't have access to this user.");
 			
@@ -115,17 +120,21 @@ class Controller extends Entity\Controller
 			exit;
 		}
 		
+		$connection = $this->db->getAdapter()->getDriver()->getConnection();
+		
 		try
 		{
-			$this->content->db->begin();
+			$connection->beginTransaction();
+			
 			$this->content->remove();
-			$this->content->db->commit();
+			
+			$connection->commit();
 			
 			new Notification\Success("Successfully removed this user.");
 		}
 		catch(Exception $exception)
 		{
-			$this->content->db->rollback();
+			$connection->rollback();
 					
 			new Notification\Error("This user wasn't removed due to an internal.");
 		}
@@ -146,15 +155,15 @@ class Controller extends Entity\Controller
 			exit;
 		}
 		
-		if(!$this->response->users)
+		if(!$this->users)
 		{
 			$request = Content::find();
-			$request->sort("id ASC");
+			$request->order("id ASC");
 			
-			$this->response->users = $request->invoke("objects");
+			$this->users = $request->get("objects");
 		}
 		
-		return $this->response->display("index.twig");
+		return $this->toHTML();
 	}
 	
 	
@@ -163,7 +172,7 @@ class Controller extends Entity\Controller
 	 */
 	public function account()
 	{
-		return $this->edit($this->response->user->id);
+		return $this->edit($this->user->id);
 	}
 	
 	
@@ -172,7 +181,7 @@ class Controller extends Entity\Controller
 	 */
 	public function dashboard()
 	{
-		return $this->response->display("index.twig");
+		return $this->toHTML();
 	}
 	
 	
@@ -183,18 +192,21 @@ class Controller extends Entity\Controller
 	{
 		$this->response->fullwidth = true;
 		
-		$form = new FormAuthenticate();
-		
-		if($form->validate($this->request->post->toArray()))
+		if($this->request->getMethod() == "POST" && $this->request->request->has("commit"))
 		{
-			if($this->content->authenticate($this->request, $form->values()))
+			$form = new FormAuthenticate();
+			
+			if($form->validate($this->request->request))
 			{
-				header("Location: /");
-				exit;
+				if($this->content->authenticate($this->request, $form->getValues()))
+				{
+					header("Location: /");
+					exit;
+				}
 			}
 		}
 		
-		return $this->response->display("index.twig");
+		return $this->toHTML();
 	}
 	
 	
@@ -203,8 +215,8 @@ class Controller extends Entity\Controller
 	 */
 	public function logout()
 	{
-		if($this->response->user)
-			$this->response->user->logout($this->request);
+		if($this->user)
+			$this->user->logout($this->request);
 		
 		header("Location: /");
 		exit;

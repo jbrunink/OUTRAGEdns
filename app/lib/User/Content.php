@@ -1,15 +1,12 @@
 <?php
-/**
- *	User model for OUTRAGEdns
- */
 
 
 namespace OUTRAGEdns\User;
 
-use OUTRAGEweb\Request;
-use OUTRAGEdns\Entity;
-use OUTRAGEdns\Domain;
-use OUTRAGEdns\ZoneTemplate;
+use \OUTRAGEdns\Entity;
+use \OUTRAGEdns\Domain;
+use \OUTRAGEdns\ZoneTemplate;
+use \Symfony\Component\HttpFoundation\Request;
 
 
 class Content extends Entity\Content
@@ -17,48 +14,48 @@ class Content extends Entity\Content
 	/**
 	 *	What zone templates does this user own?
 	 */
-	public function getter_templates()
+	protected function getter_templates()
 	{
 		if(!$this->id)
 			return null;
 		
-		return ZoneTemplate\Content::find()->where("owner = ?", $this->id)->sort("id ASC")->invoke("objects");
+		return ZoneTemplate\Content::find()->where([ "owner" => $this->id ])->order("id ASC")->get("objects");
 	}
 	
 	
 	/**
 	 *	How many zone templates does this user own?
 	 */
-	public function getter_templates_no()
+	protected function getter_templates_no()
 	{
 		if(!$this->id)
 			return 0;
 		
-		return ZoneTemplate\Content::find()->where("owner = ?", $this->id)->invoke("count");
+		return ZoneTemplate\Content::find()->where([ "owner" => $this->id ])->get("count");
 	}
 	
 	
 	/**
 	 *	What domains does this user own?
 	 */
-	public function getter_domains()
+	protected function getter_domains()
 	{
 		if(!$this->id)
 			return null;
 		
-		return Domain\Content::find()->leftJoin("zones", "zones.domain_id = domains.id")->where("zones.owner = ?", $this->id)->sort("id ASC")->invoke("objects");
+		return Domain\Content::find()->join("zones", "zones.domain_id = domains.id")->where([ "zones.owner" => $this->id ])->order("id ASC")->get("objects");
 	}
 	
 	
 	/**
 	 *	How many domains does this user own?
 	 */
-	public function getter_domains_no()
+	protected function getter_domains_no()
 	{
 		if(!$this->id)
 			return 0;
 		
-		return Domain\Content::find()->leftJoin("zones", "zones.domain_id = domains.id")->where("zones.owner = ?", $this->id)->invoke("count");
+		return Domain\Content::find()->join("zones", "zones.domain_id = domains.id")->where([ "zones.owner" => $this->id ])->get("count");
 	}
 	
 	
@@ -67,6 +64,9 @@ class Content extends Entity\Content
 	 */
 	public function save($post = array())
 	{
+		if(!empty($post["password"]))
+			$post["password"] = sha1($post["password"]);
+		
 		return parent::save($post);
 	}
 	
@@ -78,6 +78,8 @@ class Content extends Entity\Content
 	{
 		if(empty($post["password"]))
 			unset($post["password"]);
+		else
+			$post["password"] = sha1($post["password"]);
 		
 		return parent::edit($post);
 	}
@@ -86,22 +88,24 @@ class Content extends Entity\Content
 	/**
 	 *	Shall we authenticate this user?
 	 */
-	public function authenticate(Request\Environment $environment, $credentials)
+	public function authenticate(Request $request, $credentials)
 	{
 		if(!isset($credentials["username"]) || !isset($credentials["password"]))
 			return false;
 		
 		$target = $this->find()
-		               ->where("username LIKE ?", $credentials["username"])
-		               ->where("password LIKE ?", $credentials["password"])
-		               ->where("active = 1")
-		               ->invoke("first");
+		               ->where([ "username" => $credentials["username"] ])
+		               ->where([ "password" => sha1($credentials["password"]) ])
+		               ->where([ "active" => 1 ])
+		               ->get("first");
 		
 		if(!$target)
 			return false;
 		
-		$environment->session->reset();
-		$environment->session->current_users_id = $target->id;
+		$session = $request->getSession();
+		
+		$session->invalidate();
+		$session->set("authenticated_users_id", $target->id);
 		
 		return $this->load($target->id);
 	}
@@ -110,9 +114,9 @@ class Content extends Entity\Content
 	/**
 	 *	Let's log this user out.
 	 */
-	public function logout(Request\Environment $environment = null)
+	public function logout(Request $request)
 	{
-		if($environment)
-			$environment->session->reset();
+		$request->getSession()->invalidate();
+		return true;
 	}
 }
