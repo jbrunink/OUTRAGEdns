@@ -104,8 +104,10 @@
 </form>
 
 {% if content.id is not empty %}
-	<form class="export-form form-horizontal" method="GET" action="{{ content.actions.export }}">
-		<div class="pull-left">
+	<div class="pull-left">
+		<a href="{{ content.actions.import }}">Import file</a>
+		
+		<form class="export-form form-horizontal" method="GET" action="{{ content.actions.export }}">
 			<select name="format">
 				<option value="">Choose export</option>
 				<option value="bind">BIND9</option>
@@ -114,9 +116,8 @@
 			</select>
 			
 			<input type="hidden" name="prefix" value="1" />
-			
-		</div>
-	</form>
+		</form>
+	</div>
 {% endif %}
 
 <br />
