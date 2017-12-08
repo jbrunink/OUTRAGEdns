@@ -50,12 +50,11 @@ $app = new Application();
 $app->register(new TwigServiceProvider(), [ "twig.path" => TEMPLATE_DIR ]);
 
 $app["twig"]->addExtension(new Twig_Extensions_Extension_Text());
-
-#$app["debug"] = true;
+$app["debug"] = false;
 
 
 # error handling?
-if(true || !empty($app["debug"]))
+if(!empty($app["debug"]))
 {
 	$whoops = new \Whoops\Run();
 	$whoops->pushHandler(new PrettyPageHandler());
