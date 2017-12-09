@@ -10,10 +10,12 @@
 			<th width="10%">Type</th>
 			<th width="30%">Value</th>
 			
-			{% for name, ips in nameservers %}
-				<th>
-					{{ name|e }}
-				</th>
+			{% for type, list in nameservers %}
+				{% for name, ips in list %}
+					<th>
+						{{ name|e }}
+					</th>
+				{% endfor %}
 			{% endfor %}
 		</tr>
 	</thead>
@@ -39,14 +41,16 @@
 					{{ record.content|truncate(30)|e }}
 				</td>
 				
-				{% for name, ips in nameservers %}
-					<td>
-						{% if results[record.id] is defined and results[record.id][name] == true %}
-							<i class="fa fa-check" aria-hidden="true"></i>
-						{% else %}
-							<i class="fa fa-times" aria-hidden="true"></i>
-						{% endif %}
-					</td>
+				{% for type, list in nameservers %}
+					{% for name, ips in list %}
+						<td>
+							{% if results[record.id] is defined and results[record.id][name] == true %}
+								<i class="fa fa-check" aria-hidden="true"></i>
+							{% else %}
+								<i class="fa fa-times" aria-hidden="true"></i>
+							{% endif %}
+						</td>
+					{% endfor %}
 				{% endfor %}
 			</tr>
 		{% endfor %}

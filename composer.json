@@ -1,18 +1,19 @@
 {
-	"require": {  
-		"outragelib/delegator":"dev-master",
-		"outragelib/validate": "dev-master",
-		"symfony/yaml": "^4.0@dev",
+	"require": {
 		"filp/whoops": "^2.0@dev",
+		"ltd-beget/dns-zone-tokenizer": "dev-master",
+		"outragelib/delegator": "dev-master",
+		"outragelib/objectlist": "dev-master",
+		"outragelib/validate": "dev-master",
+		"pear/net_dns2": "dev-master",
 		"silex/silex": "~2.0",
 		"symfony/cache": "^4.0@dev",
-		"outragelib/objectlist": "dev-master",
-		"zendframework/zend-db": "^2.8@dev",
-		"texthtml/whoops-silex": "dev-master",
 		"symfony/twig-bridge": "^4.0@dev",
-		"pear/net_dns2": "dev-master",
-		"ltd-beget/dns-zone-tokenizer": "dev-master",
-		"twig/extensions": "^1.5@dev"
+		"symfony/yaml": "^4.0@dev",
+		"texthtml/whoops-silex": "dev-master",
+		"twig/extensions": "*",
+		"twig/twig": "^2.4",
+		"zendframework/zend-db": "^2.8@dev"
 	},
 	"repositories": [
 		{

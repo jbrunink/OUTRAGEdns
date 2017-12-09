@@ -3,9 +3,6 @@
 
 namespace OUTRAGEdns\Domain;
 
-use \Net_DNS2_Exception as DnsException;
-use \Net_DNS2_Packet_Response as DnsPacketResponse;
-use \Net_DNS2_Resolver as DnsResolver;
 use \OUTRAGEdns\Entity;
 use \OUTRAGEdns\Notification;
 use \OUTRAGEdns\Record;
@@ -416,71 +413,10 @@ class Controller extends Entity\Controller
 		# and now to see if things match!!
 		$results = [];
 		
-		$record_compare = function(Record\Content $record, DnsPacketResponse $result)
-		{
-			$name = ($record->name ? $record->name."." : "").$record->parent->name;
-			
-			foreach($result->answer as $answer)
-			{
-				$list = [
-					$answer->name == $name,
-				];
-				
-				foreach($record->rdata as $rkey => $rvalue)
-				{
-					switch($record->type)
-					{
-						case "TXT":
-							foreach($answer->text as $text)
-								$list[] = strcmp($rvalue, $text) === 0;
-						break;
-						
-						default:
-							$akey = strtolower($rkey);
-							
-							if(isset($answer->{$akey}))
-								$list[] = rtrim($answer->{$akey}, ".") == rtrim($rvalue, ".");
-						break;
-					}
-				}
-				
-				if(count($list) > 0)
-				{
-					$list = array_unique($list);
-					
-					if(count(array_filter($list)) === count($list))
-						return true;
-				}
-			}
-			
-			return false;
-		};
+		$tester = new DomainTest();
 		
-		foreach($nameservers as $key => $list)
-		{
-			$resolver = new DnsResolver([
-				"nameservers" => $list,
-				"use_tcp" => true,
-			]);
-			
-			foreach($records as $record)
-			{
-				if(!isset($results[$record->id]))
-					$results[$record->id] = [];
-				
-				try
-				{
-					$name = ($record->name ? $record->name."." : "").$this->content->name;
-					$result = $resolver->query($name, $record->type);
-					
-					$results[$record->id][$key] = $record_compare($record, $result);
-				}
-				catch(DnsException $exception)
-				{
-					$results[$record->id][$key] = null;
-				}
-			}
-		}
+		if(!empty($nameservers["DNS"]))
+			$results = $tester->testWithDNS($this->content, $records, $nameservers["DNS"]);
 		
 		$this->response->records = $records;
 		$this->response->nameservers = $nameservers;
