@@ -1,10 +1,18 @@
 (function($)
 {
-	var handler = function(params, response)
+	// processes the fields, submits the iframe and deals with the initial response
+	var createRequest = function(iframe, params, callback)
 	{
-		var self = this;
+		var dom = iframe.contents().get(0);
 		
-		var container = $("<iframe></iframe>").css("display", "none").appendTo("body");
+		iframe.one("load", function()
+		{
+			var dom = $(this).contents().get(0);
+			
+			if(dom)
+				callback($(dom.body).text().toString());
+		});
+		
 		var packet = $("<form></form>").attr("method", params.method || "POST").attr("action", params.action || window.location);
 		
 		if(this.find("input[type = 'file']").length > 0)
@@ -28,7 +36,7 @@
 			});
 		}
 		
-		container.contents().find("body").append(packet);
+		$(dom.body).append(packet);
 		
 		if(params.submit)
 		{
@@ -50,37 +58,54 @@
 		{
 			packet.trigger("submit");
 		}
+	};
+	
+	// create our initial iframe
+	var handler = function(params, response)
+	{
+		var self = this;
+		var iframe = $("<iframe></iframe>");
 		
-		container.one("load", function()
+		iframe.css("visibility", "hidden");
+		iframe.css("height", "0px");
+		iframe.appendTo("body");
+		
+		iframe.one("load", function()
 		{
-			if(response)
+			var callback = function(output)
 			{
-				var output = container.contents().text().toString();
-				
-				switch(params.returnType)
+				if(output)
 				{
-					case "map":
-						var method = new Function("return (" + output + ")");
+					switch(params.returnType)
+					{
+						case "map":
+							var method = new Function("return (" + output + ")");
+							
+							response.apply(self, [ method.apply(undefined) ]);
+						break;
 						
-						response.apply(self, [ method.apply(undefined) ]);
-					break;
-					
-					case "json":
-						response.apply(self, [ $.parseJSON($(this).contents().text()) ]);
-					break;
-					
-					default:
-						response.apply(self, [ output ]);
-					break;
+						case "json":
+							response.apply(self, [ $.parseJSON(output) ]);
+						break;
+						
+						default:
+							response.apply(self, [ output ]);
+						break;
+					}
 				}
-			}
+				
+				iframe.remove();
+			};
 			
-			container.remove();
+			createRequest.apply(self, [ $(this), params, callback ]);
 		});
+		
+		iframe.attr("src", "about:blank");
 		
 		return this;
 	};
 	
+	// wraps calls from jQuery
 	$.fn.encapsulate = function(params, response)
 	{
 		if(response == null)
