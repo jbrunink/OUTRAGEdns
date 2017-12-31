@@ -113,15 +113,12 @@ class Controller
 		{
 			$context->user = $this->user;
 			
-			if($session->has("authenticated_users_id"))
-			{	
-				if($session->has("_global_admin_mode"))
-				{
-					if($this->user->admin)
-						$context->godmode = $session->get("_global_admin_mode") && true;
-					else
-						$session->remove("_global_admin_mode");
-				}
+			if($this->request->godmode)
+			{
+				if($this->user->admin)
+					$context->godmode = $this->request->godmode;
+				else
+					$session->remove("_global_admin_mode");
 			}
 			
 			if($context->godmode)

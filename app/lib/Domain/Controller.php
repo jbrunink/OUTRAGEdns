@@ -66,7 +66,7 @@ class Controller extends Entity\Controller
 		if(!$this->content->id)
 			$this->content->load($id);
 		
-		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->user->id))
+		if(!$this->content->id || (!$this->request->godmode && $this->content->user->id !== $this->user->id))
 		{
 			new Notification\Error("You don't have access to this domain.");
 			
@@ -206,7 +206,7 @@ class Controller extends Entity\Controller
 		if(!$this->content->id)
 			$this->content->load($id);
 		
-		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->user->id))
+		if(!$this->content->id || (!$this->request->godmode && $this->content->user->id !== $this->user->id))
 		{
 			new Notification\Error("You don't have access to this domain.");
 			
@@ -260,7 +260,7 @@ class Controller extends Entity\Controller
 		if(!$this->content->id)
 			$this->content->load($id);
 		
-		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->user->id))
+		if(!$this->content->id || (!$this->request->godmode && $this->content->user->id !== $this->user->id))
 		{
 			new Notification\Error("You don't have access to this domain.");
 			
@@ -300,7 +300,7 @@ class Controller extends Entity\Controller
 		if(!$this->content->id)
 			$this->content->load($id);
 		
-		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->user->id))
+		if(!$this->content->id || (!$this->request->godmode && $this->content->user->id !== $this->user->id))
 		{
 			new Notification\Error("You don't have access to this domain.");
 			
@@ -358,7 +358,7 @@ class Controller extends Entity\Controller
 		if(!$this->content->id)
 			$this->content->load($id);
 		
-		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->user->id))
+		if(!$this->content->id || (!$this->request->godmode && $this->content->user->id !== $this->user->id))
 		{
 			new Notification\Error("You don't have access to this domain.");
 			
@@ -392,7 +392,7 @@ class Controller extends Entity\Controller
 		if(!$this->content->id)
 			$this->content->load($id);
 		
-		if(!$this->content->id || (!$this->response->godmode && $this->content->user->id !== $this->user->id))
+		if(!$this->content->id || (!$this->request->godmode && $this->content->user->id !== $this->user->id))
 		{
 			new Notification\Error("You don't have access to this domain.");
 			
@@ -437,7 +437,7 @@ class Controller extends Entity\Controller
 			$request->join("zones", "zones.domain_id = domains.id");
 			$request->order("id ASC");
 			
-			if(!$this->response->godmode)
+			if(!$this->request->godmode)
 				$request->where([ "zones.owner" => $this->user->id ]);
 			
 			$this->response->domains = $request->get("objects");

@@ -85,6 +85,15 @@ $app->before(function(Request $request, Application $app) use ($session)
 	# context so we might as well use this as a sort of umbrella variable we
 	# can then pass to twig
 	$app["outragedns.context"] = new RequestContainer();
+	
+	# another thing we might need to do is define godmode
+	$request->godmode = false;
+	
+	if($session->has("authenticated_users_id"))
+	{	
+		if($session->has("_global_admin_mode"))
+			$request->godmode = $session->get("_global_admin_mode") && true;
+	}
 }, Application::EARLY_EVENT);
 
 if($session->get("authenticated_users_id"))
