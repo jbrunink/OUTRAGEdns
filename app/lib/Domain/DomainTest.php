@@ -34,16 +34,10 @@ class DomainTest
 					
 					if(strlen($record->name) > 0)
 					{
-						switch($record->name)
-						{
-							case "*":
-								$name = "outragedns-wildcard-test-".uniqid().".".$name;
-							break;
-							
-							default:
-								$name = $record->name.".".$name;
-							break;
-						}
+						if(stristr($record->name, "*") !== false)
+							$name = str_replace("*", "outragedns-wildcard-test-".uniqid(), $record->name);
+						else
+							$name = $record->name;
 					}
 					
 					$results[$record->id][$key] = $this->parseDNSResult($name, $record, $resolver->query($name, $record->type));

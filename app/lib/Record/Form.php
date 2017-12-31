@@ -70,7 +70,7 @@ class Form extends ElementList
 		# to type in their full domain name to make an entry, let's add a
 		# suffix transformer, to make PowerDNS and woot happy.
 		if($suffix = $this->getSuffix($input))
-			$this->getElement("name")->addConstraint(new StringModifier($suffix, StringModifier::SUFFIX));
+			$this->getElement("name")->addTransformer(new StringModifier($suffix, StringModifier::SUFFIX));
 		
 		# if we're not providing the 'content' property (IE, it's null)
 		# then we need to mark that is no longer being required, and then use

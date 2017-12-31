@@ -385,7 +385,7 @@ class Content extends Entity\Content
 					if($use_prefix)
 						$name = $record->prefix;
 					else
-						$name = ($record->name ? $record->name."." : "").$this->name.".";
+						$name = $record->name;
 					
 					switch($record->type)
 					{
