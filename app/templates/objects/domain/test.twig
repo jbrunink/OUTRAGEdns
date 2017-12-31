@@ -45,9 +45,9 @@
 					{% for name, ips in list %}
 						<td>
 							{% if results[record.id] is defined and results[record.id][name] == true %}
-								<i class="fa fa-check" aria-hidden="true"></i>
+								<i class="fa fa-check fc-green" aria-hidden="true"></i>
 							{% else %}
-								<i class="fa fa-times" aria-hidden="true"></i>
+								<i class="fa fa-times fc-red" aria-hidden="true"></i>
 							{% endif %}
 						</td>
 					{% endfor %}
