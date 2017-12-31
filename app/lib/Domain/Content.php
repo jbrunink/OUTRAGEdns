@@ -370,7 +370,7 @@ class Content extends Entity\Content
 					if($use_prefix)
 						$name = $record->prefix;
 					else
-						$name = ($record->name ? $record->name."." : "").$this->name.".";
+						$name = $record->name.".";
 					
 					$max_name_len = max($max_name_len, strlen($name ?: "@"));
 					$max_ttl_len = max($max_ttl_len, strlen((string) $record->ttl));
@@ -385,7 +385,7 @@ class Content extends Entity\Content
 					if($use_prefix)
 						$name = $record->prefix;
 					else
-						$name = $record->name;
+						$name = $record->name.".";
 					
 					switch($record->type)
 					{
@@ -399,7 +399,7 @@ class Content extends Entity\Content
 							$response[] = str_pad("", 4).sprintf("%s ; %s", $parts[5], "expire");
 							$response[] = str_pad("", 4).sprintf("%s ; %s", $parts[6], "minimum");
 							$response[] = ")";
-							$response[] = '';
+							$response[] = "";
 						break;
 						
 						case "MX":
