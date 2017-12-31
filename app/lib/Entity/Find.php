@@ -53,7 +53,9 @@ class Find
 	 */
 	public function __toString()
 	{
-		return (string) $this->select;
+		$adapter = $this->content->db->getAdapter();
+		
+		return $this->select->getSqlString($adapter->getPlatform());
 	}
 	
 	

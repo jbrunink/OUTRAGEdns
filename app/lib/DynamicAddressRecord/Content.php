@@ -26,10 +26,10 @@ class Content extends Entity\Content
 	{
 		$find = Record\Content::find();
 		
+		$find->join("dynamic_addresses_records", "dynamic_addresses_records.name = records.name");
+		$find->join("dynamic_addresses", "dynamic_addresses.id = dynamic_addresses_records.dynamic_address_id");
 		$find->join("domains", "domains.id = records.domain_id");
 		$find->join("zones", "domains.id = zones.domain_id");
-		$find->join("dynamic_addresses_records", "dynamic_addresses_records.domain_id = records.domain_id");
-		$find->join("dynamic_addresses", "dynamic_addresses.id = dynamic_addresses_records.dynamic_address_id");
 		
 		$find->where([ "dynamic_addresses_records.id" => $this->id ])
 			 ->where([ "records.name" => $this->name ])
@@ -47,10 +47,10 @@ class Content extends Entity\Content
 	{
 		$find = Record\Content::find();
 		
+		$find->join("dynamic_addresses_records", "dynamic_addresses_records.name = records.name");
+		$find->join("dynamic_addresses", "dynamic_addresses.id = dynamic_addresses_records.dynamic_address_id");
 		$find->join("domains", "domains.id = records.domain_id");
 		$find->join("zones", "domains.id = zones.domain_id");
-		$find->join("dynamic_addresses_records", "dynamic_addresses_records.domain_id = records.domain_id");
-		$find->join("dynamic_addresses", "dynamic_addresses.id = dynamic_addresses_records.dynamic_address_id");
 		
 		$find->where([ "dynamic_addresses_records.id" => $this->id ])
 			 ->where([ "records.name" => $this->name ])
