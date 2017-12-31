@@ -220,7 +220,7 @@ class Controller extends Entity\Controller
 			{
 				$values = $form->getValues();
 				
-				$helper = new ImportParser();
+				$helper = new ImportParser($this->content);
 				$helper->parse($values["upload"]);
 				
 				if(count($helper->records) > 0)

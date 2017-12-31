@@ -5,6 +5,7 @@ namespace OUTRAGEdns\Domain;
 
 use \LTDBeget\dns\Tokenizer as ZoneTokeniser;
 use \OUTRAGEdns\Record\Form as RecordForm;
+use \OUTRAGEdns\Domain\Content as DomainContent;
 use \OUTRAGElib\FileStream\File;
 use \OUTRAGElib\FileStream\Stream;
 use \SimpleXMLElement;
@@ -16,6 +17,21 @@ class ImportParser
 	 *	What records have been generated?
 	 */
 	public $records = [];
+	
+	
+	/**
+	 *	What domain are we referencing?
+	 */
+	public $domain = null;
+	
+	
+	/**
+	 *	Constructor
+	 */
+	public function __construct(DomainContent $domain = null)
+	{
+		$this->domain = $domain;
+	}
 	
 	
 	/**
@@ -62,6 +78,9 @@ class ImportParser
 			
 			$form = new RecordForm();
 			
+			if($this->domain)
+				$form->content = $this->domain;
+			
 			if($form->validate($record))
 				$valid[] = $form->getValues();
 		}
@@ -83,6 +102,9 @@ class ImportParser
 			foreach($feed["records"] as $record)
 			{
 				$form = new RecordForm();
+				
+				if($this->domain)
+					$form->content = $this->domain;
 				
 				if($form->validate($record))
 					$valid[] = $form->getValues();
@@ -143,7 +165,30 @@ class ImportParser
 						$row["content"] = implode(" ", $record["RDATA"]);
 				}
 				
+				# fixing stuff for PowerDNS imports
+				switch($record["TYPE"])
+				{
+					case "MX":
+					case "SRV":
+					case "NS":
+					case "CNAME":
+						$row["content"] = rtrim($row["content"], ".");
+					break;
+					
+					case "SOA":
+						$chunks = explode(" ", $row["content"]);
+						
+						$chunks[0] = rtrim($chunks[0], ".");
+						$chunks[1] = rtrim($chunks[1], ".");
+						
+						$row["content"] = implode(" ", $chunks);
+					break;
+				}
+				
 				$form = new RecordForm();
+				
+				if($this->domain)
+					$form->content = $this->domain;
 				
 				if($form->validate($row))
 					$valid[] = $form->getValues();
