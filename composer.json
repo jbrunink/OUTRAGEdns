@@ -1,6 +1,7 @@
 {
 	"require": {
 		"filp/whoops": "^2.0@dev",
+		"leth/ip-address": "dev-master",
 		"ltd-beget/dns-zone-tokenizer": "dev-master",
 		"outragelib/delegator": "dev-master",
 		"outragelib/objectlist": "dev-master",

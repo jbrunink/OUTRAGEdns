@@ -3,6 +3,7 @@
 
 namespace OUTRAGEdns\Domain;
 
+use \Leth\IPAddress\IPv6\Address as AddressIPv6;
 use \Net_DNS2_Exception as DnsException;
 use \Net_DNS2_Packet_Response as DnsPacketResponse;
 use \Net_DNS2_Resolver as DnsResolver;
@@ -69,8 +70,24 @@ class DomainTest
 				switch($record->type)
 				{
 					case "TXT":
+						$output = "";
+						
 						foreach($answer->text as $text)
-							$list[] = strcmp($rvalue, $text) === 0;
+							$output .= $text;
+						
+						$list[] = strcmp($rvalue, $output) === 0;
+					break;
+					
+					case "AAAA":
+						$akey = strtolower($rkey);
+						
+						if(isset($answer->{$akey}))
+						{
+							$local = AddressIPv6::factory($record->content);
+							$remote = AddressIPv6::factory($answer->{$akey});
+							
+							$list[] = strcmp((string) $local, (string) $remote) === 0;
+						}
 					break;
 					
 					default:
