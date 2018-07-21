@@ -71,7 +71,7 @@ class Controller extends Entity\Controller
 							];
 						}
 						
-						$list[$domain->id]["records"][$record->id] = $record->name;
+						$list[$domain->id]["records"][$record->id] = sprintf("[%s] %s", $record->type, $record->name);
 					break;
 				}
 			}
@@ -163,7 +163,7 @@ class Controller extends Entity\Controller
 							];
 						}
 						
-						$list[$domain->id]["records"][$record->id] = $record->name;
+						$list[$domain->id]["records"][$record->id] = sprintf("[%s] %s", $record->type, $record->name);
 					break;
 				}
 			}
