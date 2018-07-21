@@ -1,6 +1,3 @@
 .sass-cache
-composer.lock
-
 vendor/
-
 app/etc/config/database\.yaml
