@@ -41,7 +41,7 @@ class FullyQualifiedDomainName extends ConstraintAbstract
 				return false;
 			}
 			
-			if(!preg_match('/^[\w-\/]+$/', $label))
+			if(!preg_match('/^[\w-]+$/', $label))
 			{
 				$this->error = "Invalid characters in FQDN.";
 				return false;

@@ -51,6 +51,7 @@ $app->register(new TwigServiceProvider(), [ "twig.path" => TEMPLATE_DIR ]);
 
 $app["twig"]->addExtension(new Twig_Extensions_Extension_Text());
 $app["debug"] = false;
+$app["unprotectedEndpoints"] = array("/dynamic-dns/", "/login/");
 
 
 # error handling?
@@ -69,18 +70,26 @@ $app->before(function(Request $request, Application $app) use ($session)
 {
 	# set session
 	$request->setSession($session);
-	
+
+	$unprotected = false;
+
 	# if the user is not accessing the login page, and they're not logged in,
 	# we'll just go ahead and re-direct them to the login page!
 	if(!$session->get("authenticated_users_id"))
 	{
-		if(!preg_match("@^/login/@", $request->server->get("REQUEST_URI")))
+		foreach($app["unprotectedEndpoints"] as $endpoint)
+		{
+			$unprotected = preg_match("@^{$endpoint}@", $request->server->get("REQUEST_URI")) && true;
+			if($unprotected)
+				break;
+		}
+		header("Protected: ".(!$unprotected ? "yes" : "no"));
+		if(!$unprotected)
 		{
 			header("Location: /login/");
 			exit;
 		}
 	}
-	
 	# twig doesn't have a nice and lovely way to store variables in a global
 	# context so we might as well use this as a sort of umbrella variable we
 	# can then pass to twig

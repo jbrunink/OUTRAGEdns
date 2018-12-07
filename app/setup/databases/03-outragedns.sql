@@ -53,4 +53,4 @@ CREATE TABLE `dynamic_addresses_records` (
 ) ENGINE=InnoDB;
 
 ALTER TABLE `dynamic_addresses_records` 
-	ADD COLUMN `domain_id` INT(11) NOT NULL AFTER `dynamic_address_id` DEFAULT '0';
+	ADD COLUMN `domain_id` INT(11) NOT NULL DEFAULT '0' AFTER `dynamic_address_id`;
