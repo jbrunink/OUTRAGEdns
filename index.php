@@ -83,7 +83,6 @@ $app->before(function(Request $request, Application $app) use ($session)
 			if($unprotected)
 				break;
 		}
-		header("Protected: ".(!$unprotected ? "yes" : "no"));
 		if(!$unprotected)
 		{
 			header("Location: /login/");
